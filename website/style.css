@@ -1,11 +1,13 @@
 body {
   padding: 0px;
   margin: 0px;
+  margin-bottom: 100px;
+  font-family: 'Roboto', sans-serif;
 }
 
 a {
   text-decoration: none;
-  color: white;
+  color: #B87200;
 }
 
 .header {
@@ -26,7 +28,10 @@ a {
   background: url(/images/books.jpeg);
   background-size: cover;
   background-repeat: no-repeat;
-  font-family: 'Roboto', sans-serif;
+}
+
+.hero a {
+  color: white;
 }
 
 .hero .copy {
@@ -56,14 +61,58 @@ a {
 }
 
 .hero .button {
-  margin-top: 40px;
-  background-color: #B87200;
+  margin-top: 50px;
   width: 250px;
-  text-align: center;
   margin-left: auto;
   margin-right: auto;
-  color: white;
   font-size: 2em;
+}
+
+.button {
+  background-color: #B87200;
   padding: 10px;
+  color: white;
+  text-align: center;
   border-radius: 3px;
+}
+
+.latest-releases h2 {
+  font-family: 'Play', sans-serif;
+}
+
+.latest-releases {
+  width: 1000px;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.latest-releases .version {
+  width: 100%;
+  border: 1px solid #dfdfdf;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.latest-releases .ts {
+  font-size: 0.75em;
+  color: #333333;
+  margin-top: 0.5em;
+}
+
+.latest-releases .button {
+  width: 150px;
+  cursor: pointer;
+}
+
+.latest-releases .changelog {
+  display: none;
+}
+
+.latest-releases .left {
+  float: left;
+}
+
+.latest-releases .right {
+  float: right;
 }
