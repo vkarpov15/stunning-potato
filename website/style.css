@@ -1,0 +1,69 @@
+body {
+  padding: 0px;
+  margin: 0px;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+.header {
+  width: 100%;
+  font-family: 'Play', sans-serif;
+}
+
+.brand {
+  margin: 15px;
+  margin-left: 25px;
+  font-size: 2em;
+  color: #00386c;
+}
+
+.hero {
+  width: 100%;
+  height: 500px;
+  background: url(/images/books.jpeg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  font-family: 'Roboto', sans-serif;
+}
+
+.hero .copy {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.75);
+  height: 500px;
+}
+
+.hero .intro {
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 3.5em;
+  color: #00386c;
+  text-align: center;
+  padding-top: 80px;
+}
+
+.hero .cta {
+  width: 1000px;
+  margin-top: 50px;
+  color: #232323;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.hero .button {
+  margin-top: 40px;
+  background-color: #B87200;
+  width: 250px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  color: white;
+  font-size: 2em;
+  padding: 10px;
+  border-radius: 3px;
+}
