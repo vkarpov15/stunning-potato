@@ -1,4 +1,4 @@
-fetch('http://api.js.report/version/latest').
+fetch('https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default/latest-versions').
   then(res => res.json()).
   then(res => {
     document.querySelector('#latest-releases-content').innerHTML = res.versions.
