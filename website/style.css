@@ -1,3 +1,8 @@
+html {
+  padding: 0px;
+  margin: 0px;
+}
+
 body {
   padding: 0px;
   margin: 0px;
@@ -13,16 +18,20 @@ a {
 .header {
   width: 100%;
   font-family: 'Play', sans-serif;
+  border-bottom: 1px solid #ddd;
+  height: 55px;
 }
 
 .brand {
   margin: 15px;
   margin-left: 25px;
   font-size: 2em;
+  width: 250px;
   color: #00386c;
 }
 
 .brand .logo {
+  margin-top: -3px;
   height: 1.5em;
   width: 1.5em;
   margin-right: 0.5em;
@@ -32,6 +41,26 @@ a {
 .brand .name {
   float: left;
 }
+
+#content {
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
+}
+
+.changelog li {
+  line-height: 1.5em;
+}
+
+code {
+  color: #00386c;
+  background-color: #ddd;
+  padding: 2px;
+  border-radius: 1px;
+}
+
+/* Home page */
 
 .hero {
   width: 100%;

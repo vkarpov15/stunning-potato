@@ -1,13 +1,20 @@
 {
+  "dependencies": {
+    "highlight.js": "9.12.0",
+    "marked": "0.5.1",
+    "unfetch": "4.0.1"
+  },
   "devDependencies": {
     "eslint": "5.3.0",
+    "express": "4.16.3",
+    "express-static": "1.2.6",
     "mocha": "5.2.0",
-    "pkg": "4.3.4",
-    "serve": "10.0.2"
+    "webpack": "4.19.1",
+    "webpack-cli": "3.1.1"
   },
   "scripts": {
     "lint": "eslint .",
-    "serve": "serve",
+    "serve": "node ./static",
     "test": "mocha ./test/*.test.js"
   },
   "eslintConfig": {
