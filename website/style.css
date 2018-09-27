@@ -22,6 +22,17 @@ a {
   color: #00386c;
 }
 
+.brand .logo {
+  height: 1.5em;
+  width: 1.5em;
+  margin-right: 0.5em;
+  float: left;
+}
+
+.brand .name {
+  float: left;
+}
+
 .hero {
   width: 100%;
   height: 500px;
