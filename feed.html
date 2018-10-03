@@ -4,6 +4,15 @@
     <link rel="stylesheet" href="/website/style.css">
     <link rel="stylesheet" href="/website/github.css">
     <link href="https://fonts.googleapis.com/css?family=Play|Roboto" rel="stylesheet">
+
+    <style>
+      #loading {
+        display: block;
+        font-size: 1.5em;
+        text-align: center;
+        margin-top: 20px;
+      }
+    </style>
   </head>
 
   <body>
@@ -18,10 +27,13 @@
         </div>
       </div>
 
-      <div id="content">
+      <div id="content" class="latest-releases">
+      </div>
+      <div id="loading">
+        Loading...
       </div>
     </div>
 
-    <script src="/website/package.js"></script>
+    <script src="/website/feed.js"></script>
   </body>
 </html>

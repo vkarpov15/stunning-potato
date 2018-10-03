@@ -1,5 +1,6 @@
 require('unfetch');
 
+const error404 = require('./error404');
 const marked = require('marked');
 
 const root = 'https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default';
@@ -14,7 +15,7 @@ function main(url, container) {
   const sp = url.split('/');
 
   if (sp.length < 4) {
-    container.innerHTML = '<h1>Not Found</h1>';
+    container.innerHTML = error404();
     return;
   }
 
@@ -31,7 +32,7 @@ function main(url, container) {
       container.innerHTML = html;
     }).
     catch(err => {
-      container.innerHTML = '<h1>Not Found</h1>';
+      container.innerHTML = error404();
       throw err;
     });
 }

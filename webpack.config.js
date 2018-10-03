@@ -1,5 +1,6 @@
 module.exports = {
   entry: {
+    feed: './client/feed.js',
     package: './client/package.js'
   },
   target: 'web',

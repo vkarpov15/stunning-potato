@@ -64,6 +64,15 @@ code {
   border-radius: 1px;
 }
 
+.error-gag-img {
+  width: 300px;
+}
+
+.error-404 {
+  width: 100%;
+  text-align: center;
+}
+
 /* Home page */
 
 .hero {
@@ -121,6 +130,7 @@ code {
 }
 
 .latest-releases {
+  font-size: 1.25em;
   width: 1000px;
   margin-top: 50px;
   margin-left: auto;
