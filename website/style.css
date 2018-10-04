@@ -60,7 +60,7 @@ a {
 .nav-right {
   position: absolute;
   right: 50px;
-  font-size: 1.5em;
+  font-size: 1.25em;
   font-family: 'Roboto', sans-serif;
   top: 8px;
 }
@@ -168,6 +168,12 @@ code {
   padding-top: 10px;
   padding-bottom: 10px;
   margin-top: 10px;
+}
+
+.version .description {
+  margin-top: 0.5em;
+  font-size: 0.75em;
+  color: #333;
 }
 
 .latest-releases .ts {

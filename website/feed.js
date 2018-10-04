@@ -114,8 +114,18 @@ module.exports = () => `
 __webpack_require__(0);
 
 const error404 = __webpack_require__(1);
+const versionComponent = __webpack_require__(3);
 
 const root = 'https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default';
+
+window.toggle = function toggle(id) {
+  const el = document.querySelector('.' + id);
+  if (el.style.display === 'block') {
+    el.style.display = 'none';
+  } else {
+    el.style.display = 'block';
+  }
+};
 
 if (typeof window !== 'undefined') {
   main(document.querySelector('#content'), document.querySelector('#loading'));
@@ -167,12 +177,22 @@ function isXPercentDownThePage(percent) {
   return (p / h) > percent;
 }
 
-const versionComponent = version => `
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+module.exports = version => `
   <div class="version">
     <div class="left">
-      <a href="https://npmjs.com/${version.packageId}">
+      <a href="https://npmjs.com/package/${version.packageId}">
         ${version.packageId}@${version.version}
       </a>
+      <div
+        class="description"
+        style="${version.package.description == null ? 'display: none' : ''}">
+        ${version.package.description}
+      </div>
       <div class="ts">
         ${ts(version.publishedAt)}
       </div>
@@ -195,15 +215,6 @@ const versionComponent = version => `
 function ts(date) {
   date = new Date(date);
   return date.toLocaleTimeString();
-}
-
-function toggle(id) {
-  const el = document.querySelector('.' + id);
-  if (el.style.display === 'block') {
-    el.style.display = 'none';
-  } else {
-    el.style.display = 'block';
-  }
 }
 
 
