@@ -24,6 +24,7 @@ a {
   font-family: 'Play', sans-serif;
   border-bottom: 1px solid #ddd;
   height: 55px;
+  position: relative;
 }
 
 .brand {
@@ -31,6 +32,10 @@ a {
   margin-left: 25px;
   font-size: 2em;
   width: 250px;
+  color: #00386c;
+}
+
+.brand a {
   color: #00386c;
 }
 
@@ -44,6 +49,19 @@ a {
 
 .brand .name {
   float: left;
+}
+
+.nav-right {
+  position: absolute;
+  right: 50px;
+  font-size: 1.5em;
+  font-family: 'Roboto', sans-serif;
+  top: 8px;
+}
+
+.nav-right a {
+  color: #00386c;
+  margin-right: 15px;
 }
 
 #content {
