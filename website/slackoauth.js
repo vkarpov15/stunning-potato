@@ -133,9 +133,8 @@ function main(content, querystring) {
 
   const opts = {
     method: 'POST',
-    mode: 'no-cors',
     headers: {
-      'content-type': 'application/json'
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({ code: params.code })
   };
