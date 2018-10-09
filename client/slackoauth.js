@@ -1,12 +1,14 @@
 require('unfetch');
 
+const qs = require('query-string');
+
 const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
 
 if (typeof window !== 'undefined') {
-  main(document.querySelector('#content'));
+  main(document.querySelector('#content'), window.location.search);
 }
 
-function main(content) {
+function main(content, querystring) {
   content.innerHTML = `
     <div class="registering">Registering</div>
   `;
@@ -21,13 +23,15 @@ function main(content) {
     content.querySelector('.registering').innerHTML = html;
   }, 250);
 
+  const params = qs.parse(querystring);
+
   const opts = {
     method: 'POST',
     mode: 'no-cors',
     headers: {
       'content-type': 'application/json'
     },
-    body: JSON.stringify({ foo: 'bar' })
+    body: JSON.stringify({ code: params.code })
   };
   fetch(`${root}/registerSlackOauth`, opts).then(res => {
     console.log(res);
