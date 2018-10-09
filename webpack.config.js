@@ -1,7 +1,8 @@
 module.exports = {
   entry: {
     feed: './client/feed.js',
-    package: './client/package.js'
+    package: './client/package.js',
+    slackoauth: './client/slackoauth.js'
   },
   target: 'web',
   output: {
