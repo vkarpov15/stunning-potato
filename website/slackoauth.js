@@ -115,8 +115,40 @@ if (typeof window !== 'undefined') {
 }
 
 function main(content, querystring) {
+  const interval = loading(content);
+
+  const params = qs.parse(querystring);
+
+  const opts = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ code: params.code })
+  };
+  fetch(`${root}/registerSlackOauth`, opts).
+    then(res => {
+      clearInterval(interval);
+      success(content);
+    }).
+    catch(err => {
+      clearInterval(interval);
+      error(content, err);
+    });
+}
+
+function error(content, err) {
   content.innerHTML = `
-    <div class="registering">Registering</div>
+    <div class="registering">
+      <p>An error occurred:</p>
+      <pre>${err.stack}</pre>
+    </div>
+  `;
+}
+
+function loading(content) {
+  content.innerHTML = `
+    <div class="registering"><p>Registering</p></div>
   `;
 
   let count = 0;
@@ -129,18 +161,20 @@ function main(content, querystring) {
     content.querySelector('.registering').innerHTML = html;
   }, 250);
 
-  const params = qs.parse(querystring);
+  return interval;
+}
 
-  const opts = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ code: params.code })
-  };
-  fetch(`${root}/registerSlackOauth`, opts).then(res => {
-    console.log(res);
-  });
+function success(content) {
+  content.innerHTML = `
+    <div class="registered">
+      <p>Registered Successfully!</p>
+      <div class="button" >
+        <a href="/dashboard">
+          See Your Dashboard
+        </a>
+      </div>
+    </div>
+  `;
 }
 
 

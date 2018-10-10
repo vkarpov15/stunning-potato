@@ -154,6 +154,10 @@ code {
   border-radius: 3px;
 }
 
+.button a {
+  color: white;
+}
+
 .latest-releases {
   font-size: 1.25em;
   width: 1000px;
