@@ -6,9 +6,11 @@
     "unfetch": "4.0.1"
   },
   "devDependencies": {
+    "@awaitjs/express": "0.1.4",
     "eslint": "5.3.0",
     "express": "4.16.3",
     "express-static": "1.2.6",
+    "mime2": "0.0.4",
     "mocha": "5.2.0",
     "webpack": "4.19.1",
     "webpack-cli": "3.1.1"
