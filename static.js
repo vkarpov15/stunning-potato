@@ -23,8 +23,12 @@ app.use((req, res, next) => {
 });
 
 app.useAsync(async (req, res, next) => {
-  let filename = req.url.substr(req.url.lastIndexOf('/'));
+  let filename = req.url.substr(req.url.lastIndexOf('/') + 1);
   url = (() => {
+    if (filename.length === 0) {
+      filename = 'index.html';
+      return req.url + 'index.html';
+    }
     if (filename.indexOf('.') === -1) {
       filename += '.html';
       return req.url + '.html';
