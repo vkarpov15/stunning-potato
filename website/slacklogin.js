@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -449,8 +449,7 @@ module.exports = function (encodedURI) {
 /* 7 */,
 /* 8 */,
 /* 9 */,
-/* 10 */,
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);
@@ -475,7 +474,7 @@ function main(content, querystring) {
     },
     body: JSON.stringify({ code: params.code })
   };
-  fetch(`${root}/registerSlackOauth`, opts).
+  fetch(`${root}/login/slack`, opts).
     then(res => {
       clearInterval(interval);
       success(content);
@@ -488,7 +487,7 @@ function main(content, querystring) {
 
 function error(content, err) {
   content.innerHTML = `
-    <div class="registering">
+    <div class="verifying">
       <p>An error occurred:</p>
       <pre>${err.stack}</pre>
     </div>
@@ -496,18 +495,19 @@ function error(content, err) {
 }
 
 function loading(content) {
+  const msg = 'Verifying Login with Slack';
   content.innerHTML = `
-    <div class="registering"><p>Registering</p></div>
+    <div class="verifying"><p>${msg}</p></div>
   `;
 
   let count = 0;
   const interval = setInterval(() => {
-    let html = content.querySelector('.registering').innerHTML;
+    let html = content.querySelector('.verifying').innerHTML;
     html += '.';
     if (html.substr(html.indexOf('.')).length > 3) {
-      html = 'Registering';
+      html = msg;
     }
-    content.querySelector('.registering').innerHTML = html;
+    content.querySelector('.verifying').innerHTML = html;
   }, 250);
 
   return interval;
@@ -515,15 +515,12 @@ function loading(content) {
 
 function success(content) {
   content.innerHTML = `
-    <div class="registered">
-      <p>Registered Successfully!</p>
-      <div class="button" >
-        <a href="/dashboard">
-          See Your Dashboard
-        </a>
-      </div>
+    <div class="logged-in">
+      <p>Logged in Successfully!</p>
     </div>
   `;
+
+  setTimeout(() => { window.location.href = '/dashboard'; }, 0);
 }
 
 
