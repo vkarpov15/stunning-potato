@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -110,16 +110,13 @@ module.exports = () => `
 /***/ }),
 /* 2 */,
 /* 3 */,
-/* 4 */,
-/* 5 */,
-/* 6 */,
-/* 7 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);
 
 const error404 = __webpack_require__(1);
-const marked = __webpack_require__(8);
+const marked = __webpack_require__(5);
 
 const root = 'https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default';
 
@@ -157,7 +154,7 @@ function main(url, container) {
 
 
 /***/ }),
-/* 8 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
@@ -1761,10 +1758,10 @@ if (true) {
 } else {}
 })(this || (typeof window !== 'undefined' ? window : global));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6)))
 
 /***/ }),
-/* 9 */
+/* 6 */
 /***/ (function(module, exports) {
 
 var g;
