@@ -126,7 +126,7 @@ function main(content, querystring) {
     },
     body: JSON.stringify({ code: params.code })
   };
-  fetch(`${root}/registerSlackOauth`, opts).
+  fetch(`${root}/slack`, opts).
     then(res => {
       clearInterval(interval);
       success(content);
