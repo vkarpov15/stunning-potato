@@ -116,7 +116,7 @@ __webpack_require__(0);
 const error404 = __webpack_require__(1);
 const versionComponent = __webpack_require__(3);
 
-const root = 'https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default';
+const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
 
 window.toggle = function toggle(id) {
   const el = document.querySelector('.' + id);
