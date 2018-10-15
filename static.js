@@ -37,7 +37,7 @@ app.useAsync(async (req, res, next) => {
   })();
 
   const contents = await new Promise((resolve, reject) => {
-    fs.readFile(`${__dirname}${url}`, 'utf8', (err, res) => {
+    fs.readFile(`${__dirname}${url}`, filename.endsWith('.html') ? 'utf8' : '', (err, res) => {
       if (err != null) {
         if (err.code === 'ENOENT') {
           err.status = 404;
