@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -95,7 +95,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /***/ }),
-/* 1 */
+/* 1 */,
+/* 2 */,
+/* 3 */,
+/* 4 */
 /***/ (function(module, exports) {
 
 module.exports = () => `
@@ -108,15 +111,16 @@ module.exports = () => `
 
 
 /***/ }),
-/* 2 */,
-/* 3 */,
-/* 4 */
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);
 
-const error404 = __webpack_require__(1);
-const marked = __webpack_require__(5);
+const error404 = __webpack_require__(4);
+const marked = __webpack_require__(9);
 
 const root = 'https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default';
 
@@ -154,7 +158,7 @@ function main(url, container) {
 
 
 /***/ }),
-/* 5 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
@@ -1758,10 +1762,10 @@ if (true) {
 } else {}
 })(this || (typeof window !== 'undefined' ? window : global));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(10)))
 
 /***/ }),
-/* 6 */
+/* 10 */
 /***/ (function(module, exports) {
 
 var g;

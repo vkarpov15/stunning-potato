@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -444,20 +444,14 @@ module.exports = function (encodedURI) {
 
 /***/ }),
 /* 4 */,
-/* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);
 
 const qs = __webpack_require__(1);
 
-const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
+const root = 'http://localhost:4000'; //'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
 
 if (typeof window !== 'undefined') {
   main(document.querySelector('#content'), window.location.search);
@@ -469,20 +463,19 @@ function main(content, querystring) {
   const params = qs.parse(querystring);
 
   const opts = {
-    method: 'POST',
+    method: 'GET',
     headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ code: params.code })
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    }
   };
-  fetch(`${root}/slack`, opts).
+  fetch(`${root}/me`, opts).
     then(res => {
       clearInterval(interval);
-      success(content);
       return res.json();
     }).
     then(res => {
-      window.localStorage.setItem('token', res.token._id);
+      success(res);
     }).
     catch(err => {
       clearInterval(interval);
@@ -492,7 +485,7 @@ function main(content, querystring) {
 
 function error(content, err) {
   content.innerHTML = `
-    <div class="registering">
+    <div class="loading">
       <p>An error occurred:</p>
       <pre>${err.stack}</pre>
     </div>
@@ -501,33 +494,60 @@ function error(content, err) {
 
 function loading(content) {
   content.innerHTML = `
-    <div class="registering"><p>Registering</p></div>
+    <div class="loading"><p>Loading</p></div>
   `;
 
   let count = 0;
   const interval = setInterval(() => {
-    let html = content.querySelector('.registering').innerHTML;
+    let html = content.querySelector('.loading').innerHTML;
     html += '.';
     if (html.substr(html.indexOf('.')).length > 3) {
-      html = 'Registering';
+      html = 'Loading';
     }
-    content.querySelector('.registering').innerHTML = html;
+    content.querySelector('.loading').innerHTML = html;
   }, 250);
 
   return interval;
 }
 
-function success(content) {
+function success(res) {
   content.innerHTML = `
-    <div class="registered">
-      <p>Registered Successfully!</p>
-      <div class="button" >
-        <a href="/dashboard">
-          See Your Dashboard
-        </a>
+    <div class="dashboard">
+      <h2>Profile</h2>
+      <div>
+        <input type="text" value="${res.customer.firstName}">
       </div>
+      <div>
+        <input type="text" value="${res.customer.lastName}">
+      </div>
+      <div>
+        <input type="text" value="${res.customer.email}">
+      </div>
+
+      <h2>Integrations</h2>
+
+      ${integrations(res.accounts)}
     </div>
   `;
+}
+
+function integrations(accounts) {
+  if (accounts.length === 0) {
+    return `
+      <div>No accounts found. Install the JSReport Slack app to add a new one.</div>
+      <a href="https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=80341368871.427593509574">
+        <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
+      </a>
+    `;
+  }
+
+  return accounts.map(account => `
+    <input type="text" value="${account.name}">
+    <div>
+      Packages Watched:
+      ${account.packagesWatched.map(pkg => `<div>${pkg}</div>`).join('\n')}
+    </div>
+  `).join('\n');
 }
 
 
