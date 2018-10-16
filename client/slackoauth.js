@@ -22,6 +22,7 @@ function main(content, querystring) {
   };
   fetch(`${root}/slack`, opts).
     then(res => {
+      window.localStorage.setItem('token', res.token._id);
       clearInterval(interval);
       success(content);
     }).
