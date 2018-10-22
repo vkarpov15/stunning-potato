@@ -1,0 +1,89 @@
+.delete {
+  cursor: pointer;
+}
+
+.dashboard h2 {
+  border-bottom: 1px solid #dfdfdf;
+  margin-top: 1em;
+  padding-bottom: 0.25em;
+}
+
+.dashboard input {
+  border: 1px solid #dfdfdf;
+  padding: 5px;
+  border-radius: 3px;
+  font-size: 1.25em;
+  color: #232323;
+}
+
+.input-with-label {
+  margin-top: 0.5em;
+}
+
+.input-with-label .label {
+  width: 150px;
+  float: left;
+  font-size: 1.25em;
+  padding: 5px;
+  color: #666;
+}
+
+.input-with-label .input {
+  width: 250px;
+  float: left;
+}
+
+.integration {
+  margin-bottom: 20px;
+  border: 1px dashed #e3e3e3;
+  padding-bottom: 10px;
+  position: relative;
+}
+
+.integration .slack {
+  height: 0.8em;
+  margin-right: 0.25em;
+}
+
+.integration .left {
+  width: 800px;
+}
+
+.integration .right {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.integration .right .delete {
+  color: #666;
+  font-size: 1.5em;
+}
+
+.integration .packages {
+  margin-top: 3px;
+  margin-bottom: 8px;
+}
+
+.integration .pkg {
+  font-size: 1.25em;
+  padding: 3px;
+  border-radius: 3px;
+  background-color: #e3e3e3;
+  color: #232323;
+}
+
+.add-package {
+  margin-top: 15px;
+  position: relative;
+  width: 440px;
+}
+
+.add-package .button {
+  width: 150px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
