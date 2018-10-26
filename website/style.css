@@ -152,6 +152,7 @@ code {
   color: white;
   text-align: center;
   border-radius: 3px;
+  cursor: pointer;
 }
 
 .button a {

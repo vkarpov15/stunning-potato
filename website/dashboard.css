@@ -29,7 +29,7 @@
 }
 
 .input-with-label .input {
-  width: 250px;
+  width: 500px;
   float: left;
 }
 
@@ -63,6 +63,7 @@
 .integration .packages {
   margin-top: 3px;
   margin-bottom: 8px;
+  line-height: 2.5em;
 }
 
 .integration .pkg {
@@ -71,6 +72,8 @@
   border-radius: 3px;
   background-color: #e3e3e3;
   color: #232323;
+  margin-right: 0.5em;
+  white-space: nowrap;
 }
 
 .add-package {
