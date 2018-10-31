@@ -1,6 +1,6 @@
 module.exports = {
   entry: {
-    dashboard: './client/dashboard.js',
+    dashboard: './client/dashboard.jsx',
     feed: './client/feed.js',
     package: './client/package.js',
     slackoauth: './client/slackoauth.js'
@@ -12,5 +12,13 @@ module.exports = {
   },
   optimization: {
     minimizer: []
+  },
+  module: {
+    rules: [{
+      test: /\.jsx$/,
+      use: {
+        loader: 'babel-loader'
+      }
+    }]
   }
 };

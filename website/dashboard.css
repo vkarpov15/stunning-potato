@@ -8,12 +8,17 @@
   padding-bottom: 0.25em;
 }
 
-.dashboard input {
+.dashboard input[type="text"] {
   border: 1px solid #dfdfdf;
   padding: 5px;
   border-radius: 3px;
   font-size: 1.25em;
   color: #232323;
+}
+
+.profile .button {
+  width: 150px;
+  margin-top: 1em;
 }
 
 .input-with-label {

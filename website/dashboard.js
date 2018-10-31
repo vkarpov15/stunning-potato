@@ -449,19 +449,208 @@ module.exports = function (encodedURI) {
 
 __webpack_require__(0);
 
+const React = __webpack_require__(6);
+
+const linkstate = __webpack_require__(7).default;
+
 const qs = __webpack_require__(1);
 
-const root = 'http://localhost:4000' //'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
+const root = 'http://localhost:4000'; //'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
 
-if (typeof window !== 'undefined') {
-  main(document.querySelector('#content'), window.location.search);
+let state = {
+  loading: true
+};
+console.log('linkstate', linkstate);
+
+class Profile extends React.Component {
+  componentDidMount() {
+    this.setState(Object.assign({}, this.props.customer));
+  }
+
+  save() {
+    return () => {
+      this.setState(Object.assign({}, {
+        saving: true
+      }));
+      const payload = Object.assign({}, this.state);
+      const opts = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: window.localStorage.getItem('token')
+        },
+        body: JSON.stringify(payload)
+      };
+      fetch(`${root}/me`, opts).then(res => res.json()).then(res => {
+        this.setState(Object.assign({}, {
+          saving: false
+        }));
+      });
+    };
+  }
+
+  render(props, state) {
+    return React.createElement("div", {
+      class: "profile"
+    }, React.createElement("div", {
+      class: "input-with-label"
+    }, React.createElement("div", {
+      class: "label"
+    }, "First Name"), React.createElement("div", {
+      class: "input"
+    }, React.createElement("input", {
+      type: "text",
+      value: state.firstName,
+      onInput: linkstate(this, 'firstName')
+    })), React.createElement("div", {
+      style: "clear: both"
+    })), React.createElement("div", {
+      class: "input-with-label"
+    }, React.createElement("div", {
+      class: "label"
+    }, "Last Name"), React.createElement("div", {
+      class: "input"
+    }, React.createElement("input", {
+      type: "text",
+      value: state.lastName,
+      onInput: linkstate(this, 'lastName')
+    })), React.createElement("div", {
+      style: "clear: both"
+    })), React.createElement("div", {
+      class: "input-with-label"
+    }, React.createElement("div", {
+      class: "label"
+    }, "Email"), React.createElement("div", {
+      class: "input"
+    }, React.createElement("input", {
+      type: "text",
+      value: state.email,
+      onInput: linkstate(this, 'customer.email')
+    })), React.createElement("div", {
+      style: "clear: both"
+    })), React.createElement("input", {
+      type: "button",
+      value: "Save Profile",
+      class: "button",
+      onClick: this.save(state),
+      disabled: state.saving
+    }));
+  }
+
 }
+
+function Integrations(props) {
+  return React.createElement("div", {
+    class: "integrations"
+  }, props.accounts.map(account => React.createElement("div", {
+    class: "integration"
+  }, React.createElement("div", {
+    class: "left"
+  }, React.createElement("div", {
+    class: "input-with-label"
+  }, React.createElement("div", {
+    class: "label"
+  }, React.createElement("img", {
+    class: "slack",
+    src: "/images/slack.svg"
+  }), "Webhook"), React.createElement("div", {
+    class: "input"
+  }, React.createElement("input", {
+    type: "text",
+    value: account.slackWebhooks[0]
+  })), React.createElement("div", {
+    style: "clear: both"
+  })), React.createElement("div", {
+    class: "input-with-label"
+  }, React.createElement("div", {
+    class: "label"
+  }, React.createElement("img", {
+    class: "slack",
+    src: "/images/npm.svg"
+  }), "Packages"), React.createElement("div", {
+    class: "input"
+  }, React.createElement("div", {
+    class: "packages"
+  }), React.createElement("div", {
+    class: "add-package"
+  }, React.createElement("div", {
+    class: "add-package-input"
+  }, React.createElement("input", {
+    type: "text",
+    placeholder: "Package Name"
+  })), React.createElement("div", {
+    class: "button"
+  }, "Watch Package"))), React.createElement("div", {
+    style: "clear: both"
+  }))), React.createElement("div", {
+    class: "right"
+  }, React.createElement("div", {
+    class: "delete",
+    id: "delete-${account._id}"
+  }, "\uD83D\uDDD9")))));
+}
+
+class Dashboard extends React.Component {
+  componentDidMount() {
+    this.setState(state);
+    const opts = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: window.localStorage.getItem('token')
+      }
+    };
+    fetch(`${root}/me`, opts).then(res => res.json()).then(res => {
+      state = Object.assign({}, res, {
+        loading: false
+      });
+      this.setState(state);
+    }).catch(err => {
+      state = Object.assign({}, {
+        err,
+        loading: false
+      });
+      this.setState(state);
+    });
+  }
+
+  render(props, state) {
+    if (state.loading !== false) {
+      return React.createElement("div", {
+        class: "loading"
+      }, "Loading");
+    }
+
+    if (state.err) {
+      return React.createElement("div", {
+        class: "loading"
+      }, React.createElement("p", null, "An error occurred:"), React.createElement("pre", null, "$", err.stack));
+    }
+
+    return React.createElement("div", {
+      class: "dashboard"
+    }, React.createElement("h2", null, "Profile"), React.createElement(Profile, {
+      customer: state.customer
+    }), React.createElement("h2", null, "Integrations"), React.createElement(Integrations, {
+      accounts: state.accounts
+    }), React.createElement("h2", null, "Add Integration"), React.createElement("a", {
+      href: "https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=80341368871.427593509574"
+    }, React.createElement("img", {
+      alt: "Add to Slack",
+      height: "40",
+      width: "139",
+      src: "https://platform.slack-edge.com/img/add_to_slack.png",
+      srcset: "https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"
+    })));
+  }
+
+}
+
+React.render(React.createElement(Dashboard, null), document.querySelector('#content'));
 
 function main(content, querystring) {
   const interval = loading(content);
-
   const params = qs.parse(querystring);
-
   const opts = {
     method: 'GET',
     headers: {
@@ -469,18 +658,15 @@ function main(content, querystring) {
       authorization: window.localStorage.getItem('token')
     }
   };
-  fetch(`${root}/me`, opts).
-    then(res => {
-      clearInterval(interval);
-      return res.json();
-    }).
-    then(res => {
-      success(content, res);
-    }).
-    catch(err => {
-      clearInterval(interval);
-      error(content, err);
-    });
+  fetch(`${root}/me`, opts).then(res => {
+    clearInterval(interval);
+    return res.json();
+  }).then(res => {
+    success(content, res);
+  }).catch(err => {
+    clearInterval(interval);
+    error(content, err);
+  });
 }
 
 function error(content, err) {
@@ -496,17 +682,17 @@ function loading(content) {
   content.innerHTML = `
     <div class="loading"><p>Loading</p></div>
   `;
-
   let count = 0;
   const interval = setInterval(() => {
     let html = content.querySelector('.loading').innerHTML;
     html += '.';
+
     if (html.substr(html.indexOf('.')).length > 3) {
       html = 'Loading';
     }
+
     content.querySelector('.loading').innerHTML = html;
   }, 250);
-
   return interval;
 }
 
@@ -549,7 +735,6 @@ function success(content, res) {
       </a>
     </div>
   `;
-
   setTimeout(() => {
     res.accounts.forEach(account => {
       packageListeners(content.querySelector(`#packages-container-${account._id}`), account, res.customer);
@@ -567,11 +752,6 @@ function integrations(accounts) {
   return accounts.map(account => `
     <div class="integration">
       <div class="left">
-        <div class="input-with-label">
-          <div class="label">Description</div>
-          <div class="input"><input type="text" value="${account.name}"></div>
-          <div style="clear: both"></div>
-        </div>
         <div class="input-with-label">
           <div class="label">
             <img class="slack" src="/images/slack.svg">
@@ -613,41 +793,30 @@ function integrations(accounts) {
 }
 
 function packages(account) {
-  return account.packagesWatched.
-    map(pkg => `
+  return account.packagesWatched.map(pkg => `
       <span class="pkg">
         ${pkg}&nbsp;
         <span class="delete" id="delete-${account._id}-${pkg}">&#x1f5d9;</span>
       </span>
-    `).
-    join('\n');
+    `).join('\n');
 }
 
 function packageListeners(container, account, customer) {
   const input = container.querySelector('input');
   container.querySelector('div.button').addEventListener('click', () => {
     const pkg = input.value;
-
     account.packagesWatched.push(pkg);
-
-    container.querySelector(`#packages-${account._id}`).innerHTML =
-      packages(account);
-
+    container.querySelector(`#packages-${account._id}`).innerHTML = packages(account);
     input.value = '';
-
     save(account);
-
     setTimeout(() => {
       packageListeners(container, account);
     }, 0);
   });
-
   account.packagesWatched.forEach((pkg, index) => {
     container.querySelector(`#delete-${account._id}-${pkg}`).addEventListener('click', () => {
       account.packagesWatched.splice(index, 1);
-
-      container.querySelector(`#packages-${account._id}`).innerHTML =
-        packages(account);
+      container.querySelector(`#packages-${account._id}`).innerHTML = packages(account);
       setTimeout(() => {
         packageListeners(container, account);
       }, 0);
@@ -662,11 +831,782 @@ function save(account) {
       'Content-Type': 'application/json',
       authorization: window.localStorage.getItem('token')
     },
-    body: JSON.stringify(Object.assign({}, account, { accountId: account._id }))
+    body: JSON.stringify(Object.assign({}, account, {
+      accountId: account._id
+    }))
   };
-  fetch(`${root}/account`, opts).
-    then(res => console.log(res), err => console.log(err));
+  fetch(`${root}/account`, opts).then(res => console.log(res), err => console.log(err));
 }
+
+/***/ }),
+/* 6 */
+/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return h; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createElement", function() { return h; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cloneElement", function() { return cloneElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Component", function() { return Component; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rerender", function() { return rerender; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "options", function() { return options; });
+var VNode = function VNode() {};
+
+var options = {};
+
+var stack = [];
+
+var EMPTY_CHILDREN = [];
+
+function h(nodeName, attributes) {
+	var children = EMPTY_CHILDREN,
+	    lastSimple,
+	    child,
+	    simple,
+	    i;
+	for (i = arguments.length; i-- > 2;) {
+		stack.push(arguments[i]);
+	}
+	if (attributes && attributes.children != null) {
+		if (!stack.length) stack.push(attributes.children);
+		delete attributes.children;
+	}
+	while (stack.length) {
+		if ((child = stack.pop()) && child.pop !== undefined) {
+			for (i = child.length; i--;) {
+				stack.push(child[i]);
+			}
+		} else {
+			if (typeof child === 'boolean') child = null;
+
+			if (simple = typeof nodeName !== 'function') {
+				if (child == null) child = '';else if (typeof child === 'number') child = String(child);else if (typeof child !== 'string') simple = false;
+			}
+
+			if (simple && lastSimple) {
+				children[children.length - 1] += child;
+			} else if (children === EMPTY_CHILDREN) {
+				children = [child];
+			} else {
+				children.push(child);
+			}
+
+			lastSimple = simple;
+		}
+	}
+
+	var p = new VNode();
+	p.nodeName = nodeName;
+	p.children = children;
+	p.attributes = attributes == null ? undefined : attributes;
+	p.key = attributes == null ? undefined : attributes.key;
+
+	if (options.vnode !== undefined) options.vnode(p);
+
+	return p;
+}
+
+function extend(obj, props) {
+  for (var i in props) {
+    obj[i] = props[i];
+  }return obj;
+}
+
+var defer = typeof Promise == 'function' ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
+
+function cloneElement(vnode, props) {
+  return h(vnode.nodeName, extend(extend({}, vnode.attributes), props), arguments.length > 2 ? [].slice.call(arguments, 2) : vnode.children);
+}
+
+var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
+
+var items = [];
+
+function enqueueRender(component) {
+	if (!component._dirty && (component._dirty = true) && items.push(component) == 1) {
+		(options.debounceRendering || defer)(rerender);
+	}
+}
+
+function rerender() {
+	var p,
+	    list = items;
+	items = [];
+	while (p = list.pop()) {
+		if (p._dirty) renderComponent(p);
+	}
+}
+
+function isSameNodeType(node, vnode, hydrating) {
+	if (typeof vnode === 'string' || typeof vnode === 'number') {
+		return node.splitText !== undefined;
+	}
+	if (typeof vnode.nodeName === 'string') {
+		return !node._componentConstructor && isNamedNode(node, vnode.nodeName);
+	}
+	return hydrating || node._componentConstructor === vnode.nodeName;
+}
+
+function isNamedNode(node, nodeName) {
+	return node.normalizedNodeName === nodeName || node.nodeName.toLowerCase() === nodeName.toLowerCase();
+}
+
+function getNodeProps(vnode) {
+	var props = extend({}, vnode.attributes);
+	props.children = vnode.children;
+
+	var defaultProps = vnode.nodeName.defaultProps;
+	if (defaultProps !== undefined) {
+		for (var i in defaultProps) {
+			if (props[i] === undefined) {
+				props[i] = defaultProps[i];
+			}
+		}
+	}
+
+	return props;
+}
+
+function createNode(nodeName, isSvg) {
+	var node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);
+	node.normalizedNodeName = nodeName;
+	return node;
+}
+
+function removeNode(node) {
+	var parentNode = node.parentNode;
+	if (parentNode) parentNode.removeChild(node);
+}
+
+function setAccessor(node, name, old, value, isSvg) {
+	if (name === 'className') name = 'class';
+
+	if (name === 'key') {} else if (name === 'ref') {
+		if (old) old(null);
+		if (value) value(node);
+	} else if (name === 'class' && !isSvg) {
+		node.className = value || '';
+	} else if (name === 'style') {
+		if (!value || typeof value === 'string' || typeof old === 'string') {
+			node.style.cssText = value || '';
+		}
+		if (value && typeof value === 'object') {
+			if (typeof old !== 'string') {
+				for (var i in old) {
+					if (!(i in value)) node.style[i] = '';
+				}
+			}
+			for (var i in value) {
+				node.style[i] = typeof value[i] === 'number' && IS_NON_DIMENSIONAL.test(i) === false ? value[i] + 'px' : value[i];
+			}
+		}
+	} else if (name === 'dangerouslySetInnerHTML') {
+		if (value) node.innerHTML = value.__html || '';
+	} else if (name[0] == 'o' && name[1] == 'n') {
+		var useCapture = name !== (name = name.replace(/Capture$/, ''));
+		name = name.toLowerCase().substring(2);
+		if (value) {
+			if (!old) node.addEventListener(name, eventProxy, useCapture);
+		} else {
+			node.removeEventListener(name, eventProxy, useCapture);
+		}
+		(node._listeners || (node._listeners = {}))[name] = value;
+	} else if (name !== 'list' && name !== 'type' && !isSvg && name in node) {
+		try {
+			node[name] = value == null ? '' : value;
+		} catch (e) {}
+		if ((value == null || value === false) && name != 'spellcheck') node.removeAttribute(name);
+	} else {
+		var ns = isSvg && name !== (name = name.replace(/^xlink:?/, ''));
+
+		if (value == null || value === false) {
+			if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase());else node.removeAttribute(name);
+		} else if (typeof value !== 'function') {
+			if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value);else node.setAttribute(name, value);
+		}
+	}
+}
+
+function eventProxy(e) {
+	return this._listeners[e.type](options.event && options.event(e) || e);
+}
+
+var mounts = [];
+
+var diffLevel = 0;
+
+var isSvgMode = false;
+
+var hydrating = false;
+
+function flushMounts() {
+	var c;
+	while (c = mounts.pop()) {
+		if (options.afterMount) options.afterMount(c);
+		if (c.componentDidMount) c.componentDidMount();
+	}
+}
+
+function diff(dom, vnode, context, mountAll, parent, componentRoot) {
+	if (!diffLevel++) {
+		isSvgMode = parent != null && parent.ownerSVGElement !== undefined;
+
+		hydrating = dom != null && !('__preactattr_' in dom);
+	}
+
+	var ret = idiff(dom, vnode, context, mountAll, componentRoot);
+
+	if (parent && ret.parentNode !== parent) parent.appendChild(ret);
+
+	if (! --diffLevel) {
+		hydrating = false;
+
+		if (!componentRoot) flushMounts();
+	}
+
+	return ret;
+}
+
+function idiff(dom, vnode, context, mountAll, componentRoot) {
+	var out = dom,
+	    prevSvgMode = isSvgMode;
+
+	if (vnode == null || typeof vnode === 'boolean') vnode = '';
+
+	if (typeof vnode === 'string' || typeof vnode === 'number') {
+		if (dom && dom.splitText !== undefined && dom.parentNode && (!dom._component || componentRoot)) {
+			if (dom.nodeValue != vnode) {
+				dom.nodeValue = vnode;
+			}
+		} else {
+			out = document.createTextNode(vnode);
+			if (dom) {
+				if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
+				recollectNodeTree(dom, true);
+			}
+		}
+
+		out['__preactattr_'] = true;
+
+		return out;
+	}
+
+	var vnodeName = vnode.nodeName;
+	if (typeof vnodeName === 'function') {
+		return buildComponentFromVNode(dom, vnode, context, mountAll);
+	}
+
+	isSvgMode = vnodeName === 'svg' ? true : vnodeName === 'foreignObject' ? false : isSvgMode;
+
+	vnodeName = String(vnodeName);
+	if (!dom || !isNamedNode(dom, vnodeName)) {
+		out = createNode(vnodeName, isSvgMode);
+
+		if (dom) {
+			while (dom.firstChild) {
+				out.appendChild(dom.firstChild);
+			}
+			if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
+
+			recollectNodeTree(dom, true);
+		}
+	}
+
+	var fc = out.firstChild,
+	    props = out['__preactattr_'],
+	    vchildren = vnode.children;
+
+	if (props == null) {
+		props = out['__preactattr_'] = {};
+		for (var a = out.attributes, i = a.length; i--;) {
+			props[a[i].name] = a[i].value;
+		}
+	}
+
+	if (!hydrating && vchildren && vchildren.length === 1 && typeof vchildren[0] === 'string' && fc != null && fc.splitText !== undefined && fc.nextSibling == null) {
+		if (fc.nodeValue != vchildren[0]) {
+			fc.nodeValue = vchildren[0];
+		}
+	} else if (vchildren && vchildren.length || fc != null) {
+			innerDiffNode(out, vchildren, context, mountAll, hydrating || props.dangerouslySetInnerHTML != null);
+		}
+
+	diffAttributes(out, vnode.attributes, props);
+
+	isSvgMode = prevSvgMode;
+
+	return out;
+}
+
+function innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {
+	var originalChildren = dom.childNodes,
+	    children = [],
+	    keyed = {},
+	    keyedLen = 0,
+	    min = 0,
+	    len = originalChildren.length,
+	    childrenLen = 0,
+	    vlen = vchildren ? vchildren.length : 0,
+	    j,
+	    c,
+	    f,
+	    vchild,
+	    child;
+
+	if (len !== 0) {
+		for (var i = 0; i < len; i++) {
+			var _child = originalChildren[i],
+			    props = _child['__preactattr_'],
+			    key = vlen && props ? _child._component ? _child._component.__key : props.key : null;
+			if (key != null) {
+				keyedLen++;
+				keyed[key] = _child;
+			} else if (props || (_child.splitText !== undefined ? isHydrating ? _child.nodeValue.trim() : true : isHydrating)) {
+				children[childrenLen++] = _child;
+			}
+		}
+	}
+
+	if (vlen !== 0) {
+		for (var i = 0; i < vlen; i++) {
+			vchild = vchildren[i];
+			child = null;
+
+			var key = vchild.key;
+			if (key != null) {
+				if (keyedLen && keyed[key] !== undefined) {
+					child = keyed[key];
+					keyed[key] = undefined;
+					keyedLen--;
+				}
+			} else if (min < childrenLen) {
+					for (j = min; j < childrenLen; j++) {
+						if (children[j] !== undefined && isSameNodeType(c = children[j], vchild, isHydrating)) {
+							child = c;
+							children[j] = undefined;
+							if (j === childrenLen - 1) childrenLen--;
+							if (j === min) min++;
+							break;
+						}
+					}
+				}
+
+			child = idiff(child, vchild, context, mountAll);
+
+			f = originalChildren[i];
+			if (child && child !== dom && child !== f) {
+				if (f == null) {
+					dom.appendChild(child);
+				} else if (child === f.nextSibling) {
+					removeNode(f);
+				} else {
+					dom.insertBefore(child, f);
+				}
+			}
+		}
+	}
+
+	if (keyedLen) {
+		for (var i in keyed) {
+			if (keyed[i] !== undefined) recollectNodeTree(keyed[i], false);
+		}
+	}
+
+	while (min <= childrenLen) {
+		if ((child = children[childrenLen--]) !== undefined) recollectNodeTree(child, false);
+	}
+}
+
+function recollectNodeTree(node, unmountOnly) {
+	var component = node._component;
+	if (component) {
+		unmountComponent(component);
+	} else {
+		if (node['__preactattr_'] != null && node['__preactattr_'].ref) node['__preactattr_'].ref(null);
+
+		if (unmountOnly === false || node['__preactattr_'] == null) {
+			removeNode(node);
+		}
+
+		removeChildren(node);
+	}
+}
+
+function removeChildren(node) {
+	node = node.lastChild;
+	while (node) {
+		var next = node.previousSibling;
+		recollectNodeTree(node, true);
+		node = next;
+	}
+}
+
+function diffAttributes(dom, attrs, old) {
+	var name;
+
+	for (name in old) {
+		if (!(attrs && attrs[name] != null) && old[name] != null) {
+			setAccessor(dom, name, old[name], old[name] = undefined, isSvgMode);
+		}
+	}
+
+	for (name in attrs) {
+		if (name !== 'children' && name !== 'innerHTML' && (!(name in old) || attrs[name] !== (name === 'value' || name === 'checked' ? dom[name] : old[name]))) {
+			setAccessor(dom, name, old[name], old[name] = attrs[name], isSvgMode);
+		}
+	}
+}
+
+var recyclerComponents = [];
+
+function createComponent(Ctor, props, context) {
+	var inst,
+	    i = recyclerComponents.length;
+
+	if (Ctor.prototype && Ctor.prototype.render) {
+		inst = new Ctor(props, context);
+		Component.call(inst, props, context);
+	} else {
+		inst = new Component(props, context);
+		inst.constructor = Ctor;
+		inst.render = doRender;
+	}
+
+	while (i--) {
+		if (recyclerComponents[i].constructor === Ctor) {
+			inst.nextBase = recyclerComponents[i].nextBase;
+			recyclerComponents.splice(i, 1);
+			return inst;
+		}
+	}
+
+	return inst;
+}
+
+function doRender(props, state, context) {
+	return this.constructor(props, context);
+}
+
+function setComponentProps(component, props, renderMode, context, mountAll) {
+	if (component._disable) return;
+	component._disable = true;
+
+	component.__ref = props.ref;
+	component.__key = props.key;
+	delete props.ref;
+	delete props.key;
+
+	if (typeof component.constructor.getDerivedStateFromProps === 'undefined') {
+		if (!component.base || mountAll) {
+			if (component.componentWillMount) component.componentWillMount();
+		} else if (component.componentWillReceiveProps) {
+			component.componentWillReceiveProps(props, context);
+		}
+	}
+
+	if (context && context !== component.context) {
+		if (!component.prevContext) component.prevContext = component.context;
+		component.context = context;
+	}
+
+	if (!component.prevProps) component.prevProps = component.props;
+	component.props = props;
+
+	component._disable = false;
+
+	if (renderMode !== 0) {
+		if (renderMode === 1 || options.syncComponentUpdates !== false || !component.base) {
+			renderComponent(component, 1, mountAll);
+		} else {
+			enqueueRender(component);
+		}
+	}
+
+	if (component.__ref) component.__ref(component);
+}
+
+function renderComponent(component, renderMode, mountAll, isChild) {
+	if (component._disable) return;
+
+	var props = component.props,
+	    state = component.state,
+	    context = component.context,
+	    previousProps = component.prevProps || props,
+	    previousState = component.prevState || state,
+	    previousContext = component.prevContext || context,
+	    isUpdate = component.base,
+	    nextBase = component.nextBase,
+	    initialBase = isUpdate || nextBase,
+	    initialChildComponent = component._component,
+	    skip = false,
+	    snapshot = previousContext,
+	    rendered,
+	    inst,
+	    cbase;
+
+	if (component.constructor.getDerivedStateFromProps) {
+		state = extend(extend({}, state), component.constructor.getDerivedStateFromProps(props, state));
+		component.state = state;
+	}
+
+	if (isUpdate) {
+		component.props = previousProps;
+		component.state = previousState;
+		component.context = previousContext;
+		if (renderMode !== 2 && component.shouldComponentUpdate && component.shouldComponentUpdate(props, state, context) === false) {
+			skip = true;
+		} else if (component.componentWillUpdate) {
+			component.componentWillUpdate(props, state, context);
+		}
+		component.props = props;
+		component.state = state;
+		component.context = context;
+	}
+
+	component.prevProps = component.prevState = component.prevContext = component.nextBase = null;
+	component._dirty = false;
+
+	if (!skip) {
+		rendered = component.render(props, state, context);
+
+		if (component.getChildContext) {
+			context = extend(extend({}, context), component.getChildContext());
+		}
+
+		if (isUpdate && component.getSnapshotBeforeUpdate) {
+			snapshot = component.getSnapshotBeforeUpdate(previousProps, previousState);
+		}
+
+		var childComponent = rendered && rendered.nodeName,
+		    toUnmount,
+		    base;
+
+		if (typeof childComponent === 'function') {
+
+			var childProps = getNodeProps(rendered);
+			inst = initialChildComponent;
+
+			if (inst && inst.constructor === childComponent && childProps.key == inst.__key) {
+				setComponentProps(inst, childProps, 1, context, false);
+			} else {
+				toUnmount = inst;
+
+				component._component = inst = createComponent(childComponent, childProps, context);
+				inst.nextBase = inst.nextBase || nextBase;
+				inst._parentComponent = component;
+				setComponentProps(inst, childProps, 0, context, false);
+				renderComponent(inst, 1, mountAll, true);
+			}
+
+			base = inst.base;
+		} else {
+			cbase = initialBase;
+
+			toUnmount = initialChildComponent;
+			if (toUnmount) {
+				cbase = component._component = null;
+			}
+
+			if (initialBase || renderMode === 1) {
+				if (cbase) cbase._component = null;
+				base = diff(cbase, rendered, context, mountAll || !isUpdate, initialBase && initialBase.parentNode, true);
+			}
+		}
+
+		if (initialBase && base !== initialBase && inst !== initialChildComponent) {
+			var baseParent = initialBase.parentNode;
+			if (baseParent && base !== baseParent) {
+				baseParent.replaceChild(base, initialBase);
+
+				if (!toUnmount) {
+					initialBase._component = null;
+					recollectNodeTree(initialBase, false);
+				}
+			}
+		}
+
+		if (toUnmount) {
+			unmountComponent(toUnmount);
+		}
+
+		component.base = base;
+		if (base && !isChild) {
+			var componentRef = component,
+			    t = component;
+			while (t = t._parentComponent) {
+				(componentRef = t).base = base;
+			}
+			base._component = componentRef;
+			base._componentConstructor = componentRef.constructor;
+		}
+	}
+
+	if (!isUpdate || mountAll) {
+		mounts.unshift(component);
+	} else if (!skip) {
+
+		if (component.componentDidUpdate) {
+			component.componentDidUpdate(previousProps, previousState, snapshot);
+		}
+		if (options.afterUpdate) options.afterUpdate(component);
+	}
+
+	while (component._renderCallbacks.length) {
+		component._renderCallbacks.pop().call(component);
+	}if (!diffLevel && !isChild) flushMounts();
+}
+
+function buildComponentFromVNode(dom, vnode, context, mountAll) {
+	var c = dom && dom._component,
+	    originalComponent = c,
+	    oldDom = dom,
+	    isDirectOwner = c && dom._componentConstructor === vnode.nodeName,
+	    isOwner = isDirectOwner,
+	    props = getNodeProps(vnode);
+	while (c && !isOwner && (c = c._parentComponent)) {
+		isOwner = c.constructor === vnode.nodeName;
+	}
+
+	if (c && isOwner && (!mountAll || c._component)) {
+		setComponentProps(c, props, 3, context, mountAll);
+		dom = c.base;
+	} else {
+		if (originalComponent && !isDirectOwner) {
+			unmountComponent(originalComponent);
+			dom = oldDom = null;
+		}
+
+		c = createComponent(vnode.nodeName, props, context);
+		if (dom && !c.nextBase) {
+			c.nextBase = dom;
+
+			oldDom = null;
+		}
+		setComponentProps(c, props, 1, context, mountAll);
+		dom = c.base;
+
+		if (oldDom && dom !== oldDom) {
+			oldDom._component = null;
+			recollectNodeTree(oldDom, false);
+		}
+	}
+
+	return dom;
+}
+
+function unmountComponent(component) {
+	if (options.beforeUnmount) options.beforeUnmount(component);
+
+	var base = component.base;
+
+	component._disable = true;
+
+	if (component.componentWillUnmount) component.componentWillUnmount();
+
+	component.base = null;
+
+	var inner = component._component;
+	if (inner) {
+		unmountComponent(inner);
+	} else if (base) {
+		if (base['__preactattr_'] && base['__preactattr_'].ref) base['__preactattr_'].ref(null);
+
+		component.nextBase = base;
+
+		removeNode(base);
+		recyclerComponents.push(component);
+
+		removeChildren(base);
+	}
+
+	if (component.__ref) component.__ref(null);
+}
+
+function Component(props, context) {
+	this._dirty = true;
+
+	this.context = context;
+
+	this.props = props;
+
+	this.state = this.state || {};
+
+	this._renderCallbacks = [];
+}
+
+extend(Component.prototype, {
+	setState: function setState(state, callback) {
+		if (!this.prevState) this.prevState = this.state;
+		this.state = extend(extend({}, this.state), typeof state === 'function' ? state(this.state, this.props) : state);
+		if (callback) this._renderCallbacks.push(callback);
+		enqueueRender(this);
+	},
+	forceUpdate: function forceUpdate(callback) {
+		if (callback) this._renderCallbacks.push(callback);
+		renderComponent(this, 2);
+	},
+	render: function render() {}
+});
+
+function render(vnode, parent, merge) {
+  return diff(merge, vnode, {}, false, parent, false);
+}
+
+var preact = {
+	h: h,
+	createElement: h,
+	cloneElement: cloneElement,
+	Component: Component,
+	render: render,
+	rerender: rerender,
+	options: options
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (preact);
+
+//# sourceMappingURL=preact.mjs.map
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function dlv(obj, key, def, p) {
+	p = 0;
+	key = key.split ? key.split('.') : key;
+	while (obj && p<key.length) { obj = obj[key[p++]]; }
+	return obj===undefined ? def : obj;
+}
+
+/** Create an Event handler function that sets a given state property.
+ *	@param {Component} component	The component whose state should be updated
+ *	@param {string} key				A dot-notated key path to update in the component's state
+ *	@param {string} eventPath		A dot-notated key path to the value that should be retrieved from the Event or component
+ *	@returns {function} linkedStateHandler
+ */
+function linkState(component, key, eventPath) {
+	var path = key.split('.'),
+		cache = component.__lsc || (component.__lsc = {});
+
+	return cache[key+eventPath] || (cache[key+eventPath] = function(e) {
+		var t = e && e.target || this,
+			state = {},
+			obj = state,
+			v = typeof eventPath==='string' ? dlv(e, eventPath) : t.nodeName ? (t.type.match(/^che|rad/) ? t.checked : t.value) : e,
+			i = 0;
+		for ( ; i<path.length-1; i++) {
+			obj = obj[path[i]] || (obj[path[i]] = !i && component.state[path[i]] || {});
+		}
+		obj[path[i]] = v;
+		component.setState(state);
+	});
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (linkState);
+//# sourceMappingURL=linkstate.es.js.map
 
 
 /***/ })
