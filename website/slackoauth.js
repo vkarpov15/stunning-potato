@@ -81,11 +81,12 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 0:
 /***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -95,7 +96,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /***/ }),
-/* 1 */
+
+/***/ 1:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -333,7 +335,91 @@ exports.parseUrl = (input, options) => {
 
 
 /***/ }),
-/* 2 */
+
+/***/ 16:
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(0);
+
+const qs = __webpack_require__(1);
+
+const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
+
+if (typeof window !== 'undefined') {
+  main(document.querySelector('#content'), window.location.search);
+}
+
+function main(content, querystring) {
+  const interval = loading(content);
+
+  const params = qs.parse(querystring);
+
+  const opts = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ code: params.code })
+  };
+  fetch(`${root}/slack`, opts).
+    then(res => {
+      clearInterval(interval);
+      success(content);
+      return res.json();
+    }).
+    then(res => {
+      window.localStorage.setItem('token', res.token._id);
+    }).
+    catch(err => {
+      clearInterval(interval);
+      error(content, err);
+    });
+}
+
+function error(content, err) {
+  content.innerHTML = `
+    <div class="registering">
+      <p>An error occurred:</p>
+      <pre>${err.stack}</pre>
+    </div>
+  `;
+}
+
+function loading(content) {
+  content.innerHTML = `
+    <div class="registering"><p>Registering</p></div>
+  `;
+
+  let count = 0;
+  const interval = setInterval(() => {
+    let html = content.querySelector('.registering').innerHTML;
+    html += '.';
+    if (html.substr(html.indexOf('.')).length > 3) {
+      html = 'Registering';
+    }
+    content.querySelector('.registering').innerHTML = html;
+  }, 250);
+
+  return interval;
+}
+
+function success(content) {
+  content.innerHTML = `
+    <div class="registered">
+      <p>Registered Successfully!</p>
+      <div class="button" >
+        <a href="/dashboard">
+          See Your Dashboard
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+
+/***/ }),
+
+/***/ 2:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -342,7 +428,8 @@ module.exports = str => encodeURIComponent(str).replace(/[!'()*]/g, x => `%${x.c
 
 
 /***/ }),
-/* 3 */
+
+/***/ 3:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -442,97 +529,6 @@ module.exports = function (encodedURI) {
 };
 
 
-/***/ }),
-/* 4 */,
-/* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(0);
-
-const qs = __webpack_require__(1);
-
-const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
-
-if (typeof window !== 'undefined') {
-  main(document.querySelector('#content'), window.location.search);
-}
-
-function main(content, querystring) {
-  const interval = loading(content);
-
-  const params = qs.parse(querystring);
-
-  const opts = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ code: params.code })
-  };
-  fetch(`${root}/slack`, opts).
-    then(res => {
-      clearInterval(interval);
-      success(content);
-      return res.json();
-    }).
-    then(res => {
-      window.localStorage.setItem('token', res.token._id);
-    }).
-    catch(err => {
-      clearInterval(interval);
-      error(content, err);
-    });
-}
-
-function error(content, err) {
-  content.innerHTML = `
-    <div class="registering">
-      <p>An error occurred:</p>
-      <pre>${err.stack}</pre>
-    </div>
-  `;
-}
-
-function loading(content) {
-  content.innerHTML = `
-    <div class="registering"><p>Registering</p></div>
-  `;
-
-  let count = 0;
-  const interval = setInterval(() => {
-    let html = content.querySelector('.registering').innerHTML;
-    html += '.';
-    if (html.substr(html.indexOf('.')).length > 3) {
-      html = 'Registering';
-    }
-    content.querySelector('.registering').innerHTML = html;
-  }, 250);
-
-  return interval;
-}
-
-function success(content) {
-  content.innerHTML = `
-    <div class="registered">
-      <p>Registered Successfully!</p>
-      <div class="button" >
-        <a href="/dashboard">
-          See Your Dashboard
-        </a>
-      </div>
-    </div>
-  `;
-}
-
-
 /***/ })
-/******/ ]);
+
+/******/ });

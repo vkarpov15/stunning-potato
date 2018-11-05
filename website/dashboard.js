@@ -457,7 +457,9 @@ const mitt = __webpack_require__(8).default;
 
 const qs = __webpack_require__(1);
 
-const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
+const root = __webpack_require__(9).root;
+
+console.log(root);
 const events$ = mitt();
 const state$ = mitt();
 let state = {
@@ -1593,6 +1595,30 @@ function mitt(all                 ) {
 
 /* harmony default export */ __webpack_exports__["default"] = (mitt);
 //# sourceMappingURL=mitt.es.js.map
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const cfg = {
+  root: 'http://localhost:4000'
+};
+
+if (true) {
+  Object.assign(cfg, __webpack_require__(10));
+}
+
+module.exports = Object.freeze(cfg);
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = {
+  root: 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod'
+};
 
 
 /***/ })

@@ -5,7 +5,8 @@ const linkstate = require('linkstate').default;
 const mitt = require('mitt').default;
 const qs = require('query-string');
 
-const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
+const root = require('../config').root;
+console.log(root);
 
 const events$ = mitt();
 const state$ = mitt();
