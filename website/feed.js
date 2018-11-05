@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -114,13 +114,14 @@ module.exports = () => `
 /* 5 */,
 /* 6 */,
 /* 7 */,
-/* 8 */
+/* 8 */,
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);
 
 const error404 = __webpack_require__(4);
-const versionComponent = __webpack_require__(9);
+const versionComponent = __webpack_require__(10);
 
 const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
 
@@ -185,7 +186,7 @@ function isXPercentDownThePage(percent) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = version => `
