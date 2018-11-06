@@ -4,6 +4,7 @@ module.exports = {
     dashboard: './client/dashboard.jsx',
     feed: './client/feed.js',
     home: './client/home.js',
+    nav: './client/nav.jsx',
     package: './client/package.js',
     slackoauth: './client/slackoauth.js'
   },

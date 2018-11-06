@@ -69,12 +69,12 @@ a {
   color: #00386c;
   margin-right: 15px;
   position: relative;
-  top: -7px;
+  top: -8px;
 }
 
 .nav-right a img {
   position: relative;
-  top: 7px;
+  top: 9px;
 }
 
 #content {

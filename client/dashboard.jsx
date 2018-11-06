@@ -1,4 +1,5 @@
 require('unfetch');
+require('./nav.jsx');
 
 const React = require('preact');
 const linkstate = require('linkstate').default;

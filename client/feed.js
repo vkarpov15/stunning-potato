@@ -1,4 +1,5 @@
 require('unfetch');
+require('./nav.jsx');
 
 const error404 = require('./error404');
 const versionComponent = require('./version');

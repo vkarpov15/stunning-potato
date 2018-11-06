@@ -1,4 +1,5 @@
 require('unfetch');
+require('./nav.jsx');
 
 const qs = require('query-string');
 
