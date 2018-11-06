@@ -211,6 +211,7 @@ code {
 
 .latest-releases .changelog {
   display: none;
+  margin: 1em;
 }
 
 .latest-releases .left {
