@@ -81,41 +81,19 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./client/feed.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./client/home.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./client/error404.js":
-/*!****************************!*\
-  !*** ./client/error404.js ***!
-  \****************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-eval("module.exports = () => `\n<div class=\"error-404\">\n  <h2>Not Found</h2>\n  <img class=\"error-gag-img\" src=\"/images/pooka.png\">\n  <div class=\"error-gag\">Life is Ruff</div>\n</div>\n`;\n\n\n//# sourceURL=webpack:///./client/error404.js?");
-
-/***/ }),
-
-/***/ "./client/feed.js":
+/***/ "./client/home.js":
 /*!************************!*\
-  !*** ./client/feed.js ***!
+  !*** ./client/home.js ***!
   \************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__(/*! unfetch */ \"./node_modules/unfetch/dist/unfetch.mjs\");\n\nconst error404 = __webpack_require__(/*! ./error404 */ \"./client/error404.js\");\nconst versionComponent = __webpack_require__(/*! ./version */ \"./client/version.js\");\n\nconst root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';\n\nwindow.toggle = function toggle(id) {\n  const el = document.querySelector('.' + id);\n  if (el.style.display === 'block') {\n    el.style.display = 'none';\n  } else {\n    el.style.display = 'block';\n  }\n};\n\nif (typeof window !== 'undefined') {\n  main(document.querySelector('#content'), document.querySelector('#loading'));\n}\n\nmodule.exports = main;\n\nfunction main(container, loading) {\n  let before = null;\n  let inFlight = null;\n\n  next();\n\n  window.addEventListener('scroll', function() {\n    if (isXPercentDownThePage(0.9) && inFlight == null) {\n      next();\n    }\n  });\n\n  function next() {\n    const url = before == null ? `${root}/feed` : `${root}/feed?before=${before}`;\n\n    if (inFlight != null) {\n      return inFlight.then(() => next());\n    }\n\n    loading.style.display = 'block';\n\n    inFlight = fetch(url).\n      then(res => res.json()).\n      then(res => {\n        inFlight = null;\n        loading.style.display = 'none';\n        before = res.versions[res.versions.length - 1].publishedAt;\n        container.innerHTML += res.versions.map(versionComponent).join('\\n');\n      }).\n      catch(err => {\n        inFlight = null;\n        loading.style.display = 'none';\n        container.innerHTML = error404();\n        throw err;\n      });\n  }\n}\n\nfunction isXPercentDownThePage(percent) {\n  const p = window.pageYOffset + document.documentElement.clientHeight;\n  const h = document.documentElement.scrollHeight;\n  return (p / h) > percent;\n}\n\n\n//# sourceURL=webpack:///./client/feed.js?");
-
-/***/ }),
-
-/***/ "./client/version.js":
-/*!***************************!*\
-  !*** ./client/version.js ***!
-  \***************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-eval("module.exports = version => `\n  <div class=\"version\">\n    <div class=\"left\">\n      <a href=\"https://npmjs.com/package/${version.packageId}\">\n        ${version.packageId}@${version.version}\n      </a>\n      <div\n        class=\"description\"\n        style=\"${version.package.description == null ? 'display: none' : ''}\">\n        ${githubButton(version)}\n        ${version.package.description}\n      </div>\n      <div class=\"ts\">\n        ${ts(version.publishedAt)}\n      </div>\n    </div>\n    <div class=\"right\">\n      <div\n        class=\"button\"\n        style=\"display: ${version.changelog != null ? 'block' : 'none'}\"\n        onClick=\"toggle('changelog-${version._id}')\">\n        Show Changelog\n      </div>\n    </div>\n    <div style=\"clear: both\"></div>\n    <div class=\"changelog changelog-${version._id}\">\n      ${version.changelog || ''}\n    </div>\n  </div>\n`;\n\nfunction githubButton(version) {\n  if (version.package.github == null) {\n    return '';\n  }\n  const { owner, repo } = version.package.github;\n  if (owner == null || repo == null) {\n    return '';\n  }\n  const badge = `https://img.shields.io/github/stars/${owner}/${repo}.svg?` +\n    'style=social&label=Stars';\n  const url = `https://github.com/${owner}/${repo}`;\n  return `<a href=\"${url}\"><img src=\"${badge}\" /></a><br>`;\n}\n\nfunction ts(date) {\n  date = new Date(date);\n  return date.toLocaleTimeString();\n}\n\n\n//# sourceURL=webpack:///./client/version.js?");
+eval("__webpack_require__(/*! unfetch */ \"./node_modules/unfetch/dist/unfetch.mjs\");\n\nfetch('https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default/latest-versions').\n  then(res => res.json()).\n  then(res => {\n    document.querySelector('#latest-releases-content').innerHTML = res.versions.\n      map(version => `\n        <div class=\"version\">\n          <div class=\"left\">\n            <a href=\"https://npmjs.com/${version.packageId}\">\n              ${version.packageId}@${version.version}\n            </a>\n            <div class=\"ts\">\n              ${ts(version.publishedAt)}\n            </div>\n          </div>\n          <div class=\"right\">\n            <div class=\"button\" onClick=\"toggle('changelog-${version._id}')\">\n              Show Changelog\n            </div>\n          </div>\n          <div style=\"clear: both\"></div>\n          <div class=\"changelog changelog-${version._id}\">\n            ${version.changelog != null ? changelog(version) : ''}\n          </div>\n        </div>\n      `).\n      join('\\n');\n  });\n\nfunction changelog(version) {\n  return version.changelog;\n}\n\nfunction toggle(id) {\n  const el = document.querySelector('.' + id);\n  if (el.style.display === 'block') {\n    el.style.display = 'none';\n  } else {\n    el.style.display = 'block';\n  }\n}\n\nfunction ts(date) {\n  date = new Date(date);\n  return date.toLocaleTimeString();\n}\n\n\n//# sourceURL=webpack:///./client/home.js?");
 
 /***/ }),
 

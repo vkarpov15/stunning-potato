@@ -1,8 +1,9 @@
 module.exports = {
-  mode: process.env.NODE_ENV,
+  mode: process.env.NODE_ENV || 'production',
   entry: {
     dashboard: './client/dashboard.jsx',
     feed: './client/feed.js',
+    home: './client/home.js',
     package: './client/package.js',
     slackoauth: './client/slackoauth.js'
   },

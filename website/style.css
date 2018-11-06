@@ -68,6 +68,13 @@ a {
 .nav-right a {
   color: #00386c;
   margin-right: 15px;
+  position: relative;
+  top: -7px;
+}
+
+.nav-right a img {
+  position: relative;
+  top: 7px;
 }
 
 #content {
