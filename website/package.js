@@ -97,6 +97,17 @@ eval("module.exports = () => `\n<div class=\"error-404\">\n  <h2>Not Found</h2>\
 
 /***/ }),
 
+/***/ "./client/http.js":
+/*!************************!*\
+  !*** ./client/http.js ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("__webpack_require__(/*! unfetch */ \"./node_modules/unfetch/dist/unfetch.mjs\");\n\nconst root = __webpack_require__(/*! ../config */ \"./config/index.js\").root;\nconsole.log(root);\n\nexports.get = function(url) {\n  const opts = {\n    method: 'GET',\n    headers: {\n      'Content-Type': 'application/json',\n      authorization: window.localStorage.getItem('token')\n    }\n  };\n  return fetch(`${root}${url}`, opts).then(res => res.json());\n};\n\n\n//# sourceURL=webpack:///./client/http.js?");
+
+/***/ }),
+
 /***/ "./client/nav.jsx":
 /*!************************!*\
   !*** ./client/nav.jsx ***!
@@ -104,7 +115,7 @@ eval("module.exports = () => `\n<div class=\"error-404\">\n  <h2>Not Found</h2>\
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__(/*! unfetch */ \"./node_modules/unfetch/dist/unfetch.mjs\");\n\nconst React = __webpack_require__(/*! preact */ \"./node_modules/preact/dist/preact.mjs\");\n\nconst root = __webpack_require__(/*! ../config */ \"./config/index.js\").root;\n\nconsole.log(root);\n\nclass Nav extends React.Component {\n  render() {\n    return React.createElement(\"div\", null, React.createElement(\"a\", {\n      href: \"/feed\"\n    }, \"Feed\"), React.createElement(\"a\", {\n      href: \"/slack\"\n    }, \"Slack\"), React.createElement(\"a\", {\n      href: \"https://tinyletter.com/js-report\"\n    }, \"Newsletter\"), React.createElement(\"a\", {\n      href: \"https://slack.com/oauth/authorize?scope=identity.basic+identity.email&client_id=80341368871.427593509574\"\n    }, React.createElement(\"img\", {\n      alt: \"Sign in with Slack\",\n      height: \"30\",\n      width: \"129\",\n      src: \"https://platform.slack-edge.com/img/sign_in_with_slack.png\",\n      srcset: \"https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x\"\n    })));\n  }\n\n}\n\nReact.render(React.createElement(Nav, null), document.querySelector('#nav-container'));\n\n//# sourceURL=webpack:///./client/nav.jsx?");
+eval("const React = __webpack_require__(/*! preact */ \"./node_modules/preact/dist/preact.mjs\");\n\nconst http = __webpack_require__(/*! ./http */ \"./client/http.js\");\n\nconst root = __webpack_require__(/*! ../config */ \"./config/index.js\").root;\n\nconsole.log(root);\n\nclass Nav extends React.Component {\n  componentDidMount() {\n    if (!window.localStorage.getItem('token')) {\n      this.setState({\n        loading: false,\n        customer: null\n      });\n      return;\n    }\n\n    this.setState({\n      loading: true\n    });\n    http.get('/me').then(res => {\n      this.setState({\n        loading: false,\n        customer: res.customer\n      });\n    }).catch(() => {\n      this.setState({\n        loading: false,\n        customer: null\n      });\n    });\n  }\n\n  login() {\n    if (this.state.loading) {\n      return React.createElement(\"span\", null);\n    }\n\n    if (this.state.customer != null) {\n      return React.createElement(\"a\", {\n        href: \"/dashboard\"\n      }, \"Dashboard\");\n    }\n\n    return React.createElement(\"a\", {\n      href: \"https://slack.com/oauth/authorize?scope=identity.basic+identity.email&client_id=80341368871.427593509574\"\n    }, React.createElement(\"img\", {\n      alt: \"Sign in with Slack\",\n      height: \"30\",\n      width: \"129\",\n      src: \"https://platform.slack-edge.com/img/sign_in_with_slack.png\",\n      srcset: \"https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x\"\n    }));\n  }\n\n  render() {\n    return React.createElement(\"div\", null, React.createElement(\"div\", {\n      class: \"nav-link\"\n    }, React.createElement(\"a\", {\n      href: \"/feed\"\n    }, \"Feed\")), React.createElement(\"div\", {\n      class: \"nav-link\"\n    }, React.createElement(\"a\", {\n      href: \"/slack\"\n    }, \"Slack\")), React.createElement(\"div\", {\n      class: \"nav-link\"\n    }, React.createElement(\"a\", {\n      href: \"https://tinyletter.com/js-report\"\n    }, \"Newsletter\")), React.createElement(\"div\", {\n      class: \"nav-link\"\n    }, this.login()), React.createElement(\"div\", {\n      style: \"clear: both\"\n    }));\n  }\n\n}\n\nReact.render(React.createElement(Nav, null), document.querySelector('#nav-container'));\n\n//# sourceURL=webpack:///./client/nav.jsx?");
 
 /***/ }),
 

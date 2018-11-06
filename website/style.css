@@ -65,16 +65,19 @@ a {
   top: 8px;
 }
 
+.nav-right .nav-link {
+  float: left;
+}
+
 .nav-right a {
   color: #00386c;
   margin-right: 15px;
   position: relative;
-  top: -8px;
 }
 
 .nav-right a img {
   position: relative;
-  top: 9px;
+  top: -4px;
 }
 
 #content {
