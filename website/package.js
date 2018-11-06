@@ -81,110 +81,2577 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./client/package.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ "./client/error404.js":
-/*!****************************!*\
-  !*** ./client/error404.js ***!
-  \****************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-eval("module.exports = () => `\n<div class=\"error-404\">\n  <h2>Not Found</h2>\n  <img class=\"error-gag-img\" src=\"/images/pooka.png\">\n  <div class=\"error-gag\">Life is Ruff</div>\n</div>\n`;\n\n\n//# sourceURL=webpack:///./client/error404.js?");
-
-/***/ }),
-
-/***/ "./client/http.js":
-/*!************************!*\
-  !*** ./client/http.js ***!
-  \************************/
-/*! no static exports found */
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__(/*! unfetch */ \"./node_modules/unfetch/dist/unfetch.mjs\");\n\nconst root = __webpack_require__(/*! ../config */ \"./config/index.js\").root;\nconsole.log(root);\n\nexports.get = function(url) {\n  const opts = {\n    method: 'GET',\n    headers: {\n      'Content-Type': 'application/json',\n      authorization: window.localStorage.getItem('token')\n    }\n  };\n  return fetch(`${root}${url}`, opts).then(res => res.json());\n};\n\n\n//# sourceURL=webpack:///./client/http.js?");
+const cfg = {
+  root: 'http://localhost:4000'
+};
+
+if (true) {
+  Object.assign(cfg, __webpack_require__(5));
+}
+
+module.exports = Object.freeze(cfg);
+
 
 /***/ }),
-
-/***/ "./client/nav.jsx":
-/*!************************!*\
-  !*** ./client/nav.jsx ***!
-  \************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-eval("const React = __webpack_require__(/*! preact */ \"./node_modules/preact/dist/preact.mjs\");\n\nconst http = __webpack_require__(/*! ./http */ \"./client/http.js\");\n\nconst root = __webpack_require__(/*! ../config */ \"./config/index.js\").root;\n\nconsole.log(root);\n\nclass Nav extends React.Component {\n  componentDidMount() {\n    if (!window.localStorage.getItem('token')) {\n      this.setState({\n        loading: false,\n        customer: null\n      });\n      return;\n    }\n\n    this.setState({\n      loading: true\n    });\n    http.get('/me').then(res => {\n      this.setState({\n        loading: false,\n        customer: res.customer\n      });\n    }).catch(() => {\n      this.setState({\n        loading: false,\n        customer: null\n      });\n    });\n  }\n\n  login() {\n    if (this.state.loading) {\n      return React.createElement(\"span\", null);\n    }\n\n    if (this.state.customer != null) {\n      return React.createElement(\"a\", {\n        href: \"/dashboard\"\n      }, \"Dashboard\");\n    }\n\n    return React.createElement(\"a\", {\n      href: \"https://slack.com/oauth/authorize?scope=identity.basic+identity.email&client_id=80341368871.427593509574\"\n    }, React.createElement(\"img\", {\n      alt: \"Sign in with Slack\",\n      height: \"30\",\n      width: \"129\",\n      src: \"https://platform.slack-edge.com/img/sign_in_with_slack.png\",\n      srcset: \"https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x\"\n    }));\n  }\n\n  render() {\n    return React.createElement(\"div\", null, React.createElement(\"div\", {\n      class: \"nav-link\"\n    }, React.createElement(\"a\", {\n      href: \"/feed\"\n    }, \"Feed\")), React.createElement(\"div\", {\n      class: \"nav-link\"\n    }, React.createElement(\"a\", {\n      href: \"/slack\"\n    }, \"Slack\")), React.createElement(\"div\", {\n      class: \"nav-link\"\n    }, React.createElement(\"a\", {\n      href: \"https://tinyletter.com/js-report\"\n    }, \"Newsletter\")), React.createElement(\"div\", {\n      class: \"nav-link\"\n    }, this.login()), React.createElement(\"div\", {\n      style: \"clear: both\"\n    }));\n  }\n\n}\n\nReact.render(React.createElement(Nav, null), document.querySelector('#nav-container'));\n\n//# sourceURL=webpack:///./client/nav.jsx?");
-
-/***/ }),
-
-/***/ "./client/package.js":
-/*!***************************!*\
-  !*** ./client/package.js ***!
-  \***************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-eval("__webpack_require__(/*! unfetch */ \"./node_modules/unfetch/dist/unfetch.mjs\");\n__webpack_require__(/*! ./nav.jsx */ \"./client/nav.jsx\");\n\nconst error404 = __webpack_require__(/*! ./error404 */ \"./client/error404.js\");\nconst marked = __webpack_require__(/*! marked */ \"./node_modules/marked/lib/marked.js\");\n\nconst root = 'https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default';\n\nif (typeof window !== 'undefined') {\n  main(window.location.pathname, document.querySelector('#content'));\n}\n\nmodule.exports = main;\n\nfunction main(url, container) {\n  const sp = url.split('/');\n\n  if (sp.length < 4) {\n    container.innerHTML = error404();\n    return;\n  }\n\n  fetch(`${root}/version?packageId=${sp[2]}&version=${sp[3]}`).\n    then(res => res.json()).\n    then(res => {\n      let html = `\n        <h1>${res.version.packageId}@${res.version.version}</h1>\n\n        <div class=\"changelog\">\n          ${res.version.changelog == null ? 'No Changelog Found' : marked(res.version.changelog)}\n        </div>\n      `;\n      container.innerHTML = html;\n    }).\n    catch(err => {\n      container.innerHTML = error404();\n      throw err;\n    });\n}\n\n\n//# sourceURL=webpack:///./client/package.js?");
-
-/***/ }),
-
-/***/ "./config/index.js":
-/*!*************************!*\
-  !*** ./config/index.js ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-eval("const cfg = {\n  root: 'http://localhost:4000'\n};\n\nif (false) {}\n\nmodule.exports = Object.freeze(cfg);\n\n\n//# sourceURL=webpack:///./config/index.js?");
-
-/***/ }),
-
-/***/ "./node_modules/marked/lib/marked.js":
-/*!*******************************************!*\
-  !*** ./node_modules/marked/lib/marked.js ***!
-  \*******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-eval("/* WEBPACK VAR INJECTION */(function(global) {/**\n * marked - a markdown parser\n * Copyright (c) 2011-2018, Christopher Jeffrey. (MIT Licensed)\n * https://github.com/markedjs/marked\n */\n\n;(function(root) {\n'use strict';\n\n/**\n * Block-Level Grammar\n */\n\nvar block = {\n  newline: /^\\n+/,\n  code: /^( {4}[^\\n]+\\n*)+/,\n  fences: noop,\n  hr: /^ {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)/,\n  heading: /^ *(#{1,6}) *([^\\n]+?) *(?:#+ *)?(?:\\n+|$)/,\n  nptable: noop,\n  blockquote: /^( {0,3}> ?(paragraph|[^\\n]*)(?:\\n|$))+/,\n  list: /^( *)(bull) [\\s\\S]+?(?:hr|def|\\n{2,}(?! )(?!\\1bull )\\n*|\\s*$)/,\n  html: '^ {0,3}(?:' // optional indentation\n    + '<(script|pre|style)[\\\\s>][\\\\s\\\\S]*?(?:</\\\\1>[^\\\\n]*\\\\n+|$)' // (1)\n    + '|comment[^\\\\n]*(\\\\n+|$)' // (2)\n    + '|<\\\\?[\\\\s\\\\S]*?\\\\?>\\\\n*' // (3)\n    + '|<![A-Z][\\\\s\\\\S]*?>\\\\n*' // (4)\n    + '|<!\\\\[CDATA\\\\[[\\\\s\\\\S]*?\\\\]\\\\]>\\\\n*' // (5)\n    + '|</?(tag)(?: +|\\\\n|/?>)[\\\\s\\\\S]*?(?:\\\\n{2,}|$)' // (6)\n    + '|<(?!script|pre|style)([a-z][\\\\w-]*)(?:attribute)*? */?>(?=\\\\h*\\\\n)[\\\\s\\\\S]*?(?:\\\\n{2,}|$)' // (7) open tag\n    + '|</(?!script|pre|style)[a-z][\\\\w-]*\\\\s*>(?=\\\\h*\\\\n)[\\\\s\\\\S]*?(?:\\\\n{2,}|$)' // (7) closing tag\n    + ')',\n  def: /^ {0,3}\\[(label)\\]: *\\n? *<?([^\\s>]+)>?(?:(?: +\\n? *| *\\n *)(title))? *(?:\\n+|$)/,\n  table: noop,\n  lheading: /^([^\\n]+)\\n *(=|-){2,} *(?:\\n+|$)/,\n  paragraph: /^([^\\n]+(?:\\n(?!hr|heading|lheading| {0,3}>|<\\/?(?:tag)(?: +|\\n|\\/?>)|<(?:script|pre|style|!--))[^\\n]+)*)/,\n  text: /^[^\\n]+/\n};\n\nblock._label = /(?!\\s*\\])(?:\\\\[\\[\\]]|[^\\[\\]])+/;\nblock._title = /(?:\"(?:\\\\\"?|[^\"\\\\])*\"|'[^'\\n]*(?:\\n[^'\\n]+)*\\n?'|\\([^()]*\\))/;\nblock.def = edit(block.def)\n  .replace('label', block._label)\n  .replace('title', block._title)\n  .getRegex();\n\nblock.bullet = /(?:[*+-]|\\d+\\.)/;\nblock.item = /^( *)(bull) [^\\n]*(?:\\n(?!\\1bull )[^\\n]*)*/;\nblock.item = edit(block.item, 'gm')\n  .replace(/bull/g, block.bullet)\n  .getRegex();\n\nblock.list = edit(block.list)\n  .replace(/bull/g, block.bullet)\n  .replace('hr', '\\\\n+(?=\\\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\\\* *){3,})(?:\\\\n+|$))')\n  .replace('def', '\\\\n+(?=' + block.def.source + ')')\n  .getRegex();\n\nblock._tag = 'address|article|aside|base|basefont|blockquote|body|caption'\n  + '|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption'\n  + '|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe'\n  + '|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option'\n  + '|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr'\n  + '|track|ul';\nblock._comment = /<!--(?!-?>)[\\s\\S]*?-->/;\nblock.html = edit(block.html, 'i')\n  .replace('comment', block._comment)\n  .replace('tag', block._tag)\n  .replace('attribute', / +[a-zA-Z:_][\\w.:-]*(?: *= *\"[^\"\\n]*\"| *= *'[^'\\n]*'| *= *[^\\s\"'=<>`]+)?/)\n  .getRegex();\n\nblock.paragraph = edit(block.paragraph)\n  .replace('hr', block.hr)\n  .replace('heading', block.heading)\n  .replace('lheading', block.lheading)\n  .replace('tag', block._tag) // pars can be interrupted by type (6) html blocks\n  .getRegex();\n\nblock.blockquote = edit(block.blockquote)\n  .replace('paragraph', block.paragraph)\n  .getRegex();\n\n/**\n * Normal Block Grammar\n */\n\nblock.normal = merge({}, block);\n\n/**\n * GFM Block Grammar\n */\n\nblock.gfm = merge({}, block.normal, {\n  fences: /^ *(`{3,}|~{3,})[ \\.]*(\\S+)? *\\n([\\s\\S]*?)\\n? *\\1 *(?:\\n+|$)/,\n  paragraph: /^/,\n  heading: /^ *(#{1,6}) +([^\\n]+?) *#* *(?:\\n+|$)/\n});\n\nblock.gfm.paragraph = edit(block.paragraph)\n  .replace('(?!', '(?!'\n    + block.gfm.fences.source.replace('\\\\1', '\\\\2') + '|'\n    + block.list.source.replace('\\\\1', '\\\\3') + '|')\n  .getRegex();\n\n/**\n * GFM + Tables Block Grammar\n */\n\nblock.tables = merge({}, block.gfm, {\n  nptable: /^ *([^|\\n ].*\\|.*)\\n *([-:]+ *\\|[-| :]*)(?:\\n((?:.*[^>\\n ].*(?:\\n|$))*)\\n*|$)/,\n  table: /^ *\\|(.+)\\n *\\|?( *[-:]+[-| :]*)(?:\\n((?: *[^>\\n ].*(?:\\n|$))*)\\n*|$)/\n});\n\n/**\n * Pedantic grammar\n */\n\nblock.pedantic = merge({}, block.normal, {\n  html: edit(\n    '^ *(?:comment *(?:\\\\n|\\\\s*$)'\n    + '|<(tag)[\\\\s\\\\S]+?</\\\\1> *(?:\\\\n{2,}|\\\\s*$)' // closed tag\n    + '|<tag(?:\"[^\"]*\"|\\'[^\\']*\\'|\\\\s[^\\'\"/>\\\\s]*)*?/?> *(?:\\\\n{2,}|\\\\s*$))')\n    .replace('comment', block._comment)\n    .replace(/tag/g, '(?!(?:'\n      + 'a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub'\n      + '|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)'\n      + '\\\\b)\\\\w+(?!:|[^\\\\w\\\\s@]*@)\\\\b')\n    .getRegex(),\n  def: /^ *\\[([^\\]]+)\\]: *<?([^\\s>]+)>?(?: +([\"(][^\\n]+[\")]))? *(?:\\n+|$)/\n});\n\n/**\n * Block Lexer\n */\n\nfunction Lexer(options) {\n  this.tokens = [];\n  this.tokens.links = Object.create(null);\n  this.options = options || marked.defaults;\n  this.rules = block.normal;\n\n  if (this.options.pedantic) {\n    this.rules = block.pedantic;\n  } else if (this.options.gfm) {\n    if (this.options.tables) {\n      this.rules = block.tables;\n    } else {\n      this.rules = block.gfm;\n    }\n  }\n}\n\n/**\n * Expose Block Rules\n */\n\nLexer.rules = block;\n\n/**\n * Static Lex Method\n */\n\nLexer.lex = function(src, options) {\n  var lexer = new Lexer(options);\n  return lexer.lex(src);\n};\n\n/**\n * Preprocessing\n */\n\nLexer.prototype.lex = function(src) {\n  src = src\n    .replace(/\\r\\n|\\r/g, '\\n')\n    .replace(/\\t/g, '    ')\n    .replace(/\\u00a0/g, ' ')\n    .replace(/\\u2424/g, '\\n');\n\n  return this.token(src, true);\n};\n\n/**\n * Lexing\n */\n\nLexer.prototype.token = function(src, top) {\n  src = src.replace(/^ +$/gm, '');\n  var next,\n      loose,\n      cap,\n      bull,\n      b,\n      item,\n      listStart,\n      listItems,\n      t,\n      space,\n      i,\n      tag,\n      l,\n      isordered,\n      istask,\n      ischecked;\n\n  while (src) {\n    // newline\n    if (cap = this.rules.newline.exec(src)) {\n      src = src.substring(cap[0].length);\n      if (cap[0].length > 1) {\n        this.tokens.push({\n          type: 'space'\n        });\n      }\n    }\n\n    // code\n    if (cap = this.rules.code.exec(src)) {\n      src = src.substring(cap[0].length);\n      cap = cap[0].replace(/^ {4}/gm, '');\n      this.tokens.push({\n        type: 'code',\n        text: !this.options.pedantic\n          ? rtrim(cap, '\\n')\n          : cap\n      });\n      continue;\n    }\n\n    // fences (gfm)\n    if (cap = this.rules.fences.exec(src)) {\n      src = src.substring(cap[0].length);\n      this.tokens.push({\n        type: 'code',\n        lang: cap[2],\n        text: cap[3] || ''\n      });\n      continue;\n    }\n\n    // heading\n    if (cap = this.rules.heading.exec(src)) {\n      src = src.substring(cap[0].length);\n      this.tokens.push({\n        type: 'heading',\n        depth: cap[1].length,\n        text: cap[2]\n      });\n      continue;\n    }\n\n    // table no leading pipe (gfm)\n    if (top && (cap = this.rules.nptable.exec(src))) {\n      item = {\n        type: 'table',\n        header: splitCells(cap[1].replace(/^ *| *\\| *$/g, '')),\n        align: cap[2].replace(/^ *|\\| *$/g, '').split(/ *\\| */),\n        cells: cap[3] ? cap[3].replace(/\\n$/, '').split('\\n') : []\n      };\n\n      if (item.header.length === item.align.length) {\n        src = src.substring(cap[0].length);\n\n        for (i = 0; i < item.align.length; i++) {\n          if (/^ *-+: *$/.test(item.align[i])) {\n            item.align[i] = 'right';\n          } else if (/^ *:-+: *$/.test(item.align[i])) {\n            item.align[i] = 'center';\n          } else if (/^ *:-+ *$/.test(item.align[i])) {\n            item.align[i] = 'left';\n          } else {\n            item.align[i] = null;\n          }\n        }\n\n        for (i = 0; i < item.cells.length; i++) {\n          item.cells[i] = splitCells(item.cells[i], item.header.length);\n        }\n\n        this.tokens.push(item);\n\n        continue;\n      }\n    }\n\n    // hr\n    if (cap = this.rules.hr.exec(src)) {\n      src = src.substring(cap[0].length);\n      this.tokens.push({\n        type: 'hr'\n      });\n      continue;\n    }\n\n    // blockquote\n    if (cap = this.rules.blockquote.exec(src)) {\n      src = src.substring(cap[0].length);\n\n      this.tokens.push({\n        type: 'blockquote_start'\n      });\n\n      cap = cap[0].replace(/^ *> ?/gm, '');\n\n      // Pass `top` to keep the current\n      // \"toplevel\" state. This is exactly\n      // how markdown.pl works.\n      this.token(cap, top);\n\n      this.tokens.push({\n        type: 'blockquote_end'\n      });\n\n      continue;\n    }\n\n    // list\n    if (cap = this.rules.list.exec(src)) {\n      src = src.substring(cap[0].length);\n      bull = cap[2];\n      isordered = bull.length > 1;\n\n      listStart = {\n        type: 'list_start',\n        ordered: isordered,\n        start: isordered ? +bull : '',\n        loose: false\n      };\n\n      this.tokens.push(listStart);\n\n      // Get each top-level item.\n      cap = cap[0].match(this.rules.item);\n\n      listItems = [];\n      next = false;\n      l = cap.length;\n      i = 0;\n\n      for (; i < l; i++) {\n        item = cap[i];\n\n        // Remove the list item's bullet\n        // so it is seen as the next token.\n        space = item.length;\n        item = item.replace(/^ *([*+-]|\\d+\\.) +/, '');\n\n        // Outdent whatever the\n        // list item contains. Hacky.\n        if (~item.indexOf('\\n ')) {\n          space -= item.length;\n          item = !this.options.pedantic\n            ? item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '')\n            : item.replace(/^ {1,4}/gm, '');\n        }\n\n        // Determine whether the next list item belongs here.\n        // Backpedal if it does not belong in this list.\n        if (this.options.smartLists && i !== l - 1) {\n          b = block.bullet.exec(cap[i + 1])[0];\n          if (bull !== b && !(bull.length > 1 && b.length > 1)) {\n            src = cap.slice(i + 1).join('\\n') + src;\n            i = l - 1;\n          }\n        }\n\n        // Determine whether item is loose or not.\n        // Use: /(^|\\n)(?! )[^\\n]+\\n\\n(?!\\s*$)/\n        // for discount behavior.\n        loose = next || /\\n\\n(?!\\s*$)/.test(item);\n        if (i !== l - 1) {\n          next = item.charAt(item.length - 1) === '\\n';\n          if (!loose) loose = next;\n        }\n\n        if (loose) {\n          listStart.loose = true;\n        }\n\n        // Check for task list items\n        istask = /^\\[[ xX]\\] /.test(item);\n        ischecked = undefined;\n        if (istask) {\n          ischecked = item[1] !== ' ';\n          item = item.replace(/^\\[[ xX]\\] +/, '');\n        }\n\n        t = {\n          type: 'list_item_start',\n          task: istask,\n          checked: ischecked,\n          loose: loose\n        };\n\n        listItems.push(t);\n        this.tokens.push(t);\n\n        // Recurse.\n        this.token(item, false);\n\n        this.tokens.push({\n          type: 'list_item_end'\n        });\n      }\n\n      if (listStart.loose) {\n        l = listItems.length;\n        i = 0;\n        for (; i < l; i++) {\n          listItems[i].loose = true;\n        }\n      }\n\n      this.tokens.push({\n        type: 'list_end'\n      });\n\n      continue;\n    }\n\n    // html\n    if (cap = this.rules.html.exec(src)) {\n      src = src.substring(cap[0].length);\n      this.tokens.push({\n        type: this.options.sanitize\n          ? 'paragraph'\n          : 'html',\n        pre: !this.options.sanitizer\n          && (cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style'),\n        text: cap[0]\n      });\n      continue;\n    }\n\n    // def\n    if (top && (cap = this.rules.def.exec(src))) {\n      src = src.substring(cap[0].length);\n      if (cap[3]) cap[3] = cap[3].substring(1, cap[3].length - 1);\n      tag = cap[1].toLowerCase().replace(/\\s+/g, ' ');\n      if (!this.tokens.links[tag]) {\n        this.tokens.links[tag] = {\n          href: cap[2],\n          title: cap[3]\n        };\n      }\n      continue;\n    }\n\n    // table (gfm)\n    if (top && (cap = this.rules.table.exec(src))) {\n      item = {\n        type: 'table',\n        header: splitCells(cap[1].replace(/^ *| *\\| *$/g, '')),\n        align: cap[2].replace(/^ *|\\| *$/g, '').split(/ *\\| */),\n        cells: cap[3] ? cap[3].replace(/(?: *\\| *)?\\n$/, '').split('\\n') : []\n      };\n\n      if (item.header.length === item.align.length) {\n        src = src.substring(cap[0].length);\n\n        for (i = 0; i < item.align.length; i++) {\n          if (/^ *-+: *$/.test(item.align[i])) {\n            item.align[i] = 'right';\n          } else if (/^ *:-+: *$/.test(item.align[i])) {\n            item.align[i] = 'center';\n          } else if (/^ *:-+ *$/.test(item.align[i])) {\n            item.align[i] = 'left';\n          } else {\n            item.align[i] = null;\n          }\n        }\n\n        for (i = 0; i < item.cells.length; i++) {\n          item.cells[i] = splitCells(\n            item.cells[i].replace(/^ *\\| *| *\\| *$/g, ''),\n            item.header.length);\n        }\n\n        this.tokens.push(item);\n\n        continue;\n      }\n    }\n\n    // lheading\n    if (cap = this.rules.lheading.exec(src)) {\n      src = src.substring(cap[0].length);\n      this.tokens.push({\n        type: 'heading',\n        depth: cap[2] === '=' ? 1 : 2,\n        text: cap[1]\n      });\n      continue;\n    }\n\n    // top-level paragraph\n    if (top && (cap = this.rules.paragraph.exec(src))) {\n      src = src.substring(cap[0].length);\n      this.tokens.push({\n        type: 'paragraph',\n        text: cap[1].charAt(cap[1].length - 1) === '\\n'\n          ? cap[1].slice(0, -1)\n          : cap[1]\n      });\n      continue;\n    }\n\n    // text\n    if (cap = this.rules.text.exec(src)) {\n      // Top-level should never reach here.\n      src = src.substring(cap[0].length);\n      this.tokens.push({\n        type: 'text',\n        text: cap[0]\n      });\n      continue;\n    }\n\n    if (src) {\n      throw new Error('Infinite loop on byte: ' + src.charCodeAt(0));\n    }\n  }\n\n  return this.tokens;\n};\n\n/**\n * Inline-Level Grammar\n */\n\nvar inline = {\n  escape: /^\\\\([!\"#$%&'()*+,\\-./:;<=>?@\\[\\]\\\\^_`{|}~])/,\n  autolink: /^<(scheme:[^\\s\\x00-\\x1f<>]*|email)>/,\n  url: noop,\n  tag: '^comment'\n    + '|^</[a-zA-Z][\\\\w:-]*\\\\s*>' // self-closing tag\n    + '|^<[a-zA-Z][\\\\w-]*(?:attribute)*?\\\\s*/?>' // open tag\n    + '|^<\\\\?[\\\\s\\\\S]*?\\\\?>' // processing instruction, e.g. <?php ?>\n    + '|^<![a-zA-Z]+\\\\s[\\\\s\\\\S]*?>' // declaration, e.g. <!DOCTYPE html>\n    + '|^<!\\\\[CDATA\\\\[[\\\\s\\\\S]*?\\\\]\\\\]>', // CDATA section\n  link: /^!?\\[(label)\\]\\(href(?:\\s+(title))?\\s*\\)/,\n  reflink: /^!?\\[(label)\\]\\[(?!\\s*\\])((?:\\\\[\\[\\]]?|[^\\[\\]\\\\])+)\\]/,\n  nolink: /^!?\\[(?!\\s*\\])((?:\\[[^\\[\\]]*\\]|\\\\[\\[\\]]|[^\\[\\]])*)\\](?:\\[\\])?/,\n  strong: /^__([^\\s])__(?!_)|^\\*\\*([^\\s])\\*\\*(?!\\*)|^__([^\\s][\\s\\S]*?[^\\s])__(?!_)|^\\*\\*([^\\s][\\s\\S]*?[^\\s])\\*\\*(?!\\*)/,\n  em: /^_([^\\s_])_(?!_)|^\\*([^\\s*\"<\\[])\\*(?!\\*)|^_([^\\s][\\s\\S]*?[^\\s_])_(?!_)|^_([^\\s_][\\s\\S]*?[^\\s])_(?!_)|^\\*([^\\s\"<\\[][\\s\\S]*?[^\\s*])\\*(?!\\*)|^\\*([^\\s*\"<\\[][\\s\\S]*?[^\\s])\\*(?!\\*)/,\n  code: /^(`+)([^`]|[^`][\\s\\S]*?[^`])\\1(?!`)/,\n  br: /^( {2,}|\\\\)\\n(?!\\s*$)/,\n  del: noop,\n  text: /^(`+|[^`])[\\s\\S]*?(?=[\\\\<!\\[`*]|\\b_| {2,}\\n|$)/\n};\n\ninline._escapes = /\\\\([!\"#$%&'()*+,\\-./:;<=>?@\\[\\]\\\\^_`{|}~])/g;\n\ninline._scheme = /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/;\ninline._email = /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/;\ninline.autolink = edit(inline.autolink)\n  .replace('scheme', inline._scheme)\n  .replace('email', inline._email)\n  .getRegex();\n\ninline._attribute = /\\s+[a-zA-Z:_][\\w.:-]*(?:\\s*=\\s*\"[^\"]*\"|\\s*=\\s*'[^']*'|\\s*=\\s*[^\\s\"'=<>`]+)?/;\n\ninline.tag = edit(inline.tag)\n  .replace('comment', block._comment)\n  .replace('attribute', inline._attribute)\n  .getRegex();\n\ninline._label = /(?:\\[[^\\[\\]]*\\]|\\\\[\\[\\]]?|`[^`]*`|[^\\[\\]\\\\])*?/;\ninline._href = /\\s*(<(?:\\\\[<>]?|[^\\s<>\\\\])*>|(?:\\\\[()]?|\\([^\\s\\x00-\\x1f\\\\]*\\)|[^\\s\\x00-\\x1f()\\\\])*?)/;\ninline._title = /\"(?:\\\\\"?|[^\"\\\\])*\"|'(?:\\\\'?|[^'\\\\])*'|\\((?:\\\\\\)?|[^)\\\\])*\\)/;\n\ninline.link = edit(inline.link)\n  .replace('label', inline._label)\n  .replace('href', inline._href)\n  .replace('title', inline._title)\n  .getRegex();\n\ninline.reflink = edit(inline.reflink)\n  .replace('label', inline._label)\n  .getRegex();\n\n/**\n * Normal Inline Grammar\n */\n\ninline.normal = merge({}, inline);\n\n/**\n * Pedantic Inline Grammar\n */\n\ninline.pedantic = merge({}, inline.normal, {\n  strong: /^__(?=\\S)([\\s\\S]*?\\S)__(?!_)|^\\*\\*(?=\\S)([\\s\\S]*?\\S)\\*\\*(?!\\*)/,\n  em: /^_(?=\\S)([\\s\\S]*?\\S)_(?!_)|^\\*(?=\\S)([\\s\\S]*?\\S)\\*(?!\\*)/,\n  link: edit(/^!?\\[(label)\\]\\((.*?)\\)/)\n    .replace('label', inline._label)\n    .getRegex(),\n  reflink: edit(/^!?\\[(label)\\]\\s*\\[([^\\]]*)\\]/)\n    .replace('label', inline._label)\n    .getRegex()\n});\n\n/**\n * GFM Inline Grammar\n */\n\ninline.gfm = merge({}, inline.normal, {\n  escape: edit(inline.escape).replace('])', '~|])').getRegex(),\n  _extended_email: /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/,\n  url: /^((?:ftp|https?):\\/\\/|www\\.)(?:[a-zA-Z0-9\\-]+\\.?)+[^\\s<]*|^email/,\n  _backpedal: /(?:[^?!.,:;*_~()&]+|\\([^)]*\\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/,\n  del: /^~+(?=\\S)([\\s\\S]*?\\S)~+/,\n  text: edit(inline.text)\n    .replace(']|', '~]|')\n    .replace('|$', '|https?://|ftp://|www\\\\.|[a-zA-Z0-9.!#$%&\\'*+/=?^_`{\\\\|}~-]+@|$')\n    .getRegex()\n});\n\ninline.gfm.url = edit(inline.gfm.url)\n  .replace('email', inline.gfm._extended_email)\n  .getRegex();\n/**\n * GFM + Line Breaks Inline Grammar\n */\n\ninline.breaks = merge({}, inline.gfm, {\n  br: edit(inline.br).replace('{2,}', '*').getRegex(),\n  text: edit(inline.gfm.text).replace('{2,}', '*').getRegex()\n});\n\n/**\n * Inline Lexer & Compiler\n */\n\nfunction InlineLexer(links, options) {\n  this.options = options || marked.defaults;\n  this.links = links;\n  this.rules = inline.normal;\n  this.renderer = this.options.renderer || new Renderer();\n  this.renderer.options = this.options;\n\n  if (!this.links) {\n    throw new Error('Tokens array requires a `links` property.');\n  }\n\n  if (this.options.pedantic) {\n    this.rules = inline.pedantic;\n  } else if (this.options.gfm) {\n    if (this.options.breaks) {\n      this.rules = inline.breaks;\n    } else {\n      this.rules = inline.gfm;\n    }\n  }\n}\n\n/**\n * Expose Inline Rules\n */\n\nInlineLexer.rules = inline;\n\n/**\n * Static Lexing/Compiling Method\n */\n\nInlineLexer.output = function(src, links, options) {\n  var inline = new InlineLexer(links, options);\n  return inline.output(src);\n};\n\n/**\n * Lexing/Compiling\n */\n\nInlineLexer.prototype.output = function(src) {\n  var out = '',\n      link,\n      text,\n      href,\n      title,\n      cap,\n      prevCapZero;\n\n  while (src) {\n    // escape\n    if (cap = this.rules.escape.exec(src)) {\n      src = src.substring(cap[0].length);\n      out += cap[1];\n      continue;\n    }\n\n    // autolink\n    if (cap = this.rules.autolink.exec(src)) {\n      src = src.substring(cap[0].length);\n      if (cap[2] === '@') {\n        text = escape(this.mangle(cap[1]));\n        href = 'mailto:' + text;\n      } else {\n        text = escape(cap[1]);\n        href = text;\n      }\n      out += this.renderer.link(href, null, text);\n      continue;\n    }\n\n    // url (gfm)\n    if (!this.inLink && (cap = this.rules.url.exec(src))) {\n      if (cap[2] === '@') {\n        text = escape(cap[0]);\n        href = 'mailto:' + text;\n      } else {\n        // do extended autolink path validation\n        do {\n          prevCapZero = cap[0];\n          cap[0] = this.rules._backpedal.exec(cap[0])[0];\n        } while (prevCapZero !== cap[0]);\n        text = escape(cap[0]);\n        if (cap[1] === 'www.') {\n          href = 'http://' + text;\n        } else {\n          href = text;\n        }\n      }\n      src = src.substring(cap[0].length);\n      out += this.renderer.link(href, null, text);\n      continue;\n    }\n\n    // tag\n    if (cap = this.rules.tag.exec(src)) {\n      if (!this.inLink && /^<a /i.test(cap[0])) {\n        this.inLink = true;\n      } else if (this.inLink && /^<\\/a>/i.test(cap[0])) {\n        this.inLink = false;\n      }\n      if (!this.inRawBlock && /^<(pre|code|kbd|script)(\\s|>)/i.test(cap[0])) {\n        this.inRawBlock = true;\n      } else if (this.inRawBlock && /^<\\/(pre|code|kbd|script)(\\s|>)/i.test(cap[0])) {\n        this.inRawBlock = false;\n      }\n\n      src = src.substring(cap[0].length);\n      out += this.options.sanitize\n        ? this.options.sanitizer\n          ? this.options.sanitizer(cap[0])\n          : escape(cap[0])\n        : cap[0]\n      continue;\n    }\n\n    // link\n    if (cap = this.rules.link.exec(src)) {\n      src = src.substring(cap[0].length);\n      this.inLink = true;\n      href = cap[2];\n      if (this.options.pedantic) {\n        link = /^([^'\"]*[^\\s])\\s+(['\"])(.*)\\2/.exec(href);\n\n        if (link) {\n          href = link[1];\n          title = link[3];\n        } else {\n          title = '';\n        }\n      } else {\n        title = cap[3] ? cap[3].slice(1, -1) : '';\n      }\n      href = href.trim().replace(/^<([\\s\\S]*)>$/, '$1');\n      out += this.outputLink(cap, {\n        href: InlineLexer.escapes(href),\n        title: InlineLexer.escapes(title)\n      });\n      this.inLink = false;\n      continue;\n    }\n\n    // reflink, nolink\n    if ((cap = this.rules.reflink.exec(src))\n        || (cap = this.rules.nolink.exec(src))) {\n      src = src.substring(cap[0].length);\n      link = (cap[2] || cap[1]).replace(/\\s+/g, ' ');\n      link = this.links[link.toLowerCase()];\n      if (!link || !link.href) {\n        out += cap[0].charAt(0);\n        src = cap[0].substring(1) + src;\n        continue;\n      }\n      this.inLink = true;\n      out += this.outputLink(cap, link);\n      this.inLink = false;\n      continue;\n    }\n\n    // strong\n    if (cap = this.rules.strong.exec(src)) {\n      src = src.substring(cap[0].length);\n      out += this.renderer.strong(this.output(cap[4] || cap[3] || cap[2] || cap[1]));\n      continue;\n    }\n\n    // em\n    if (cap = this.rules.em.exec(src)) {\n      src = src.substring(cap[0].length);\n      out += this.renderer.em(this.output(cap[6] || cap[5] || cap[4] || cap[3] || cap[2] || cap[1]));\n      continue;\n    }\n\n    // code\n    if (cap = this.rules.code.exec(src)) {\n      src = src.substring(cap[0].length);\n      out += this.renderer.codespan(escape(cap[2].trim(), true));\n      continue;\n    }\n\n    // br\n    if (cap = this.rules.br.exec(src)) {\n      src = src.substring(cap[0].length);\n      out += this.renderer.br();\n      continue;\n    }\n\n    // del (gfm)\n    if (cap = this.rules.del.exec(src)) {\n      src = src.substring(cap[0].length);\n      out += this.renderer.del(this.output(cap[1]));\n      continue;\n    }\n\n    // text\n    if (cap = this.rules.text.exec(src)) {\n      src = src.substring(cap[0].length);\n      if (this.inRawBlock) {\n        out += this.renderer.text(cap[0]);\n      } else {\n        out += this.renderer.text(escape(this.smartypants(cap[0])));\n      }\n      continue;\n    }\n\n    if (src) {\n      throw new Error('Infinite loop on byte: ' + src.charCodeAt(0));\n    }\n  }\n\n  return out;\n};\n\nInlineLexer.escapes = function(text) {\n  return text ? text.replace(InlineLexer.rules._escapes, '$1') : text;\n}\n\n/**\n * Compile Link\n */\n\nInlineLexer.prototype.outputLink = function(cap, link) {\n  var href = link.href,\n      title = link.title ? escape(link.title) : null;\n\n  return cap[0].charAt(0) !== '!'\n    ? this.renderer.link(href, title, this.output(cap[1]))\n    : this.renderer.image(href, title, escape(cap[1]));\n};\n\n/**\n * Smartypants Transformations\n */\n\nInlineLexer.prototype.smartypants = function(text) {\n  if (!this.options.smartypants) return text;\n  return text\n    // em-dashes\n    .replace(/---/g, '\\u2014')\n    // en-dashes\n    .replace(/--/g, '\\u2013')\n    // opening singles\n    .replace(/(^|[-\\u2014/(\\[{\"\\s])'/g, '$1\\u2018')\n    // closing singles & apostrophes\n    .replace(/'/g, '\\u2019')\n    // opening doubles\n    .replace(/(^|[-\\u2014/(\\[{\\u2018\\s])\"/g, '$1\\u201c')\n    // closing doubles\n    .replace(/\"/g, '\\u201d')\n    // ellipses\n    .replace(/\\.{3}/g, '\\u2026');\n};\n\n/**\n * Mangle Links\n */\n\nInlineLexer.prototype.mangle = function(text) {\n  if (!this.options.mangle) return text;\n  var out = '',\n      l = text.length,\n      i = 0,\n      ch;\n\n  for (; i < l; i++) {\n    ch = text.charCodeAt(i);\n    if (Math.random() > 0.5) {\n      ch = 'x' + ch.toString(16);\n    }\n    out += '&#' + ch + ';';\n  }\n\n  return out;\n};\n\n/**\n * Renderer\n */\n\nfunction Renderer(options) {\n  this.options = options || marked.defaults;\n}\n\nRenderer.prototype.code = function(code, lang, escaped) {\n  if (this.options.highlight) {\n    var out = this.options.highlight(code, lang);\n    if (out != null && out !== code) {\n      escaped = true;\n      code = out;\n    }\n  }\n\n  if (!lang) {\n    return '<pre><code>'\n      + (escaped ? code : escape(code, true))\n      + '</code></pre>';\n  }\n\n  return '<pre><code class=\"'\n    + this.options.langPrefix\n    + escape(lang, true)\n    + '\">'\n    + (escaped ? code : escape(code, true))\n    + '</code></pre>\\n';\n};\n\nRenderer.prototype.blockquote = function(quote) {\n  return '<blockquote>\\n' + quote + '</blockquote>\\n';\n};\n\nRenderer.prototype.html = function(html) {\n  return html;\n};\n\nRenderer.prototype.heading = function(text, level, raw) {\n  if (this.options.headerIds) {\n    return '<h'\n      + level\n      + ' id=\"'\n      + this.options.headerPrefix\n      + raw.toLowerCase().replace(/[^\\w]+/g, '-')\n      + '\">'\n      + text\n      + '</h'\n      + level\n      + '>\\n';\n  }\n  // ignore IDs\n  return '<h' + level + '>' + text + '</h' + level + '>\\n';\n};\n\nRenderer.prototype.hr = function() {\n  return this.options.xhtml ? '<hr/>\\n' : '<hr>\\n';\n};\n\nRenderer.prototype.list = function(body, ordered, start) {\n  var type = ordered ? 'ol' : 'ul',\n      startatt = (ordered && start !== 1) ? (' start=\"' + start + '\"') : '';\n  return '<' + type + startatt + '>\\n' + body + '</' + type + '>\\n';\n};\n\nRenderer.prototype.listitem = function(text) {\n  return '<li>' + text + '</li>\\n';\n};\n\nRenderer.prototype.checkbox = function(checked) {\n  return '<input '\n    + (checked ? 'checked=\"\" ' : '')\n    + 'disabled=\"\" type=\"checkbox\"'\n    + (this.options.xhtml ? ' /' : '')\n    + '> ';\n}\n\nRenderer.prototype.paragraph = function(text) {\n  return '<p>' + text + '</p>\\n';\n};\n\nRenderer.prototype.table = function(header, body) {\n  if (body) body = '<tbody>' + body + '</tbody>';\n\n  return '<table>\\n'\n    + '<thead>\\n'\n    + header\n    + '</thead>\\n'\n    + body\n    + '</table>\\n';\n};\n\nRenderer.prototype.tablerow = function(content) {\n  return '<tr>\\n' + content + '</tr>\\n';\n};\n\nRenderer.prototype.tablecell = function(content, flags) {\n  var type = flags.header ? 'th' : 'td';\n  var tag = flags.align\n    ? '<' + type + ' align=\"' + flags.align + '\">'\n    : '<' + type + '>';\n  return tag + content + '</' + type + '>\\n';\n};\n\n// span level renderer\nRenderer.prototype.strong = function(text) {\n  return '<strong>' + text + '</strong>';\n};\n\nRenderer.prototype.em = function(text) {\n  return '<em>' + text + '</em>';\n};\n\nRenderer.prototype.codespan = function(text) {\n  return '<code>' + text + '</code>';\n};\n\nRenderer.prototype.br = function() {\n  return this.options.xhtml ? '<br/>' : '<br>';\n};\n\nRenderer.prototype.del = function(text) {\n  return '<del>' + text + '</del>';\n};\n\nRenderer.prototype.link = function(href, title, text) {\n  if (this.options.sanitize) {\n    try {\n      var prot = decodeURIComponent(unescape(href))\n        .replace(/[^\\w:]/g, '')\n        .toLowerCase();\n    } catch (e) {\n      return text;\n    }\n    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {\n      return text;\n    }\n  }\n  if (this.options.baseUrl && !originIndependentUrl.test(href)) {\n    href = resolveUrl(this.options.baseUrl, href);\n  }\n  try {\n    href = encodeURI(href).replace(/%25/g, '%');\n  } catch (e) {\n    return text;\n  }\n  var out = '<a href=\"' + escape(href) + '\"';\n  if (title) {\n    out += ' title=\"' + title + '\"';\n  }\n  out += '>' + text + '</a>';\n  return out;\n};\n\nRenderer.prototype.image = function(href, title, text) {\n  if (this.options.baseUrl && !originIndependentUrl.test(href)) {\n    href = resolveUrl(this.options.baseUrl, href);\n  }\n  var out = '<img src=\"' + href + '\" alt=\"' + text + '\"';\n  if (title) {\n    out += ' title=\"' + title + '\"';\n  }\n  out += this.options.xhtml ? '/>' : '>';\n  return out;\n};\n\nRenderer.prototype.text = function(text) {\n  return text;\n};\n\n/**\n * TextRenderer\n * returns only the textual part of the token\n */\n\nfunction TextRenderer() {}\n\n// no need for block level renderers\n\nTextRenderer.prototype.strong =\nTextRenderer.prototype.em =\nTextRenderer.prototype.codespan =\nTextRenderer.prototype.del =\nTextRenderer.prototype.text = function (text) {\n  return text;\n}\n\nTextRenderer.prototype.link =\nTextRenderer.prototype.image = function(href, title, text) {\n  return '' + text;\n}\n\nTextRenderer.prototype.br = function() {\n  return '';\n}\n\n/**\n * Parsing & Compiling\n */\n\nfunction Parser(options) {\n  this.tokens = [];\n  this.token = null;\n  this.options = options || marked.defaults;\n  this.options.renderer = this.options.renderer || new Renderer();\n  this.renderer = this.options.renderer;\n  this.renderer.options = this.options;\n}\n\n/**\n * Static Parse Method\n */\n\nParser.parse = function(src, options) {\n  var parser = new Parser(options);\n  return parser.parse(src);\n};\n\n/**\n * Parse Loop\n */\n\nParser.prototype.parse = function(src) {\n  this.inline = new InlineLexer(src.links, this.options);\n  // use an InlineLexer with a TextRenderer to extract pure text\n  this.inlineText = new InlineLexer(\n    src.links,\n    merge({}, this.options, {renderer: new TextRenderer()})\n  );\n  this.tokens = src.reverse();\n\n  var out = '';\n  while (this.next()) {\n    out += this.tok();\n  }\n\n  return out;\n};\n\n/**\n * Next Token\n */\n\nParser.prototype.next = function() {\n  return this.token = this.tokens.pop();\n};\n\n/**\n * Preview Next Token\n */\n\nParser.prototype.peek = function() {\n  return this.tokens[this.tokens.length - 1] || 0;\n};\n\n/**\n * Parse Text Tokens\n */\n\nParser.prototype.parseText = function() {\n  var body = this.token.text;\n\n  while (this.peek().type === 'text') {\n    body += '\\n' + this.next().text;\n  }\n\n  return this.inline.output(body);\n};\n\n/**\n * Parse Current Token\n */\n\nParser.prototype.tok = function() {\n  switch (this.token.type) {\n    case 'space': {\n      return '';\n    }\n    case 'hr': {\n      return this.renderer.hr();\n    }\n    case 'heading': {\n      return this.renderer.heading(\n        this.inline.output(this.token.text),\n        this.token.depth,\n        unescape(this.inlineText.output(this.token.text)));\n    }\n    case 'code': {\n      return this.renderer.code(this.token.text,\n        this.token.lang,\n        this.token.escaped);\n    }\n    case 'table': {\n      var header = '',\n          body = '',\n          i,\n          row,\n          cell,\n          j;\n\n      // header\n      cell = '';\n      for (i = 0; i < this.token.header.length; i++) {\n        cell += this.renderer.tablecell(\n          this.inline.output(this.token.header[i]),\n          { header: true, align: this.token.align[i] }\n        );\n      }\n      header += this.renderer.tablerow(cell);\n\n      for (i = 0; i < this.token.cells.length; i++) {\n        row = this.token.cells[i];\n\n        cell = '';\n        for (j = 0; j < row.length; j++) {\n          cell += this.renderer.tablecell(\n            this.inline.output(row[j]),\n            { header: false, align: this.token.align[j] }\n          );\n        }\n\n        body += this.renderer.tablerow(cell);\n      }\n      return this.renderer.table(header, body);\n    }\n    case 'blockquote_start': {\n      body = '';\n\n      while (this.next().type !== 'blockquote_end') {\n        body += this.tok();\n      }\n\n      return this.renderer.blockquote(body);\n    }\n    case 'list_start': {\n      body = '';\n      var ordered = this.token.ordered,\n          start = this.token.start;\n\n      while (this.next().type !== 'list_end') {\n        body += this.tok();\n      }\n\n      return this.renderer.list(body, ordered, start);\n    }\n    case 'list_item_start': {\n      body = '';\n      var loose = this.token.loose;\n\n      if (this.token.task) {\n        body += this.renderer.checkbox(this.token.checked);\n      }\n\n      while (this.next().type !== 'list_item_end') {\n        body += !loose && this.token.type === 'text'\n          ? this.parseText()\n          : this.tok();\n      }\n\n      return this.renderer.listitem(body);\n    }\n    case 'html': {\n      // TODO parse inline content if parameter markdown=1\n      return this.renderer.html(this.token.text);\n    }\n    case 'paragraph': {\n      return this.renderer.paragraph(this.inline.output(this.token.text));\n    }\n    case 'text': {\n      return this.renderer.paragraph(this.parseText());\n    }\n  }\n};\n\n/**\n * Helpers\n */\n\nfunction escape(html, encode) {\n  if (encode) {\n    if (escape.escapeTest.test(html)) {\n      return html.replace(escape.escapeReplace, function (ch) { return escape.replacements[ch] });\n    }\n  } else {\n    if (escape.escapeTestNoEncode.test(html)) {\n      return html.replace(escape.escapeReplaceNoEncode, function (ch) { return escape.replacements[ch] });\n    }\n  }\n\n  return html;\n}\n\nescape.escapeTest = /[&<>\"']/;\nescape.escapeReplace = /[&<>\"']/g;\nescape.replacements = {\n  '&': '&amp;',\n  '<': '&lt;',\n  '>': '&gt;',\n  '\"': '&quot;',\n  \"'\": '&#39;'\n};\n\nescape.escapeTestNoEncode = /[<>\"']|&(?!#?\\w+;)/;\nescape.escapeReplaceNoEncode = /[<>\"']|&(?!#?\\w+;)/g;\n\nfunction unescape(html) {\n  // explicitly match decimal, hex, and named HTML entities\n  return html.replace(/&(#(?:\\d+)|(?:#x[0-9A-Fa-f]+)|(?:\\w+));?/ig, function(_, n) {\n    n = n.toLowerCase();\n    if (n === 'colon') return ':';\n    if (n.charAt(0) === '#') {\n      return n.charAt(1) === 'x'\n        ? String.fromCharCode(parseInt(n.substring(2), 16))\n        : String.fromCharCode(+n.substring(1));\n    }\n    return '';\n  });\n}\n\nfunction edit(regex, opt) {\n  regex = regex.source || regex;\n  opt = opt || '';\n  return {\n    replace: function(name, val) {\n      val = val.source || val;\n      val = val.replace(/(^|[^\\[])\\^/g, '$1');\n      regex = regex.replace(name, val);\n      return this;\n    },\n    getRegex: function() {\n      return new RegExp(regex, opt);\n    }\n  };\n}\n\nfunction resolveUrl(base, href) {\n  if (!baseUrls[' ' + base]) {\n    // we can ignore everything in base after the last slash of its path component,\n    // but we might need to add _that_\n    // https://tools.ietf.org/html/rfc3986#section-3\n    if (/^[^:]+:\\/*[^/]*$/.test(base)) {\n      baseUrls[' ' + base] = base + '/';\n    } else {\n      baseUrls[' ' + base] = rtrim(base, '/', true);\n    }\n  }\n  base = baseUrls[' ' + base];\n\n  if (href.slice(0, 2) === '//') {\n    return base.replace(/:[\\s\\S]*/, ':') + href;\n  } else if (href.charAt(0) === '/') {\n    return base.replace(/(:\\/*[^/]*)[\\s\\S]*/, '$1') + href;\n  } else {\n    return base + href;\n  }\n}\nvar baseUrls = {};\nvar originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;\n\nfunction noop() {}\nnoop.exec = noop;\n\nfunction merge(obj) {\n  var i = 1,\n      target,\n      key;\n\n  for (; i < arguments.length; i++) {\n    target = arguments[i];\n    for (key in target) {\n      if (Object.prototype.hasOwnProperty.call(target, key)) {\n        obj[key] = target[key];\n      }\n    }\n  }\n\n  return obj;\n}\n\nfunction splitCells(tableRow, count) {\n  // ensure that every cell-delimiting pipe has a space\n  // before it to distinguish it from an escaped pipe\n  var row = tableRow.replace(/\\|/g, function (match, offset, str) {\n        var escaped = false,\n            curr = offset;\n        while (--curr >= 0 && str[curr] === '\\\\') escaped = !escaped;\n        if (escaped) {\n          // odd number of slashes means | is escaped\n          // so we leave it alone\n          return '|';\n        } else {\n          // add space before unescaped |\n          return ' |';\n        }\n      }),\n      cells = row.split(/ \\|/),\n      i = 0;\n\n  if (cells.length > count) {\n    cells.splice(count);\n  } else {\n    while (cells.length < count) cells.push('');\n  }\n\n  for (; i < cells.length; i++) {\n    // leading or trailing whitespace is ignored per the gfm spec\n    cells[i] = cells[i].trim().replace(/\\\\\\|/g, '|');\n  }\n  return cells;\n}\n\n// Remove trailing 'c's. Equivalent to str.replace(/c*$/, '').\n// /c*$/ is vulnerable to REDOS.\n// invert: Remove suffix of non-c chars instead. Default falsey.\nfunction rtrim(str, c, invert) {\n  if (str.length === 0) {\n    return '';\n  }\n\n  // Length of suffix matching the invert condition.\n  var suffLen = 0;\n\n  // Step left until we fail to match the invert condition.\n  while (suffLen < str.length) {\n    var currChar = str.charAt(str.length - suffLen - 1);\n    if (currChar === c && !invert) {\n      suffLen++;\n    } else if (currChar !== c && invert) {\n      suffLen++;\n    } else {\n      break;\n    }\n  }\n\n  return str.substr(0, str.length - suffLen);\n}\n\n/**\n * Marked\n */\n\nfunction marked(src, opt, callback) {\n  // throw error in case of non string input\n  if (typeof src === 'undefined' || src === null) {\n    throw new Error('marked(): input parameter is undefined or null');\n  }\n  if (typeof src !== 'string') {\n    throw new Error('marked(): input parameter is of type '\n      + Object.prototype.toString.call(src) + ', string expected');\n  }\n\n  if (callback || typeof opt === 'function') {\n    if (!callback) {\n      callback = opt;\n      opt = null;\n    }\n\n    opt = merge({}, marked.defaults, opt || {});\n\n    var highlight = opt.highlight,\n        tokens,\n        pending,\n        i = 0;\n\n    try {\n      tokens = Lexer.lex(src, opt)\n    } catch (e) {\n      return callback(e);\n    }\n\n    pending = tokens.length;\n\n    var done = function(err) {\n      if (err) {\n        opt.highlight = highlight;\n        return callback(err);\n      }\n\n      var out;\n\n      try {\n        out = Parser.parse(tokens, opt);\n      } catch (e) {\n        err = e;\n      }\n\n      opt.highlight = highlight;\n\n      return err\n        ? callback(err)\n        : callback(null, out);\n    };\n\n    if (!highlight || highlight.length < 3) {\n      return done();\n    }\n\n    delete opt.highlight;\n\n    if (!pending) return done();\n\n    for (; i < tokens.length; i++) {\n      (function(token) {\n        if (token.type !== 'code') {\n          return --pending || done();\n        }\n        return highlight(token.text, token.lang, function(err, code) {\n          if (err) return done(err);\n          if (code == null || code === token.text) {\n            return --pending || done();\n          }\n          token.text = code;\n          token.escaped = true;\n          --pending || done();\n        });\n      })(tokens[i]);\n    }\n\n    return;\n  }\n  try {\n    if (opt) opt = merge({}, marked.defaults, opt);\n    return Parser.parse(Lexer.lex(src, opt), opt);\n  } catch (e) {\n    e.message += '\\nPlease report this to https://github.com/markedjs/marked.';\n    if ((opt || marked.defaults).silent) {\n      return '<p>An error occurred:</p><pre>'\n        + escape(e.message + '', true)\n        + '</pre>';\n    }\n    throw e;\n  }\n}\n\n/**\n * Options\n */\n\nmarked.options =\nmarked.setOptions = function(opt) {\n  merge(marked.defaults, opt);\n  return marked;\n};\n\nmarked.getDefaults = function () {\n  return {\n    baseUrl: null,\n    breaks: false,\n    gfm: true,\n    headerIds: true,\n    headerPrefix: '',\n    highlight: null,\n    langPrefix: 'language-',\n    mangle: true,\n    pedantic: false,\n    renderer: new Renderer(),\n    sanitize: false,\n    sanitizer: null,\n    silent: false,\n    smartLists: false,\n    smartypants: false,\n    tables: true,\n    xhtml: false\n  };\n}\n\nmarked.defaults = marked.getDefaults();\n\n/**\n * Expose\n */\n\nmarked.Parser = Parser;\nmarked.parser = Parser.parse;\n\nmarked.Renderer = Renderer;\nmarked.TextRenderer = TextRenderer;\n\nmarked.Lexer = Lexer;\nmarked.lexer = Lexer.lex;\n\nmarked.InlineLexer = InlineLexer;\nmarked.inlineLexer = InlineLexer.output;\n\nmarked.parse = marked;\n\nif (true) {\n  module.exports = marked;\n} else {}\n})(this || (typeof window !== 'undefined' ? window : global));\n\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ \"./node_modules/webpack/buildin/global.js\")))\n\n//# sourceURL=webpack:///./node_modules/marked/lib/marked.js?");
-
-/***/ }),
-
-/***/ "./node_modules/preact/dist/preact.mjs":
-/*!*********************************************!*\
-  !*** ./node_modules/preact/dist/preact.mjs ***!
-  \*********************************************/
-/*! exports provided: default, h, createElement, cloneElement, Component, render, rerender, options */
+/* 1 */
 /***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"h\", function() { return h; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"createElement\", function() { return h; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"cloneElement\", function() { return cloneElement; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Component\", function() { return Component; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"render\", function() { return render; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"rerender\", function() { return rerender; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"options\", function() { return options; });\nvar VNode = function VNode() {};\n\nvar options = {};\n\nvar stack = [];\n\nvar EMPTY_CHILDREN = [];\n\nfunction h(nodeName, attributes) {\n\tvar children = EMPTY_CHILDREN,\n\t    lastSimple,\n\t    child,\n\t    simple,\n\t    i;\n\tfor (i = arguments.length; i-- > 2;) {\n\t\tstack.push(arguments[i]);\n\t}\n\tif (attributes && attributes.children != null) {\n\t\tif (!stack.length) stack.push(attributes.children);\n\t\tdelete attributes.children;\n\t}\n\twhile (stack.length) {\n\t\tif ((child = stack.pop()) && child.pop !== undefined) {\n\t\t\tfor (i = child.length; i--;) {\n\t\t\t\tstack.push(child[i]);\n\t\t\t}\n\t\t} else {\n\t\t\tif (typeof child === 'boolean') child = null;\n\n\t\t\tif (simple = typeof nodeName !== 'function') {\n\t\t\t\tif (child == null) child = '';else if (typeof child === 'number') child = String(child);else if (typeof child !== 'string') simple = false;\n\t\t\t}\n\n\t\t\tif (simple && lastSimple) {\n\t\t\t\tchildren[children.length - 1] += child;\n\t\t\t} else if (children === EMPTY_CHILDREN) {\n\t\t\t\tchildren = [child];\n\t\t\t} else {\n\t\t\t\tchildren.push(child);\n\t\t\t}\n\n\t\t\tlastSimple = simple;\n\t\t}\n\t}\n\n\tvar p = new VNode();\n\tp.nodeName = nodeName;\n\tp.children = children;\n\tp.attributes = attributes == null ? undefined : attributes;\n\tp.key = attributes == null ? undefined : attributes.key;\n\n\tif (options.vnode !== undefined) options.vnode(p);\n\n\treturn p;\n}\n\nfunction extend(obj, props) {\n  for (var i in props) {\n    obj[i] = props[i];\n  }return obj;\n}\n\nvar defer = typeof Promise == 'function' ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;\n\nfunction cloneElement(vnode, props) {\n  return h(vnode.nodeName, extend(extend({}, vnode.attributes), props), arguments.length > 2 ? [].slice.call(arguments, 2) : vnode.children);\n}\n\nvar IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;\n\nvar items = [];\n\nfunction enqueueRender(component) {\n\tif (!component._dirty && (component._dirty = true) && items.push(component) == 1) {\n\t\t(options.debounceRendering || defer)(rerender);\n\t}\n}\n\nfunction rerender() {\n\tvar p,\n\t    list = items;\n\titems = [];\n\twhile (p = list.pop()) {\n\t\tif (p._dirty) renderComponent(p);\n\t}\n}\n\nfunction isSameNodeType(node, vnode, hydrating) {\n\tif (typeof vnode === 'string' || typeof vnode === 'number') {\n\t\treturn node.splitText !== undefined;\n\t}\n\tif (typeof vnode.nodeName === 'string') {\n\t\treturn !node._componentConstructor && isNamedNode(node, vnode.nodeName);\n\t}\n\treturn hydrating || node._componentConstructor === vnode.nodeName;\n}\n\nfunction isNamedNode(node, nodeName) {\n\treturn node.normalizedNodeName === nodeName || node.nodeName.toLowerCase() === nodeName.toLowerCase();\n}\n\nfunction getNodeProps(vnode) {\n\tvar props = extend({}, vnode.attributes);\n\tprops.children = vnode.children;\n\n\tvar defaultProps = vnode.nodeName.defaultProps;\n\tif (defaultProps !== undefined) {\n\t\tfor (var i in defaultProps) {\n\t\t\tif (props[i] === undefined) {\n\t\t\t\tprops[i] = defaultProps[i];\n\t\t\t}\n\t\t}\n\t}\n\n\treturn props;\n}\n\nfunction createNode(nodeName, isSvg) {\n\tvar node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);\n\tnode.normalizedNodeName = nodeName;\n\treturn node;\n}\n\nfunction removeNode(node) {\n\tvar parentNode = node.parentNode;\n\tif (parentNode) parentNode.removeChild(node);\n}\n\nfunction setAccessor(node, name, old, value, isSvg) {\n\tif (name === 'className') name = 'class';\n\n\tif (name === 'key') {} else if (name === 'ref') {\n\t\tif (old) old(null);\n\t\tif (value) value(node);\n\t} else if (name === 'class' && !isSvg) {\n\t\tnode.className = value || '';\n\t} else if (name === 'style') {\n\t\tif (!value || typeof value === 'string' || typeof old === 'string') {\n\t\t\tnode.style.cssText = value || '';\n\t\t}\n\t\tif (value && typeof value === 'object') {\n\t\t\tif (typeof old !== 'string') {\n\t\t\t\tfor (var i in old) {\n\t\t\t\t\tif (!(i in value)) node.style[i] = '';\n\t\t\t\t}\n\t\t\t}\n\t\t\tfor (var i in value) {\n\t\t\t\tnode.style[i] = typeof value[i] === 'number' && IS_NON_DIMENSIONAL.test(i) === false ? value[i] + 'px' : value[i];\n\t\t\t}\n\t\t}\n\t} else if (name === 'dangerouslySetInnerHTML') {\n\t\tif (value) node.innerHTML = value.__html || '';\n\t} else if (name[0] == 'o' && name[1] == 'n') {\n\t\tvar useCapture = name !== (name = name.replace(/Capture$/, ''));\n\t\tname = name.toLowerCase().substring(2);\n\t\tif (value) {\n\t\t\tif (!old) node.addEventListener(name, eventProxy, useCapture);\n\t\t} else {\n\t\t\tnode.removeEventListener(name, eventProxy, useCapture);\n\t\t}\n\t\t(node._listeners || (node._listeners = {}))[name] = value;\n\t} else if (name !== 'list' && name !== 'type' && !isSvg && name in node) {\n\t\ttry {\n\t\t\tnode[name] = value == null ? '' : value;\n\t\t} catch (e) {}\n\t\tif ((value == null || value === false) && name != 'spellcheck') node.removeAttribute(name);\n\t} else {\n\t\tvar ns = isSvg && name !== (name = name.replace(/^xlink:?/, ''));\n\n\t\tif (value == null || value === false) {\n\t\t\tif (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase());else node.removeAttribute(name);\n\t\t} else if (typeof value !== 'function') {\n\t\t\tif (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value);else node.setAttribute(name, value);\n\t\t}\n\t}\n}\n\nfunction eventProxy(e) {\n\treturn this._listeners[e.type](options.event && options.event(e) || e);\n}\n\nvar mounts = [];\n\nvar diffLevel = 0;\n\nvar isSvgMode = false;\n\nvar hydrating = false;\n\nfunction flushMounts() {\n\tvar c;\n\twhile (c = mounts.pop()) {\n\t\tif (options.afterMount) options.afterMount(c);\n\t\tif (c.componentDidMount) c.componentDidMount();\n\t}\n}\n\nfunction diff(dom, vnode, context, mountAll, parent, componentRoot) {\n\tif (!diffLevel++) {\n\t\tisSvgMode = parent != null && parent.ownerSVGElement !== undefined;\n\n\t\thydrating = dom != null && !('__preactattr_' in dom);\n\t}\n\n\tvar ret = idiff(dom, vnode, context, mountAll, componentRoot);\n\n\tif (parent && ret.parentNode !== parent) parent.appendChild(ret);\n\n\tif (! --diffLevel) {\n\t\thydrating = false;\n\n\t\tif (!componentRoot) flushMounts();\n\t}\n\n\treturn ret;\n}\n\nfunction idiff(dom, vnode, context, mountAll, componentRoot) {\n\tvar out = dom,\n\t    prevSvgMode = isSvgMode;\n\n\tif (vnode == null || typeof vnode === 'boolean') vnode = '';\n\n\tif (typeof vnode === 'string' || typeof vnode === 'number') {\n\t\tif (dom && dom.splitText !== undefined && dom.parentNode && (!dom._component || componentRoot)) {\n\t\t\tif (dom.nodeValue != vnode) {\n\t\t\t\tdom.nodeValue = vnode;\n\t\t\t}\n\t\t} else {\n\t\t\tout = document.createTextNode(vnode);\n\t\t\tif (dom) {\n\t\t\t\tif (dom.parentNode) dom.parentNode.replaceChild(out, dom);\n\t\t\t\trecollectNodeTree(dom, true);\n\t\t\t}\n\t\t}\n\n\t\tout['__preactattr_'] = true;\n\n\t\treturn out;\n\t}\n\n\tvar vnodeName = vnode.nodeName;\n\tif (typeof vnodeName === 'function') {\n\t\treturn buildComponentFromVNode(dom, vnode, context, mountAll);\n\t}\n\n\tisSvgMode = vnodeName === 'svg' ? true : vnodeName === 'foreignObject' ? false : isSvgMode;\n\n\tvnodeName = String(vnodeName);\n\tif (!dom || !isNamedNode(dom, vnodeName)) {\n\t\tout = createNode(vnodeName, isSvgMode);\n\n\t\tif (dom) {\n\t\t\twhile (dom.firstChild) {\n\t\t\t\tout.appendChild(dom.firstChild);\n\t\t\t}\n\t\t\tif (dom.parentNode) dom.parentNode.replaceChild(out, dom);\n\n\t\t\trecollectNodeTree(dom, true);\n\t\t}\n\t}\n\n\tvar fc = out.firstChild,\n\t    props = out['__preactattr_'],\n\t    vchildren = vnode.children;\n\n\tif (props == null) {\n\t\tprops = out['__preactattr_'] = {};\n\t\tfor (var a = out.attributes, i = a.length; i--;) {\n\t\t\tprops[a[i].name] = a[i].value;\n\t\t}\n\t}\n\n\tif (!hydrating && vchildren && vchildren.length === 1 && typeof vchildren[0] === 'string' && fc != null && fc.splitText !== undefined && fc.nextSibling == null) {\n\t\tif (fc.nodeValue != vchildren[0]) {\n\t\t\tfc.nodeValue = vchildren[0];\n\t\t}\n\t} else if (vchildren && vchildren.length || fc != null) {\n\t\t\tinnerDiffNode(out, vchildren, context, mountAll, hydrating || props.dangerouslySetInnerHTML != null);\n\t\t}\n\n\tdiffAttributes(out, vnode.attributes, props);\n\n\tisSvgMode = prevSvgMode;\n\n\treturn out;\n}\n\nfunction innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {\n\tvar originalChildren = dom.childNodes,\n\t    children = [],\n\t    keyed = {},\n\t    keyedLen = 0,\n\t    min = 0,\n\t    len = originalChildren.length,\n\t    childrenLen = 0,\n\t    vlen = vchildren ? vchildren.length : 0,\n\t    j,\n\t    c,\n\t    f,\n\t    vchild,\n\t    child;\n\n\tif (len !== 0) {\n\t\tfor (var i = 0; i < len; i++) {\n\t\t\tvar _child = originalChildren[i],\n\t\t\t    props = _child['__preactattr_'],\n\t\t\t    key = vlen && props ? _child._component ? _child._component.__key : props.key : null;\n\t\t\tif (key != null) {\n\t\t\t\tkeyedLen++;\n\t\t\t\tkeyed[key] = _child;\n\t\t\t} else if (props || (_child.splitText !== undefined ? isHydrating ? _child.nodeValue.trim() : true : isHydrating)) {\n\t\t\t\tchildren[childrenLen++] = _child;\n\t\t\t}\n\t\t}\n\t}\n\n\tif (vlen !== 0) {\n\t\tfor (var i = 0; i < vlen; i++) {\n\t\t\tvchild = vchildren[i];\n\t\t\tchild = null;\n\n\t\t\tvar key = vchild.key;\n\t\t\tif (key != null) {\n\t\t\t\tif (keyedLen && keyed[key] !== undefined) {\n\t\t\t\t\tchild = keyed[key];\n\t\t\t\t\tkeyed[key] = undefined;\n\t\t\t\t\tkeyedLen--;\n\t\t\t\t}\n\t\t\t} else if (min < childrenLen) {\n\t\t\t\t\tfor (j = min; j < childrenLen; j++) {\n\t\t\t\t\t\tif (children[j] !== undefined && isSameNodeType(c = children[j], vchild, isHydrating)) {\n\t\t\t\t\t\t\tchild = c;\n\t\t\t\t\t\t\tchildren[j] = undefined;\n\t\t\t\t\t\t\tif (j === childrenLen - 1) childrenLen--;\n\t\t\t\t\t\t\tif (j === min) min++;\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\tchild = idiff(child, vchild, context, mountAll);\n\n\t\t\tf = originalChildren[i];\n\t\t\tif (child && child !== dom && child !== f) {\n\t\t\t\tif (f == null) {\n\t\t\t\t\tdom.appendChild(child);\n\t\t\t\t} else if (child === f.nextSibling) {\n\t\t\t\t\tremoveNode(f);\n\t\t\t\t} else {\n\t\t\t\t\tdom.insertBefore(child, f);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\n\tif (keyedLen) {\n\t\tfor (var i in keyed) {\n\t\t\tif (keyed[i] !== undefined) recollectNodeTree(keyed[i], false);\n\t\t}\n\t}\n\n\twhile (min <= childrenLen) {\n\t\tif ((child = children[childrenLen--]) !== undefined) recollectNodeTree(child, false);\n\t}\n}\n\nfunction recollectNodeTree(node, unmountOnly) {\n\tvar component = node._component;\n\tif (component) {\n\t\tunmountComponent(component);\n\t} else {\n\t\tif (node['__preactattr_'] != null && node['__preactattr_'].ref) node['__preactattr_'].ref(null);\n\n\t\tif (unmountOnly === false || node['__preactattr_'] == null) {\n\t\t\tremoveNode(node);\n\t\t}\n\n\t\tremoveChildren(node);\n\t}\n}\n\nfunction removeChildren(node) {\n\tnode = node.lastChild;\n\twhile (node) {\n\t\tvar next = node.previousSibling;\n\t\trecollectNodeTree(node, true);\n\t\tnode = next;\n\t}\n}\n\nfunction diffAttributes(dom, attrs, old) {\n\tvar name;\n\n\tfor (name in old) {\n\t\tif (!(attrs && attrs[name] != null) && old[name] != null) {\n\t\t\tsetAccessor(dom, name, old[name], old[name] = undefined, isSvgMode);\n\t\t}\n\t}\n\n\tfor (name in attrs) {\n\t\tif (name !== 'children' && name !== 'innerHTML' && (!(name in old) || attrs[name] !== (name === 'value' || name === 'checked' ? dom[name] : old[name]))) {\n\t\t\tsetAccessor(dom, name, old[name], old[name] = attrs[name], isSvgMode);\n\t\t}\n\t}\n}\n\nvar recyclerComponents = [];\n\nfunction createComponent(Ctor, props, context) {\n\tvar inst,\n\t    i = recyclerComponents.length;\n\n\tif (Ctor.prototype && Ctor.prototype.render) {\n\t\tinst = new Ctor(props, context);\n\t\tComponent.call(inst, props, context);\n\t} else {\n\t\tinst = new Component(props, context);\n\t\tinst.constructor = Ctor;\n\t\tinst.render = doRender;\n\t}\n\n\twhile (i--) {\n\t\tif (recyclerComponents[i].constructor === Ctor) {\n\t\t\tinst.nextBase = recyclerComponents[i].nextBase;\n\t\t\trecyclerComponents.splice(i, 1);\n\t\t\treturn inst;\n\t\t}\n\t}\n\n\treturn inst;\n}\n\nfunction doRender(props, state, context) {\n\treturn this.constructor(props, context);\n}\n\nfunction setComponentProps(component, props, renderMode, context, mountAll) {\n\tif (component._disable) return;\n\tcomponent._disable = true;\n\n\tcomponent.__ref = props.ref;\n\tcomponent.__key = props.key;\n\tdelete props.ref;\n\tdelete props.key;\n\n\tif (typeof component.constructor.getDerivedStateFromProps === 'undefined') {\n\t\tif (!component.base || mountAll) {\n\t\t\tif (component.componentWillMount) component.componentWillMount();\n\t\t} else if (component.componentWillReceiveProps) {\n\t\t\tcomponent.componentWillReceiveProps(props, context);\n\t\t}\n\t}\n\n\tif (context && context !== component.context) {\n\t\tif (!component.prevContext) component.prevContext = component.context;\n\t\tcomponent.context = context;\n\t}\n\n\tif (!component.prevProps) component.prevProps = component.props;\n\tcomponent.props = props;\n\n\tcomponent._disable = false;\n\n\tif (renderMode !== 0) {\n\t\tif (renderMode === 1 || options.syncComponentUpdates !== false || !component.base) {\n\t\t\trenderComponent(component, 1, mountAll);\n\t\t} else {\n\t\t\tenqueueRender(component);\n\t\t}\n\t}\n\n\tif (component.__ref) component.__ref(component);\n}\n\nfunction renderComponent(component, renderMode, mountAll, isChild) {\n\tif (component._disable) return;\n\n\tvar props = component.props,\n\t    state = component.state,\n\t    context = component.context,\n\t    previousProps = component.prevProps || props,\n\t    previousState = component.prevState || state,\n\t    previousContext = component.prevContext || context,\n\t    isUpdate = component.base,\n\t    nextBase = component.nextBase,\n\t    initialBase = isUpdate || nextBase,\n\t    initialChildComponent = component._component,\n\t    skip = false,\n\t    snapshot = previousContext,\n\t    rendered,\n\t    inst,\n\t    cbase;\n\n\tif (component.constructor.getDerivedStateFromProps) {\n\t\tstate = extend(extend({}, state), component.constructor.getDerivedStateFromProps(props, state));\n\t\tcomponent.state = state;\n\t}\n\n\tif (isUpdate) {\n\t\tcomponent.props = previousProps;\n\t\tcomponent.state = previousState;\n\t\tcomponent.context = previousContext;\n\t\tif (renderMode !== 2 && component.shouldComponentUpdate && component.shouldComponentUpdate(props, state, context) === false) {\n\t\t\tskip = true;\n\t\t} else if (component.componentWillUpdate) {\n\t\t\tcomponent.componentWillUpdate(props, state, context);\n\t\t}\n\t\tcomponent.props = props;\n\t\tcomponent.state = state;\n\t\tcomponent.context = context;\n\t}\n\n\tcomponent.prevProps = component.prevState = component.prevContext = component.nextBase = null;\n\tcomponent._dirty = false;\n\n\tif (!skip) {\n\t\trendered = component.render(props, state, context);\n\n\t\tif (component.getChildContext) {\n\t\t\tcontext = extend(extend({}, context), component.getChildContext());\n\t\t}\n\n\t\tif (isUpdate && component.getSnapshotBeforeUpdate) {\n\t\t\tsnapshot = component.getSnapshotBeforeUpdate(previousProps, previousState);\n\t\t}\n\n\t\tvar childComponent = rendered && rendered.nodeName,\n\t\t    toUnmount,\n\t\t    base;\n\n\t\tif (typeof childComponent === 'function') {\n\n\t\t\tvar childProps = getNodeProps(rendered);\n\t\t\tinst = initialChildComponent;\n\n\t\t\tif (inst && inst.constructor === childComponent && childProps.key == inst.__key) {\n\t\t\t\tsetComponentProps(inst, childProps, 1, context, false);\n\t\t\t} else {\n\t\t\t\ttoUnmount = inst;\n\n\t\t\t\tcomponent._component = inst = createComponent(childComponent, childProps, context);\n\t\t\t\tinst.nextBase = inst.nextBase || nextBase;\n\t\t\t\tinst._parentComponent = component;\n\t\t\t\tsetComponentProps(inst, childProps, 0, context, false);\n\t\t\t\trenderComponent(inst, 1, mountAll, true);\n\t\t\t}\n\n\t\t\tbase = inst.base;\n\t\t} else {\n\t\t\tcbase = initialBase;\n\n\t\t\ttoUnmount = initialChildComponent;\n\t\t\tif (toUnmount) {\n\t\t\t\tcbase = component._component = null;\n\t\t\t}\n\n\t\t\tif (initialBase || renderMode === 1) {\n\t\t\t\tif (cbase) cbase._component = null;\n\t\t\t\tbase = diff(cbase, rendered, context, mountAll || !isUpdate, initialBase && initialBase.parentNode, true);\n\t\t\t}\n\t\t}\n\n\t\tif (initialBase && base !== initialBase && inst !== initialChildComponent) {\n\t\t\tvar baseParent = initialBase.parentNode;\n\t\t\tif (baseParent && base !== baseParent) {\n\t\t\t\tbaseParent.replaceChild(base, initialBase);\n\n\t\t\t\tif (!toUnmount) {\n\t\t\t\t\tinitialBase._component = null;\n\t\t\t\t\trecollectNodeTree(initialBase, false);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\tif (toUnmount) {\n\t\t\tunmountComponent(toUnmount);\n\t\t}\n\n\t\tcomponent.base = base;\n\t\tif (base && !isChild) {\n\t\t\tvar componentRef = component,\n\t\t\t    t = component;\n\t\t\twhile (t = t._parentComponent) {\n\t\t\t\t(componentRef = t).base = base;\n\t\t\t}\n\t\t\tbase._component = componentRef;\n\t\t\tbase._componentConstructor = componentRef.constructor;\n\t\t}\n\t}\n\n\tif (!isUpdate || mountAll) {\n\t\tmounts.unshift(component);\n\t} else if (!skip) {\n\n\t\tif (component.componentDidUpdate) {\n\t\t\tcomponent.componentDidUpdate(previousProps, previousState, snapshot);\n\t\t}\n\t\tif (options.afterUpdate) options.afterUpdate(component);\n\t}\n\n\twhile (component._renderCallbacks.length) {\n\t\tcomponent._renderCallbacks.pop().call(component);\n\t}if (!diffLevel && !isChild) flushMounts();\n}\n\nfunction buildComponentFromVNode(dom, vnode, context, mountAll) {\n\tvar c = dom && dom._component,\n\t    originalComponent = c,\n\t    oldDom = dom,\n\t    isDirectOwner = c && dom._componentConstructor === vnode.nodeName,\n\t    isOwner = isDirectOwner,\n\t    props = getNodeProps(vnode);\n\twhile (c && !isOwner && (c = c._parentComponent)) {\n\t\tisOwner = c.constructor === vnode.nodeName;\n\t}\n\n\tif (c && isOwner && (!mountAll || c._component)) {\n\t\tsetComponentProps(c, props, 3, context, mountAll);\n\t\tdom = c.base;\n\t} else {\n\t\tif (originalComponent && !isDirectOwner) {\n\t\t\tunmountComponent(originalComponent);\n\t\t\tdom = oldDom = null;\n\t\t}\n\n\t\tc = createComponent(vnode.nodeName, props, context);\n\t\tif (dom && !c.nextBase) {\n\t\t\tc.nextBase = dom;\n\n\t\t\toldDom = null;\n\t\t}\n\t\tsetComponentProps(c, props, 1, context, mountAll);\n\t\tdom = c.base;\n\n\t\tif (oldDom && dom !== oldDom) {\n\t\t\toldDom._component = null;\n\t\t\trecollectNodeTree(oldDom, false);\n\t\t}\n\t}\n\n\treturn dom;\n}\n\nfunction unmountComponent(component) {\n\tif (options.beforeUnmount) options.beforeUnmount(component);\n\n\tvar base = component.base;\n\n\tcomponent._disable = true;\n\n\tif (component.componentWillUnmount) component.componentWillUnmount();\n\n\tcomponent.base = null;\n\n\tvar inner = component._component;\n\tif (inner) {\n\t\tunmountComponent(inner);\n\t} else if (base) {\n\t\tif (base['__preactattr_'] && base['__preactattr_'].ref) base['__preactattr_'].ref(null);\n\n\t\tcomponent.nextBase = base;\n\n\t\tremoveNode(base);\n\t\trecyclerComponents.push(component);\n\n\t\tremoveChildren(base);\n\t}\n\n\tif (component.__ref) component.__ref(null);\n}\n\nfunction Component(props, context) {\n\tthis._dirty = true;\n\n\tthis.context = context;\n\n\tthis.props = props;\n\n\tthis.state = this.state || {};\n\n\tthis._renderCallbacks = [];\n}\n\nextend(Component.prototype, {\n\tsetState: function setState(state, callback) {\n\t\tif (!this.prevState) this.prevState = this.state;\n\t\tthis.state = extend(extend({}, this.state), typeof state === 'function' ? state(this.state, this.props) : state);\n\t\tif (callback) this._renderCallbacks.push(callback);\n\t\tenqueueRender(this);\n\t},\n\tforceUpdate: function forceUpdate(callback) {\n\t\tif (callback) this._renderCallbacks.push(callback);\n\t\trenderComponent(this, 2);\n\t},\n\trender: function render() {}\n});\n\nfunction render(vnode, parent, merge) {\n  return diff(merge, vnode, {}, false, parent, false);\n}\n\nvar preact = {\n\th: h,\n\tcreateElement: h,\n\tcloneElement: cloneElement,\n\tComponent: Component,\n\trender: render,\n\trerender: rerender,\n\toptions: options\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (preact);\n\n//# sourceMappingURL=preact.mjs.map\n\n\n//# sourceURL=webpack:///./node_modules/preact/dist/preact.mjs?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (function(e,n){return n=n||{},new Promise(function(t,r){var s=new XMLHttpRequest;for(var o in s.open(n.method||"get",e,!0),n.headers)s.setRequestHeader(o,n.headers[o]);function u(){var e,n=[],t=[],r={};return s.getAllResponseHeaders().replace(/^(.*?):[^\S\n]*([\s\S]*?)$/gm,function(s,o,u){n.push(o=o.toLowerCase()),t.push([o,u]),r[o]=(e=r[o])?e+","+u:u}),{ok:2==(s.status/100|0),status:s.status,statusText:s.statusText,url:s.responseURL,clone:u,text:function(){return Promise.resolve(s.responseText)},json:function(){return Promise.resolve(s.responseText).then(JSON.parse)},blob:function(){return Promise.resolve(new Blob([s.response]))},headers:{keys:function(){return n},entries:function(){return t},get:function(e){return r[e.toLowerCase()]},has:function(e){return e.toLowerCase()in r}}}}s.withCredentials="include"==n.credentials,s.onload=function(){t(u())},s.onerror=r,s.send(n.body||null)})});;
+//# sourceMappingURL=unfetch.mjs.map
+
 
 /***/ }),
-
-/***/ "./node_modules/unfetch/dist/unfetch.mjs":
-/*!***********************************************!*\
-  !*** ./node_modules/unfetch/dist/unfetch.mjs ***!
-  \***********************************************/
-/*! exports provided: default */
+/* 2 */
 /***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ __webpack_exports__[\"default\"] = (function(e,n){return n=n||{},new Promise(function(t,r){var s=new XMLHttpRequest;for(var o in s.open(n.method||\"get\",e,!0),n.headers)s.setRequestHeader(o,n.headers[o]);function u(){var e,n=[],t=[],r={};return s.getAllResponseHeaders().replace(/^(.*?):[^\\S\\n]*([\\s\\S]*?)$/gm,function(s,o,u){n.push(o=o.toLowerCase()),t.push([o,u]),r[o]=(e=r[o])?e+\",\"+u:u}),{ok:2==(s.status/100|0),status:s.status,statusText:s.statusText,url:s.responseURL,clone:u,text:function(){return Promise.resolve(s.responseText)},json:function(){return Promise.resolve(s.responseText).then(JSON.parse)},blob:function(){return Promise.resolve(new Blob([s.response]))},headers:{keys:function(){return n},entries:function(){return t},get:function(e){return r[e.toLowerCase()]},has:function(e){return e.toLowerCase()in r}}}}s.withCredentials=\"include\"==n.credentials,s.onload=function(){t(u())},s.onerror=r,s.send(n.body||null)})});;\n//# sourceMappingURL=unfetch.mjs.map\n\n\n//# sourceURL=webpack:///./node_modules/unfetch/dist/unfetch.mjs?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return h; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createElement", function() { return h; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cloneElement", function() { return cloneElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Component", function() { return Component; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rerender", function() { return rerender; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "options", function() { return options; });
+var VNode = function VNode() {};
+
+var options = {};
+
+var stack = [];
+
+var EMPTY_CHILDREN = [];
+
+function h(nodeName, attributes) {
+	var children = EMPTY_CHILDREN,
+	    lastSimple,
+	    child,
+	    simple,
+	    i;
+	for (i = arguments.length; i-- > 2;) {
+		stack.push(arguments[i]);
+	}
+	if (attributes && attributes.children != null) {
+		if (!stack.length) stack.push(attributes.children);
+		delete attributes.children;
+	}
+	while (stack.length) {
+		if ((child = stack.pop()) && child.pop !== undefined) {
+			for (i = child.length; i--;) {
+				stack.push(child[i]);
+			}
+		} else {
+			if (typeof child === 'boolean') child = null;
+
+			if (simple = typeof nodeName !== 'function') {
+				if (child == null) child = '';else if (typeof child === 'number') child = String(child);else if (typeof child !== 'string') simple = false;
+			}
+
+			if (simple && lastSimple) {
+				children[children.length - 1] += child;
+			} else if (children === EMPTY_CHILDREN) {
+				children = [child];
+			} else {
+				children.push(child);
+			}
+
+			lastSimple = simple;
+		}
+	}
+
+	var p = new VNode();
+	p.nodeName = nodeName;
+	p.children = children;
+	p.attributes = attributes == null ? undefined : attributes;
+	p.key = attributes == null ? undefined : attributes.key;
+
+	if (options.vnode !== undefined) options.vnode(p);
+
+	return p;
+}
+
+function extend(obj, props) {
+  for (var i in props) {
+    obj[i] = props[i];
+  }return obj;
+}
+
+var defer = typeof Promise == 'function' ? Promise.resolve().then.bind(Promise.resolve()) : setTimeout;
+
+function cloneElement(vnode, props) {
+  return h(vnode.nodeName, extend(extend({}, vnode.attributes), props), arguments.length > 2 ? [].slice.call(arguments, 2) : vnode.children);
+}
+
+var IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
+
+var items = [];
+
+function enqueueRender(component) {
+	if (!component._dirty && (component._dirty = true) && items.push(component) == 1) {
+		(options.debounceRendering || defer)(rerender);
+	}
+}
+
+function rerender() {
+	var p,
+	    list = items;
+	items = [];
+	while (p = list.pop()) {
+		if (p._dirty) renderComponent(p);
+	}
+}
+
+function isSameNodeType(node, vnode, hydrating) {
+	if (typeof vnode === 'string' || typeof vnode === 'number') {
+		return node.splitText !== undefined;
+	}
+	if (typeof vnode.nodeName === 'string') {
+		return !node._componentConstructor && isNamedNode(node, vnode.nodeName);
+	}
+	return hydrating || node._componentConstructor === vnode.nodeName;
+}
+
+function isNamedNode(node, nodeName) {
+	return node.normalizedNodeName === nodeName || node.nodeName.toLowerCase() === nodeName.toLowerCase();
+}
+
+function getNodeProps(vnode) {
+	var props = extend({}, vnode.attributes);
+	props.children = vnode.children;
+
+	var defaultProps = vnode.nodeName.defaultProps;
+	if (defaultProps !== undefined) {
+		for (var i in defaultProps) {
+			if (props[i] === undefined) {
+				props[i] = defaultProps[i];
+			}
+		}
+	}
+
+	return props;
+}
+
+function createNode(nodeName, isSvg) {
+	var node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);
+	node.normalizedNodeName = nodeName;
+	return node;
+}
+
+function removeNode(node) {
+	var parentNode = node.parentNode;
+	if (parentNode) parentNode.removeChild(node);
+}
+
+function setAccessor(node, name, old, value, isSvg) {
+	if (name === 'className') name = 'class';
+
+	if (name === 'key') {} else if (name === 'ref') {
+		if (old) old(null);
+		if (value) value(node);
+	} else if (name === 'class' && !isSvg) {
+		node.className = value || '';
+	} else if (name === 'style') {
+		if (!value || typeof value === 'string' || typeof old === 'string') {
+			node.style.cssText = value || '';
+		}
+		if (value && typeof value === 'object') {
+			if (typeof old !== 'string') {
+				for (var i in old) {
+					if (!(i in value)) node.style[i] = '';
+				}
+			}
+			for (var i in value) {
+				node.style[i] = typeof value[i] === 'number' && IS_NON_DIMENSIONAL.test(i) === false ? value[i] + 'px' : value[i];
+			}
+		}
+	} else if (name === 'dangerouslySetInnerHTML') {
+		if (value) node.innerHTML = value.__html || '';
+	} else if (name[0] == 'o' && name[1] == 'n') {
+		var useCapture = name !== (name = name.replace(/Capture$/, ''));
+		name = name.toLowerCase().substring(2);
+		if (value) {
+			if (!old) node.addEventListener(name, eventProxy, useCapture);
+		} else {
+			node.removeEventListener(name, eventProxy, useCapture);
+		}
+		(node._listeners || (node._listeners = {}))[name] = value;
+	} else if (name !== 'list' && name !== 'type' && !isSvg && name in node) {
+		try {
+			node[name] = value == null ? '' : value;
+		} catch (e) {}
+		if ((value == null || value === false) && name != 'spellcheck') node.removeAttribute(name);
+	} else {
+		var ns = isSvg && name !== (name = name.replace(/^xlink:?/, ''));
+
+		if (value == null || value === false) {
+			if (ns) node.removeAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase());else node.removeAttribute(name);
+		} else if (typeof value !== 'function') {
+			if (ns) node.setAttributeNS('http://www.w3.org/1999/xlink', name.toLowerCase(), value);else node.setAttribute(name, value);
+		}
+	}
+}
+
+function eventProxy(e) {
+	return this._listeners[e.type](options.event && options.event(e) || e);
+}
+
+var mounts = [];
+
+var diffLevel = 0;
+
+var isSvgMode = false;
+
+var hydrating = false;
+
+function flushMounts() {
+	var c;
+	while (c = mounts.pop()) {
+		if (options.afterMount) options.afterMount(c);
+		if (c.componentDidMount) c.componentDidMount();
+	}
+}
+
+function diff(dom, vnode, context, mountAll, parent, componentRoot) {
+	if (!diffLevel++) {
+		isSvgMode = parent != null && parent.ownerSVGElement !== undefined;
+
+		hydrating = dom != null && !('__preactattr_' in dom);
+	}
+
+	var ret = idiff(dom, vnode, context, mountAll, componentRoot);
+
+	if (parent && ret.parentNode !== parent) parent.appendChild(ret);
+
+	if (! --diffLevel) {
+		hydrating = false;
+
+		if (!componentRoot) flushMounts();
+	}
+
+	return ret;
+}
+
+function idiff(dom, vnode, context, mountAll, componentRoot) {
+	var out = dom,
+	    prevSvgMode = isSvgMode;
+
+	if (vnode == null || typeof vnode === 'boolean') vnode = '';
+
+	if (typeof vnode === 'string' || typeof vnode === 'number') {
+		if (dom && dom.splitText !== undefined && dom.parentNode && (!dom._component || componentRoot)) {
+			if (dom.nodeValue != vnode) {
+				dom.nodeValue = vnode;
+			}
+		} else {
+			out = document.createTextNode(vnode);
+			if (dom) {
+				if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
+				recollectNodeTree(dom, true);
+			}
+		}
+
+		out['__preactattr_'] = true;
+
+		return out;
+	}
+
+	var vnodeName = vnode.nodeName;
+	if (typeof vnodeName === 'function') {
+		return buildComponentFromVNode(dom, vnode, context, mountAll);
+	}
+
+	isSvgMode = vnodeName === 'svg' ? true : vnodeName === 'foreignObject' ? false : isSvgMode;
+
+	vnodeName = String(vnodeName);
+	if (!dom || !isNamedNode(dom, vnodeName)) {
+		out = createNode(vnodeName, isSvgMode);
+
+		if (dom) {
+			while (dom.firstChild) {
+				out.appendChild(dom.firstChild);
+			}
+			if (dom.parentNode) dom.parentNode.replaceChild(out, dom);
+
+			recollectNodeTree(dom, true);
+		}
+	}
+
+	var fc = out.firstChild,
+	    props = out['__preactattr_'],
+	    vchildren = vnode.children;
+
+	if (props == null) {
+		props = out['__preactattr_'] = {};
+		for (var a = out.attributes, i = a.length; i--;) {
+			props[a[i].name] = a[i].value;
+		}
+	}
+
+	if (!hydrating && vchildren && vchildren.length === 1 && typeof vchildren[0] === 'string' && fc != null && fc.splitText !== undefined && fc.nextSibling == null) {
+		if (fc.nodeValue != vchildren[0]) {
+			fc.nodeValue = vchildren[0];
+		}
+	} else if (vchildren && vchildren.length || fc != null) {
+			innerDiffNode(out, vchildren, context, mountAll, hydrating || props.dangerouslySetInnerHTML != null);
+		}
+
+	diffAttributes(out, vnode.attributes, props);
+
+	isSvgMode = prevSvgMode;
+
+	return out;
+}
+
+function innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {
+	var originalChildren = dom.childNodes,
+	    children = [],
+	    keyed = {},
+	    keyedLen = 0,
+	    min = 0,
+	    len = originalChildren.length,
+	    childrenLen = 0,
+	    vlen = vchildren ? vchildren.length : 0,
+	    j,
+	    c,
+	    f,
+	    vchild,
+	    child;
+
+	if (len !== 0) {
+		for (var i = 0; i < len; i++) {
+			var _child = originalChildren[i],
+			    props = _child['__preactattr_'],
+			    key = vlen && props ? _child._component ? _child._component.__key : props.key : null;
+			if (key != null) {
+				keyedLen++;
+				keyed[key] = _child;
+			} else if (props || (_child.splitText !== undefined ? isHydrating ? _child.nodeValue.trim() : true : isHydrating)) {
+				children[childrenLen++] = _child;
+			}
+		}
+	}
+
+	if (vlen !== 0) {
+		for (var i = 0; i < vlen; i++) {
+			vchild = vchildren[i];
+			child = null;
+
+			var key = vchild.key;
+			if (key != null) {
+				if (keyedLen && keyed[key] !== undefined) {
+					child = keyed[key];
+					keyed[key] = undefined;
+					keyedLen--;
+				}
+			} else if (min < childrenLen) {
+					for (j = min; j < childrenLen; j++) {
+						if (children[j] !== undefined && isSameNodeType(c = children[j], vchild, isHydrating)) {
+							child = c;
+							children[j] = undefined;
+							if (j === childrenLen - 1) childrenLen--;
+							if (j === min) min++;
+							break;
+						}
+					}
+				}
+
+			child = idiff(child, vchild, context, mountAll);
+
+			f = originalChildren[i];
+			if (child && child !== dom && child !== f) {
+				if (f == null) {
+					dom.appendChild(child);
+				} else if (child === f.nextSibling) {
+					removeNode(f);
+				} else {
+					dom.insertBefore(child, f);
+				}
+			}
+		}
+	}
+
+	if (keyedLen) {
+		for (var i in keyed) {
+			if (keyed[i] !== undefined) recollectNodeTree(keyed[i], false);
+		}
+	}
+
+	while (min <= childrenLen) {
+		if ((child = children[childrenLen--]) !== undefined) recollectNodeTree(child, false);
+	}
+}
+
+function recollectNodeTree(node, unmountOnly) {
+	var component = node._component;
+	if (component) {
+		unmountComponent(component);
+	} else {
+		if (node['__preactattr_'] != null && node['__preactattr_'].ref) node['__preactattr_'].ref(null);
+
+		if (unmountOnly === false || node['__preactattr_'] == null) {
+			removeNode(node);
+		}
+
+		removeChildren(node);
+	}
+}
+
+function removeChildren(node) {
+	node = node.lastChild;
+	while (node) {
+		var next = node.previousSibling;
+		recollectNodeTree(node, true);
+		node = next;
+	}
+}
+
+function diffAttributes(dom, attrs, old) {
+	var name;
+
+	for (name in old) {
+		if (!(attrs && attrs[name] != null) && old[name] != null) {
+			setAccessor(dom, name, old[name], old[name] = undefined, isSvgMode);
+		}
+	}
+
+	for (name in attrs) {
+		if (name !== 'children' && name !== 'innerHTML' && (!(name in old) || attrs[name] !== (name === 'value' || name === 'checked' ? dom[name] : old[name]))) {
+			setAccessor(dom, name, old[name], old[name] = attrs[name], isSvgMode);
+		}
+	}
+}
+
+var recyclerComponents = [];
+
+function createComponent(Ctor, props, context) {
+	var inst,
+	    i = recyclerComponents.length;
+
+	if (Ctor.prototype && Ctor.prototype.render) {
+		inst = new Ctor(props, context);
+		Component.call(inst, props, context);
+	} else {
+		inst = new Component(props, context);
+		inst.constructor = Ctor;
+		inst.render = doRender;
+	}
+
+	while (i--) {
+		if (recyclerComponents[i].constructor === Ctor) {
+			inst.nextBase = recyclerComponents[i].nextBase;
+			recyclerComponents.splice(i, 1);
+			return inst;
+		}
+	}
+
+	return inst;
+}
+
+function doRender(props, state, context) {
+	return this.constructor(props, context);
+}
+
+function setComponentProps(component, props, renderMode, context, mountAll) {
+	if (component._disable) return;
+	component._disable = true;
+
+	component.__ref = props.ref;
+	component.__key = props.key;
+	delete props.ref;
+	delete props.key;
+
+	if (typeof component.constructor.getDerivedStateFromProps === 'undefined') {
+		if (!component.base || mountAll) {
+			if (component.componentWillMount) component.componentWillMount();
+		} else if (component.componentWillReceiveProps) {
+			component.componentWillReceiveProps(props, context);
+		}
+	}
+
+	if (context && context !== component.context) {
+		if (!component.prevContext) component.prevContext = component.context;
+		component.context = context;
+	}
+
+	if (!component.prevProps) component.prevProps = component.props;
+	component.props = props;
+
+	component._disable = false;
+
+	if (renderMode !== 0) {
+		if (renderMode === 1 || options.syncComponentUpdates !== false || !component.base) {
+			renderComponent(component, 1, mountAll);
+		} else {
+			enqueueRender(component);
+		}
+	}
+
+	if (component.__ref) component.__ref(component);
+}
+
+function renderComponent(component, renderMode, mountAll, isChild) {
+	if (component._disable) return;
+
+	var props = component.props,
+	    state = component.state,
+	    context = component.context,
+	    previousProps = component.prevProps || props,
+	    previousState = component.prevState || state,
+	    previousContext = component.prevContext || context,
+	    isUpdate = component.base,
+	    nextBase = component.nextBase,
+	    initialBase = isUpdate || nextBase,
+	    initialChildComponent = component._component,
+	    skip = false,
+	    snapshot = previousContext,
+	    rendered,
+	    inst,
+	    cbase;
+
+	if (component.constructor.getDerivedStateFromProps) {
+		state = extend(extend({}, state), component.constructor.getDerivedStateFromProps(props, state));
+		component.state = state;
+	}
+
+	if (isUpdate) {
+		component.props = previousProps;
+		component.state = previousState;
+		component.context = previousContext;
+		if (renderMode !== 2 && component.shouldComponentUpdate && component.shouldComponentUpdate(props, state, context) === false) {
+			skip = true;
+		} else if (component.componentWillUpdate) {
+			component.componentWillUpdate(props, state, context);
+		}
+		component.props = props;
+		component.state = state;
+		component.context = context;
+	}
+
+	component.prevProps = component.prevState = component.prevContext = component.nextBase = null;
+	component._dirty = false;
+
+	if (!skip) {
+		rendered = component.render(props, state, context);
+
+		if (component.getChildContext) {
+			context = extend(extend({}, context), component.getChildContext());
+		}
+
+		if (isUpdate && component.getSnapshotBeforeUpdate) {
+			snapshot = component.getSnapshotBeforeUpdate(previousProps, previousState);
+		}
+
+		var childComponent = rendered && rendered.nodeName,
+		    toUnmount,
+		    base;
+
+		if (typeof childComponent === 'function') {
+
+			var childProps = getNodeProps(rendered);
+			inst = initialChildComponent;
+
+			if (inst && inst.constructor === childComponent && childProps.key == inst.__key) {
+				setComponentProps(inst, childProps, 1, context, false);
+			} else {
+				toUnmount = inst;
+
+				component._component = inst = createComponent(childComponent, childProps, context);
+				inst.nextBase = inst.nextBase || nextBase;
+				inst._parentComponent = component;
+				setComponentProps(inst, childProps, 0, context, false);
+				renderComponent(inst, 1, mountAll, true);
+			}
+
+			base = inst.base;
+		} else {
+			cbase = initialBase;
+
+			toUnmount = initialChildComponent;
+			if (toUnmount) {
+				cbase = component._component = null;
+			}
+
+			if (initialBase || renderMode === 1) {
+				if (cbase) cbase._component = null;
+				base = diff(cbase, rendered, context, mountAll || !isUpdate, initialBase && initialBase.parentNode, true);
+			}
+		}
+
+		if (initialBase && base !== initialBase && inst !== initialChildComponent) {
+			var baseParent = initialBase.parentNode;
+			if (baseParent && base !== baseParent) {
+				baseParent.replaceChild(base, initialBase);
+
+				if (!toUnmount) {
+					initialBase._component = null;
+					recollectNodeTree(initialBase, false);
+				}
+			}
+		}
+
+		if (toUnmount) {
+			unmountComponent(toUnmount);
+		}
+
+		component.base = base;
+		if (base && !isChild) {
+			var componentRef = component,
+			    t = component;
+			while (t = t._parentComponent) {
+				(componentRef = t).base = base;
+			}
+			base._component = componentRef;
+			base._componentConstructor = componentRef.constructor;
+		}
+	}
+
+	if (!isUpdate || mountAll) {
+		mounts.unshift(component);
+	} else if (!skip) {
+
+		if (component.componentDidUpdate) {
+			component.componentDidUpdate(previousProps, previousState, snapshot);
+		}
+		if (options.afterUpdate) options.afterUpdate(component);
+	}
+
+	while (component._renderCallbacks.length) {
+		component._renderCallbacks.pop().call(component);
+	}if (!diffLevel && !isChild) flushMounts();
+}
+
+function buildComponentFromVNode(dom, vnode, context, mountAll) {
+	var c = dom && dom._component,
+	    originalComponent = c,
+	    oldDom = dom,
+	    isDirectOwner = c && dom._componentConstructor === vnode.nodeName,
+	    isOwner = isDirectOwner,
+	    props = getNodeProps(vnode);
+	while (c && !isOwner && (c = c._parentComponent)) {
+		isOwner = c.constructor === vnode.nodeName;
+	}
+
+	if (c && isOwner && (!mountAll || c._component)) {
+		setComponentProps(c, props, 3, context, mountAll);
+		dom = c.base;
+	} else {
+		if (originalComponent && !isDirectOwner) {
+			unmountComponent(originalComponent);
+			dom = oldDom = null;
+		}
+
+		c = createComponent(vnode.nodeName, props, context);
+		if (dom && !c.nextBase) {
+			c.nextBase = dom;
+
+			oldDom = null;
+		}
+		setComponentProps(c, props, 1, context, mountAll);
+		dom = c.base;
+
+		if (oldDom && dom !== oldDom) {
+			oldDom._component = null;
+			recollectNodeTree(oldDom, false);
+		}
+	}
+
+	return dom;
+}
+
+function unmountComponent(component) {
+	if (options.beforeUnmount) options.beforeUnmount(component);
+
+	var base = component.base;
+
+	component._disable = true;
+
+	if (component.componentWillUnmount) component.componentWillUnmount();
+
+	component.base = null;
+
+	var inner = component._component;
+	if (inner) {
+		unmountComponent(inner);
+	} else if (base) {
+		if (base['__preactattr_'] && base['__preactattr_'].ref) base['__preactattr_'].ref(null);
+
+		component.nextBase = base;
+
+		removeNode(base);
+		recyclerComponents.push(component);
+
+		removeChildren(base);
+	}
+
+	if (component.__ref) component.__ref(null);
+}
+
+function Component(props, context) {
+	this._dirty = true;
+
+	this.context = context;
+
+	this.props = props;
+
+	this.state = this.state || {};
+
+	this._renderCallbacks = [];
+}
+
+extend(Component.prototype, {
+	setState: function setState(state, callback) {
+		if (!this.prevState) this.prevState = this.state;
+		this.state = extend(extend({}, this.state), typeof state === 'function' ? state(this.state, this.props) : state);
+		if (callback) this._renderCallbacks.push(callback);
+		enqueueRender(this);
+	},
+	forceUpdate: function forceUpdate(callback) {
+		if (callback) this._renderCallbacks.push(callback);
+		renderComponent(this, 2);
+	},
+	render: function render() {}
+});
+
+function render(vnode, parent, merge) {
+  return diff(merge, vnode, {}, false, parent, false);
+}
+
+var preact = {
+	h: h,
+	createElement: h,
+	cloneElement: cloneElement,
+	Component: Component,
+	render: render,
+	rerender: rerender,
+	options: options
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (preact);
+
+//# sourceMappingURL=preact.mjs.map
+
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/***/ "./node_modules/webpack/buildin/global.js":
-/*!***********************************!*\
-  !*** (webpack)/buildin/global.js ***!
-  \***********************************/
-/*! no static exports found */
+const React = __webpack_require__(2);
+
+const http = __webpack_require__(4);
+
+const root = __webpack_require__(0).root;
+
+console.log(root);
+
+class Nav extends React.Component {
+  componentDidMount() {
+    if (!window.localStorage.getItem('token')) {
+      this.setState({
+        loading: false,
+        customer: null
+      });
+      return;
+    }
+
+    this.setState({
+      loading: true
+    });
+    http.get('/me').then(res => {
+      this.setState({
+        loading: false,
+        customer: res.customer
+      });
+    }).catch(() => {
+      this.setState({
+        loading: false,
+        customer: null
+      });
+    });
+  }
+
+  login() {
+    if (this.state.loading) {
+      return React.createElement("span", null);
+    }
+
+    if (this.state.customer != null) {
+      return React.createElement("a", {
+        href: "/dashboard"
+      }, "Dashboard");
+    }
+
+    return React.createElement("a", {
+      href: "https://slack.com/oauth/authorize?scope=identity.basic+identity.email&client_id=80341368871.427593509574"
+    }, React.createElement("img", {
+      alt: "Sign in with Slack",
+      height: "30",
+      width: "129",
+      src: "https://platform.slack-edge.com/img/sign_in_with_slack.png",
+      srcset: "https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x"
+    }));
+  }
+
+  render() {
+    return React.createElement("div", null, React.createElement("div", {
+      class: "nav-link"
+    }, React.createElement("a", {
+      href: "/feed"
+    }, "Feed")), React.createElement("div", {
+      class: "nav-link"
+    }, React.createElement("a", {
+      href: "/slack"
+    }, "Slack")), React.createElement("div", {
+      class: "nav-link"
+    }, React.createElement("a", {
+      href: "https://tinyletter.com/js-report"
+    }, "Newsletter")), React.createElement("div", {
+      class: "nav-link"
+    }, this.login()), React.createElement("div", {
+      style: "clear: both"
+    }));
+  }
+
+}
+
+React.render(React.createElement(Nav, null), document.querySelector('#nav-container'));
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(1);
+
+const root = __webpack_require__(0).root;
+console.log(root);
+
+exports.get = function(url) {
+  const opts = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    }
+  };
+  return fetch(`${root}${url}`, opts).then(res => res.json());
+};
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports) {
 
-eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn this;\n})();\n\ntry {\n\t// This works if eval is allowed (see CSP)\n\tg = g || Function(\"return this\")() || (1, eval)(\"this\");\n} catch (e) {\n\t// This works if the window reference is available\n\tif (typeof window === \"object\") g = window;\n}\n\n// g can still be undefined, but nothing to do about it...\n// We return undefined, instead of nothing here, so it's\n// easier to handle this case. if(!global) { ...}\n\nmodule.exports = g;\n\n\n//# sourceURL=webpack:///(webpack)/buildin/global.js?");
+module.exports = {
+  root: 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod'
+};
+
+
+/***/ }),
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = () => `
+<div class="error-404">
+  <h2>Not Found</h2>
+  <img class="error-gag-img" src="/images/pooka.png">
+  <div class="error-gag">Life is Ruff</div>
+</div>
+`;
+
+
+/***/ }),
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(1);
+__webpack_require__(3);
+
+const error404 = __webpack_require__(9);
+const marked = __webpack_require__(17);
+
+const root = 'https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default';
+
+if (typeof window !== 'undefined') {
+  main(window.location.pathname, document.querySelector('#content'));
+}
+
+module.exports = main;
+
+function main(url, container) {
+  const sp = url.split('/');
+
+  if (sp.length < 4) {
+    container.innerHTML = error404();
+    return;
+  }
+
+  fetch(`${root}/version?packageId=${sp[2]}&version=${sp[3]}`).
+    then(res => res.json()).
+    then(res => {
+      let html = `
+        <h1>${res.version.packageId}@${res.version.version}</h1>
+
+        <div class="changelog">
+          ${res.version.changelog == null ? 'No Changelog Found' : marked(res.version.changelog)}
+        </div>
+      `;
+      container.innerHTML = html;
+    }).
+    catch(err => {
+      container.innerHTML = error404();
+      throw err;
+    });
+}
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {/**
+ * marked - a markdown parser
+ * Copyright (c) 2011-2018, Christopher Jeffrey. (MIT Licensed)
+ * https://github.com/markedjs/marked
+ */
+
+;(function(root) {
+'use strict';
+
+/**
+ * Block-Level Grammar
+ */
+
+var block = {
+  newline: /^\n+/,
+  code: /^( {4}[^\n]+\n*)+/,
+  fences: noop,
+  hr: /^ {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)/,
+  heading: /^ *(#{1,6}) *([^\n]+?) *(?:#+ *)?(?:\n+|$)/,
+  nptable: noop,
+  blockquote: /^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/,
+  list: /^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,
+  html: '^ {0,3}(?:' // optional indentation
+    + '<(script|pre|style)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)' // (1)
+    + '|comment[^\\n]*(\\n+|$)' // (2)
+    + '|<\\?[\\s\\S]*?\\?>\\n*' // (3)
+    + '|<![A-Z][\\s\\S]*?>\\n*' // (4)
+    + '|<!\\[CDATA\\[[\\s\\S]*?\\]\\]>\\n*' // (5)
+    + '|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:\\n{2,}|$)' // (6)
+    + '|<(?!script|pre|style)([a-z][\\w-]*)(?:attribute)*? */?>(?=\\h*\\n)[\\s\\S]*?(?:\\n{2,}|$)' // (7) open tag
+    + '|</(?!script|pre|style)[a-z][\\w-]*\\s*>(?=\\h*\\n)[\\s\\S]*?(?:\\n{2,}|$)' // (7) closing tag
+    + ')',
+  def: /^ {0,3}\[(label)\]: *\n? *<?([^\s>]+)>?(?:(?: +\n? *| *\n *)(title))? *(?:\n+|$)/,
+  table: noop,
+  lheading: /^([^\n]+)\n *(=|-){2,} *(?:\n+|$)/,
+  paragraph: /^([^\n]+(?:\n(?!hr|heading|lheading| {0,3}>|<\/?(?:tag)(?: +|\n|\/?>)|<(?:script|pre|style|!--))[^\n]+)*)/,
+  text: /^[^\n]+/
+};
+
+block._label = /(?!\s*\])(?:\\[\[\]]|[^\[\]])+/;
+block._title = /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/;
+block.def = edit(block.def)
+  .replace('label', block._label)
+  .replace('title', block._title)
+  .getRegex();
+
+block.bullet = /(?:[*+-]|\d+\.)/;
+block.item = /^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/;
+block.item = edit(block.item, 'gm')
+  .replace(/bull/g, block.bullet)
+  .getRegex();
+
+block.list = edit(block.list)
+  .replace(/bull/g, block.bullet)
+  .replace('hr', '\\n+(?=\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$))')
+  .replace('def', '\\n+(?=' + block.def.source + ')')
+  .getRegex();
+
+block._tag = 'address|article|aside|base|basefont|blockquote|body|caption'
+  + '|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption'
+  + '|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe'
+  + '|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option'
+  + '|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr'
+  + '|track|ul';
+block._comment = /<!--(?!-?>)[\s\S]*?-->/;
+block.html = edit(block.html, 'i')
+  .replace('comment', block._comment)
+  .replace('tag', block._tag)
+  .replace('attribute', / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/)
+  .getRegex();
+
+block.paragraph = edit(block.paragraph)
+  .replace('hr', block.hr)
+  .replace('heading', block.heading)
+  .replace('lheading', block.lheading)
+  .replace('tag', block._tag) // pars can be interrupted by type (6) html blocks
+  .getRegex();
+
+block.blockquote = edit(block.blockquote)
+  .replace('paragraph', block.paragraph)
+  .getRegex();
+
+/**
+ * Normal Block Grammar
+ */
+
+block.normal = merge({}, block);
+
+/**
+ * GFM Block Grammar
+ */
+
+block.gfm = merge({}, block.normal, {
+  fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\n? *\1 *(?:\n+|$)/,
+  paragraph: /^/,
+  heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
+});
+
+block.gfm.paragraph = edit(block.paragraph)
+  .replace('(?!', '(?!'
+    + block.gfm.fences.source.replace('\\1', '\\2') + '|'
+    + block.list.source.replace('\\1', '\\3') + '|')
+  .getRegex();
+
+/**
+ * GFM + Tables Block Grammar
+ */
+
+block.tables = merge({}, block.gfm, {
+  nptable: /^ *([^|\n ].*\|.*)\n *([-:]+ *\|[-| :]*)(?:\n((?:.*[^>\n ].*(?:\n|$))*)\n*|$)/,
+  table: /^ *\|(.+)\n *\|?( *[-:]+[-| :]*)(?:\n((?: *[^>\n ].*(?:\n|$))*)\n*|$)/
+});
+
+/**
+ * Pedantic grammar
+ */
+
+block.pedantic = merge({}, block.normal, {
+  html: edit(
+    '^ *(?:comment *(?:\\n|\\s*$)'
+    + '|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)' // closed tag
+    + '|<tag(?:"[^"]*"|\'[^\']*\'|\\s[^\'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))')
+    .replace('comment', block._comment)
+    .replace(/tag/g, '(?!(?:'
+      + 'a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub'
+      + '|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)'
+      + '\\b)\\w+(?!:|[^\\w\\s@]*@)\\b')
+    .getRegex(),
+  def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/
+});
+
+/**
+ * Block Lexer
+ */
+
+function Lexer(options) {
+  this.tokens = [];
+  this.tokens.links = Object.create(null);
+  this.options = options || marked.defaults;
+  this.rules = block.normal;
+
+  if (this.options.pedantic) {
+    this.rules = block.pedantic;
+  } else if (this.options.gfm) {
+    if (this.options.tables) {
+      this.rules = block.tables;
+    } else {
+      this.rules = block.gfm;
+    }
+  }
+}
+
+/**
+ * Expose Block Rules
+ */
+
+Lexer.rules = block;
+
+/**
+ * Static Lex Method
+ */
+
+Lexer.lex = function(src, options) {
+  var lexer = new Lexer(options);
+  return lexer.lex(src);
+};
+
+/**
+ * Preprocessing
+ */
+
+Lexer.prototype.lex = function(src) {
+  src = src
+    .replace(/\r\n|\r/g, '\n')
+    .replace(/\t/g, '    ')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\u2424/g, '\n');
+
+  return this.token(src, true);
+};
+
+/**
+ * Lexing
+ */
+
+Lexer.prototype.token = function(src, top) {
+  src = src.replace(/^ +$/gm, '');
+  var next,
+      loose,
+      cap,
+      bull,
+      b,
+      item,
+      listStart,
+      listItems,
+      t,
+      space,
+      i,
+      tag,
+      l,
+      isordered,
+      istask,
+      ischecked;
+
+  while (src) {
+    // newline
+    if (cap = this.rules.newline.exec(src)) {
+      src = src.substring(cap[0].length);
+      if (cap[0].length > 1) {
+        this.tokens.push({
+          type: 'space'
+        });
+      }
+    }
+
+    // code
+    if (cap = this.rules.code.exec(src)) {
+      src = src.substring(cap[0].length);
+      cap = cap[0].replace(/^ {4}/gm, '');
+      this.tokens.push({
+        type: 'code',
+        text: !this.options.pedantic
+          ? rtrim(cap, '\n')
+          : cap
+      });
+      continue;
+    }
+
+    // fences (gfm)
+    if (cap = this.rules.fences.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'code',
+        lang: cap[2],
+        text: cap[3] || ''
+      });
+      continue;
+    }
+
+    // heading
+    if (cap = this.rules.heading.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'heading',
+        depth: cap[1].length,
+        text: cap[2]
+      });
+      continue;
+    }
+
+    // table no leading pipe (gfm)
+    if (top && (cap = this.rules.nptable.exec(src))) {
+      item = {
+        type: 'table',
+        header: splitCells(cap[1].replace(/^ *| *\| *$/g, '')),
+        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
+        cells: cap[3] ? cap[3].replace(/\n$/, '').split('\n') : []
+      };
+
+      if (item.header.length === item.align.length) {
+        src = src.substring(cap[0].length);
+
+        for (i = 0; i < item.align.length; i++) {
+          if (/^ *-+: *$/.test(item.align[i])) {
+            item.align[i] = 'right';
+          } else if (/^ *:-+: *$/.test(item.align[i])) {
+            item.align[i] = 'center';
+          } else if (/^ *:-+ *$/.test(item.align[i])) {
+            item.align[i] = 'left';
+          } else {
+            item.align[i] = null;
+          }
+        }
+
+        for (i = 0; i < item.cells.length; i++) {
+          item.cells[i] = splitCells(item.cells[i], item.header.length);
+        }
+
+        this.tokens.push(item);
+
+        continue;
+      }
+    }
+
+    // hr
+    if (cap = this.rules.hr.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'hr'
+      });
+      continue;
+    }
+
+    // blockquote
+    if (cap = this.rules.blockquote.exec(src)) {
+      src = src.substring(cap[0].length);
+
+      this.tokens.push({
+        type: 'blockquote_start'
+      });
+
+      cap = cap[0].replace(/^ *> ?/gm, '');
+
+      // Pass `top` to keep the current
+      // "toplevel" state. This is exactly
+      // how markdown.pl works.
+      this.token(cap, top);
+
+      this.tokens.push({
+        type: 'blockquote_end'
+      });
+
+      continue;
+    }
+
+    // list
+    if (cap = this.rules.list.exec(src)) {
+      src = src.substring(cap[0].length);
+      bull = cap[2];
+      isordered = bull.length > 1;
+
+      listStart = {
+        type: 'list_start',
+        ordered: isordered,
+        start: isordered ? +bull : '',
+        loose: false
+      };
+
+      this.tokens.push(listStart);
+
+      // Get each top-level item.
+      cap = cap[0].match(this.rules.item);
+
+      listItems = [];
+      next = false;
+      l = cap.length;
+      i = 0;
+
+      for (; i < l; i++) {
+        item = cap[i];
+
+        // Remove the list item's bullet
+        // so it is seen as the next token.
+        space = item.length;
+        item = item.replace(/^ *([*+-]|\d+\.) +/, '');
+
+        // Outdent whatever the
+        // list item contains. Hacky.
+        if (~item.indexOf('\n ')) {
+          space -= item.length;
+          item = !this.options.pedantic
+            ? item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '')
+            : item.replace(/^ {1,4}/gm, '');
+        }
+
+        // Determine whether the next list item belongs here.
+        // Backpedal if it does not belong in this list.
+        if (this.options.smartLists && i !== l - 1) {
+          b = block.bullet.exec(cap[i + 1])[0];
+          if (bull !== b && !(bull.length > 1 && b.length > 1)) {
+            src = cap.slice(i + 1).join('\n') + src;
+            i = l - 1;
+          }
+        }
+
+        // Determine whether item is loose or not.
+        // Use: /(^|\n)(?! )[^\n]+\n\n(?!\s*$)/
+        // for discount behavior.
+        loose = next || /\n\n(?!\s*$)/.test(item);
+        if (i !== l - 1) {
+          next = item.charAt(item.length - 1) === '\n';
+          if (!loose) loose = next;
+        }
+
+        if (loose) {
+          listStart.loose = true;
+        }
+
+        // Check for task list items
+        istask = /^\[[ xX]\] /.test(item);
+        ischecked = undefined;
+        if (istask) {
+          ischecked = item[1] !== ' ';
+          item = item.replace(/^\[[ xX]\] +/, '');
+        }
+
+        t = {
+          type: 'list_item_start',
+          task: istask,
+          checked: ischecked,
+          loose: loose
+        };
+
+        listItems.push(t);
+        this.tokens.push(t);
+
+        // Recurse.
+        this.token(item, false);
+
+        this.tokens.push({
+          type: 'list_item_end'
+        });
+      }
+
+      if (listStart.loose) {
+        l = listItems.length;
+        i = 0;
+        for (; i < l; i++) {
+          listItems[i].loose = true;
+        }
+      }
+
+      this.tokens.push({
+        type: 'list_end'
+      });
+
+      continue;
+    }
+
+    // html
+    if (cap = this.rules.html.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: this.options.sanitize
+          ? 'paragraph'
+          : 'html',
+        pre: !this.options.sanitizer
+          && (cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style'),
+        text: cap[0]
+      });
+      continue;
+    }
+
+    // def
+    if (top && (cap = this.rules.def.exec(src))) {
+      src = src.substring(cap[0].length);
+      if (cap[3]) cap[3] = cap[3].substring(1, cap[3].length - 1);
+      tag = cap[1].toLowerCase().replace(/\s+/g, ' ');
+      if (!this.tokens.links[tag]) {
+        this.tokens.links[tag] = {
+          href: cap[2],
+          title: cap[3]
+        };
+      }
+      continue;
+    }
+
+    // table (gfm)
+    if (top && (cap = this.rules.table.exec(src))) {
+      item = {
+        type: 'table',
+        header: splitCells(cap[1].replace(/^ *| *\| *$/g, '')),
+        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
+        cells: cap[3] ? cap[3].replace(/(?: *\| *)?\n$/, '').split('\n') : []
+      };
+
+      if (item.header.length === item.align.length) {
+        src = src.substring(cap[0].length);
+
+        for (i = 0; i < item.align.length; i++) {
+          if (/^ *-+: *$/.test(item.align[i])) {
+            item.align[i] = 'right';
+          } else if (/^ *:-+: *$/.test(item.align[i])) {
+            item.align[i] = 'center';
+          } else if (/^ *:-+ *$/.test(item.align[i])) {
+            item.align[i] = 'left';
+          } else {
+            item.align[i] = null;
+          }
+        }
+
+        for (i = 0; i < item.cells.length; i++) {
+          item.cells[i] = splitCells(
+            item.cells[i].replace(/^ *\| *| *\| *$/g, ''),
+            item.header.length);
+        }
+
+        this.tokens.push(item);
+
+        continue;
+      }
+    }
+
+    // lheading
+    if (cap = this.rules.lheading.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'heading',
+        depth: cap[2] === '=' ? 1 : 2,
+        text: cap[1]
+      });
+      continue;
+    }
+
+    // top-level paragraph
+    if (top && (cap = this.rules.paragraph.exec(src))) {
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'paragraph',
+        text: cap[1].charAt(cap[1].length - 1) === '\n'
+          ? cap[1].slice(0, -1)
+          : cap[1]
+      });
+      continue;
+    }
+
+    // text
+    if (cap = this.rules.text.exec(src)) {
+      // Top-level should never reach here.
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'text',
+        text: cap[0]
+      });
+      continue;
+    }
+
+    if (src) {
+      throw new Error('Infinite loop on byte: ' + src.charCodeAt(0));
+    }
+  }
+
+  return this.tokens;
+};
+
+/**
+ * Inline-Level Grammar
+ */
+
+var inline = {
+  escape: /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/,
+  autolink: /^<(scheme:[^\s\x00-\x1f<>]*|email)>/,
+  url: noop,
+  tag: '^comment'
+    + '|^</[a-zA-Z][\\w:-]*\\s*>' // self-closing tag
+    + '|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>' // open tag
+    + '|^<\\?[\\s\\S]*?\\?>' // processing instruction, e.g. <?php ?>
+    + '|^<![a-zA-Z]+\\s[\\s\\S]*?>' // declaration, e.g. <!DOCTYPE html>
+    + '|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>', // CDATA section
+  link: /^!?\[(label)\]\(href(?:\s+(title))?\s*\)/,
+  reflink: /^!?\[(label)\]\[(?!\s*\])((?:\\[\[\]]?|[^\[\]\\])+)\]/,
+  nolink: /^!?\[(?!\s*\])((?:\[[^\[\]]*\]|\\[\[\]]|[^\[\]])*)\](?:\[\])?/,
+  strong: /^__([^\s])__(?!_)|^\*\*([^\s])\*\*(?!\*)|^__([^\s][\s\S]*?[^\s])__(?!_)|^\*\*([^\s][\s\S]*?[^\s])\*\*(?!\*)/,
+  em: /^_([^\s_])_(?!_)|^\*([^\s*"<\[])\*(?!\*)|^_([^\s][\s\S]*?[^\s_])_(?!_)|^_([^\s_][\s\S]*?[^\s])_(?!_)|^\*([^\s"<\[][\s\S]*?[^\s*])\*(?!\*)|^\*([^\s*"<\[][\s\S]*?[^\s])\*(?!\*)/,
+  code: /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,
+  br: /^( {2,}|\\)\n(?!\s*$)/,
+  del: noop,
+  text: /^(`+|[^`])[\s\S]*?(?=[\\<!\[`*]|\b_| {2,}\n|$)/
+};
+
+inline._escapes = /\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/g;
+
+inline._scheme = /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/;
+inline._email = /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/;
+inline.autolink = edit(inline.autolink)
+  .replace('scheme', inline._scheme)
+  .replace('email', inline._email)
+  .getRegex();
+
+inline._attribute = /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/;
+
+inline.tag = edit(inline.tag)
+  .replace('comment', block._comment)
+  .replace('attribute', inline._attribute)
+  .getRegex();
+
+inline._label = /(?:\[[^\[\]]*\]|\\[\[\]]?|`[^`]*`|[^\[\]\\])*?/;
+inline._href = /\s*(<(?:\\[<>]?|[^\s<>\\])*>|(?:\\[()]?|\([^\s\x00-\x1f\\]*\)|[^\s\x00-\x1f()\\])*?)/;
+inline._title = /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/;
+
+inline.link = edit(inline.link)
+  .replace('label', inline._label)
+  .replace('href', inline._href)
+  .replace('title', inline._title)
+  .getRegex();
+
+inline.reflink = edit(inline.reflink)
+  .replace('label', inline._label)
+  .getRegex();
+
+/**
+ * Normal Inline Grammar
+ */
+
+inline.normal = merge({}, inline);
+
+/**
+ * Pedantic Inline Grammar
+ */
+
+inline.pedantic = merge({}, inline.normal, {
+  strong: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
+  em: /^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/,
+  link: edit(/^!?\[(label)\]\((.*?)\)/)
+    .replace('label', inline._label)
+    .getRegex(),
+  reflink: edit(/^!?\[(label)\]\s*\[([^\]]*)\]/)
+    .replace('label', inline._label)
+    .getRegex()
+});
+
+/**
+ * GFM Inline Grammar
+ */
+
+inline.gfm = merge({}, inline.normal, {
+  escape: edit(inline.escape).replace('])', '~|])').getRegex(),
+  _extended_email: /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/,
+  url: /^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/,
+  _backpedal: /(?:[^?!.,:;*_~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/,
+  del: /^~+(?=\S)([\s\S]*?\S)~+/,
+  text: edit(inline.text)
+    .replace(']|', '~]|')
+    .replace('|$', '|https?://|ftp://|www\\.|[a-zA-Z0-9.!#$%&\'*+/=?^_`{\\|}~-]+@|$')
+    .getRegex()
+});
+
+inline.gfm.url = edit(inline.gfm.url)
+  .replace('email', inline.gfm._extended_email)
+  .getRegex();
+/**
+ * GFM + Line Breaks Inline Grammar
+ */
+
+inline.breaks = merge({}, inline.gfm, {
+  br: edit(inline.br).replace('{2,}', '*').getRegex(),
+  text: edit(inline.gfm.text).replace('{2,}', '*').getRegex()
+});
+
+/**
+ * Inline Lexer & Compiler
+ */
+
+function InlineLexer(links, options) {
+  this.options = options || marked.defaults;
+  this.links = links;
+  this.rules = inline.normal;
+  this.renderer = this.options.renderer || new Renderer();
+  this.renderer.options = this.options;
+
+  if (!this.links) {
+    throw new Error('Tokens array requires a `links` property.');
+  }
+
+  if (this.options.pedantic) {
+    this.rules = inline.pedantic;
+  } else if (this.options.gfm) {
+    if (this.options.breaks) {
+      this.rules = inline.breaks;
+    } else {
+      this.rules = inline.gfm;
+    }
+  }
+}
+
+/**
+ * Expose Inline Rules
+ */
+
+InlineLexer.rules = inline;
+
+/**
+ * Static Lexing/Compiling Method
+ */
+
+InlineLexer.output = function(src, links, options) {
+  var inline = new InlineLexer(links, options);
+  return inline.output(src);
+};
+
+/**
+ * Lexing/Compiling
+ */
+
+InlineLexer.prototype.output = function(src) {
+  var out = '',
+      link,
+      text,
+      href,
+      title,
+      cap,
+      prevCapZero;
+
+  while (src) {
+    // escape
+    if (cap = this.rules.escape.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += cap[1];
+      continue;
+    }
+
+    // autolink
+    if (cap = this.rules.autolink.exec(src)) {
+      src = src.substring(cap[0].length);
+      if (cap[2] === '@') {
+        text = escape(this.mangle(cap[1]));
+        href = 'mailto:' + text;
+      } else {
+        text = escape(cap[1]);
+        href = text;
+      }
+      out += this.renderer.link(href, null, text);
+      continue;
+    }
+
+    // url (gfm)
+    if (!this.inLink && (cap = this.rules.url.exec(src))) {
+      if (cap[2] === '@') {
+        text = escape(cap[0]);
+        href = 'mailto:' + text;
+      } else {
+        // do extended autolink path validation
+        do {
+          prevCapZero = cap[0];
+          cap[0] = this.rules._backpedal.exec(cap[0])[0];
+        } while (prevCapZero !== cap[0]);
+        text = escape(cap[0]);
+        if (cap[1] === 'www.') {
+          href = 'http://' + text;
+        } else {
+          href = text;
+        }
+      }
+      src = src.substring(cap[0].length);
+      out += this.renderer.link(href, null, text);
+      continue;
+    }
+
+    // tag
+    if (cap = this.rules.tag.exec(src)) {
+      if (!this.inLink && /^<a /i.test(cap[0])) {
+        this.inLink = true;
+      } else if (this.inLink && /^<\/a>/i.test(cap[0])) {
+        this.inLink = false;
+      }
+      if (!this.inRawBlock && /^<(pre|code|kbd|script)(\s|>)/i.test(cap[0])) {
+        this.inRawBlock = true;
+      } else if (this.inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(cap[0])) {
+        this.inRawBlock = false;
+      }
+
+      src = src.substring(cap[0].length);
+      out += this.options.sanitize
+        ? this.options.sanitizer
+          ? this.options.sanitizer(cap[0])
+          : escape(cap[0])
+        : cap[0]
+      continue;
+    }
+
+    // link
+    if (cap = this.rules.link.exec(src)) {
+      src = src.substring(cap[0].length);
+      this.inLink = true;
+      href = cap[2];
+      if (this.options.pedantic) {
+        link = /^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(href);
+
+        if (link) {
+          href = link[1];
+          title = link[3];
+        } else {
+          title = '';
+        }
+      } else {
+        title = cap[3] ? cap[3].slice(1, -1) : '';
+      }
+      href = href.trim().replace(/^<([\s\S]*)>$/, '$1');
+      out += this.outputLink(cap, {
+        href: InlineLexer.escapes(href),
+        title: InlineLexer.escapes(title)
+      });
+      this.inLink = false;
+      continue;
+    }
+
+    // reflink, nolink
+    if ((cap = this.rules.reflink.exec(src))
+        || (cap = this.rules.nolink.exec(src))) {
+      src = src.substring(cap[0].length);
+      link = (cap[2] || cap[1]).replace(/\s+/g, ' ');
+      link = this.links[link.toLowerCase()];
+      if (!link || !link.href) {
+        out += cap[0].charAt(0);
+        src = cap[0].substring(1) + src;
+        continue;
+      }
+      this.inLink = true;
+      out += this.outputLink(cap, link);
+      this.inLink = false;
+      continue;
+    }
+
+    // strong
+    if (cap = this.rules.strong.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.strong(this.output(cap[4] || cap[3] || cap[2] || cap[1]));
+      continue;
+    }
+
+    // em
+    if (cap = this.rules.em.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.em(this.output(cap[6] || cap[5] || cap[4] || cap[3] || cap[2] || cap[1]));
+      continue;
+    }
+
+    // code
+    if (cap = this.rules.code.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.codespan(escape(cap[2].trim(), true));
+      continue;
+    }
+
+    // br
+    if (cap = this.rules.br.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.br();
+      continue;
+    }
+
+    // del (gfm)
+    if (cap = this.rules.del.exec(src)) {
+      src = src.substring(cap[0].length);
+      out += this.renderer.del(this.output(cap[1]));
+      continue;
+    }
+
+    // text
+    if (cap = this.rules.text.exec(src)) {
+      src = src.substring(cap[0].length);
+      if (this.inRawBlock) {
+        out += this.renderer.text(cap[0]);
+      } else {
+        out += this.renderer.text(escape(this.smartypants(cap[0])));
+      }
+      continue;
+    }
+
+    if (src) {
+      throw new Error('Infinite loop on byte: ' + src.charCodeAt(0));
+    }
+  }
+
+  return out;
+};
+
+InlineLexer.escapes = function(text) {
+  return text ? text.replace(InlineLexer.rules._escapes, '$1') : text;
+}
+
+/**
+ * Compile Link
+ */
+
+InlineLexer.prototype.outputLink = function(cap, link) {
+  var href = link.href,
+      title = link.title ? escape(link.title) : null;
+
+  return cap[0].charAt(0) !== '!'
+    ? this.renderer.link(href, title, this.output(cap[1]))
+    : this.renderer.image(href, title, escape(cap[1]));
+};
+
+/**
+ * Smartypants Transformations
+ */
+
+InlineLexer.prototype.smartypants = function(text) {
+  if (!this.options.smartypants) return text;
+  return text
+    // em-dashes
+    .replace(/---/g, '\u2014')
+    // en-dashes
+    .replace(/--/g, '\u2013')
+    // opening singles
+    .replace(/(^|[-\u2014/(\[{"\s])'/g, '$1\u2018')
+    // closing singles & apostrophes
+    .replace(/'/g, '\u2019')
+    // opening doubles
+    .replace(/(^|[-\u2014/(\[{\u2018\s])"/g, '$1\u201c')
+    // closing doubles
+    .replace(/"/g, '\u201d')
+    // ellipses
+    .replace(/\.{3}/g, '\u2026');
+};
+
+/**
+ * Mangle Links
+ */
+
+InlineLexer.prototype.mangle = function(text) {
+  if (!this.options.mangle) return text;
+  var out = '',
+      l = text.length,
+      i = 0,
+      ch;
+
+  for (; i < l; i++) {
+    ch = text.charCodeAt(i);
+    if (Math.random() > 0.5) {
+      ch = 'x' + ch.toString(16);
+    }
+    out += '&#' + ch + ';';
+  }
+
+  return out;
+};
+
+/**
+ * Renderer
+ */
+
+function Renderer(options) {
+  this.options = options || marked.defaults;
+}
+
+Renderer.prototype.code = function(code, lang, escaped) {
+  if (this.options.highlight) {
+    var out = this.options.highlight(code, lang);
+    if (out != null && out !== code) {
+      escaped = true;
+      code = out;
+    }
+  }
+
+  if (!lang) {
+    return '<pre><code>'
+      + (escaped ? code : escape(code, true))
+      + '</code></pre>';
+  }
+
+  return '<pre><code class="'
+    + this.options.langPrefix
+    + escape(lang, true)
+    + '">'
+    + (escaped ? code : escape(code, true))
+    + '</code></pre>\n';
+};
+
+Renderer.prototype.blockquote = function(quote) {
+  return '<blockquote>\n' + quote + '</blockquote>\n';
+};
+
+Renderer.prototype.html = function(html) {
+  return html;
+};
+
+Renderer.prototype.heading = function(text, level, raw) {
+  if (this.options.headerIds) {
+    return '<h'
+      + level
+      + ' id="'
+      + this.options.headerPrefix
+      + raw.toLowerCase().replace(/[^\w]+/g, '-')
+      + '">'
+      + text
+      + '</h'
+      + level
+      + '>\n';
+  }
+  // ignore IDs
+  return '<h' + level + '>' + text + '</h' + level + '>\n';
+};
+
+Renderer.prototype.hr = function() {
+  return this.options.xhtml ? '<hr/>\n' : '<hr>\n';
+};
+
+Renderer.prototype.list = function(body, ordered, start) {
+  var type = ordered ? 'ol' : 'ul',
+      startatt = (ordered && start !== 1) ? (' start="' + start + '"') : '';
+  return '<' + type + startatt + '>\n' + body + '</' + type + '>\n';
+};
+
+Renderer.prototype.listitem = function(text) {
+  return '<li>' + text + '</li>\n';
+};
+
+Renderer.prototype.checkbox = function(checked) {
+  return '<input '
+    + (checked ? 'checked="" ' : '')
+    + 'disabled="" type="checkbox"'
+    + (this.options.xhtml ? ' /' : '')
+    + '> ';
+}
+
+Renderer.prototype.paragraph = function(text) {
+  return '<p>' + text + '</p>\n';
+};
+
+Renderer.prototype.table = function(header, body) {
+  if (body) body = '<tbody>' + body + '</tbody>';
+
+  return '<table>\n'
+    + '<thead>\n'
+    + header
+    + '</thead>\n'
+    + body
+    + '</table>\n';
+};
+
+Renderer.prototype.tablerow = function(content) {
+  return '<tr>\n' + content + '</tr>\n';
+};
+
+Renderer.prototype.tablecell = function(content, flags) {
+  var type = flags.header ? 'th' : 'td';
+  var tag = flags.align
+    ? '<' + type + ' align="' + flags.align + '">'
+    : '<' + type + '>';
+  return tag + content + '</' + type + '>\n';
+};
+
+// span level renderer
+Renderer.prototype.strong = function(text) {
+  return '<strong>' + text + '</strong>';
+};
+
+Renderer.prototype.em = function(text) {
+  return '<em>' + text + '</em>';
+};
+
+Renderer.prototype.codespan = function(text) {
+  return '<code>' + text + '</code>';
+};
+
+Renderer.prototype.br = function() {
+  return this.options.xhtml ? '<br/>' : '<br>';
+};
+
+Renderer.prototype.del = function(text) {
+  return '<del>' + text + '</del>';
+};
+
+Renderer.prototype.link = function(href, title, text) {
+  if (this.options.sanitize) {
+    try {
+      var prot = decodeURIComponent(unescape(href))
+        .replace(/[^\w:]/g, '')
+        .toLowerCase();
+    } catch (e) {
+      return text;
+    }
+    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
+      return text;
+    }
+  }
+  if (this.options.baseUrl && !originIndependentUrl.test(href)) {
+    href = resolveUrl(this.options.baseUrl, href);
+  }
+  try {
+    href = encodeURI(href).replace(/%25/g, '%');
+  } catch (e) {
+    return text;
+  }
+  var out = '<a href="' + escape(href) + '"';
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+  out += '>' + text + '</a>';
+  return out;
+};
+
+Renderer.prototype.image = function(href, title, text) {
+  if (this.options.baseUrl && !originIndependentUrl.test(href)) {
+    href = resolveUrl(this.options.baseUrl, href);
+  }
+  var out = '<img src="' + href + '" alt="' + text + '"';
+  if (title) {
+    out += ' title="' + title + '"';
+  }
+  out += this.options.xhtml ? '/>' : '>';
+  return out;
+};
+
+Renderer.prototype.text = function(text) {
+  return text;
+};
+
+/**
+ * TextRenderer
+ * returns only the textual part of the token
+ */
+
+function TextRenderer() {}
+
+// no need for block level renderers
+
+TextRenderer.prototype.strong =
+TextRenderer.prototype.em =
+TextRenderer.prototype.codespan =
+TextRenderer.prototype.del =
+TextRenderer.prototype.text = function (text) {
+  return text;
+}
+
+TextRenderer.prototype.link =
+TextRenderer.prototype.image = function(href, title, text) {
+  return '' + text;
+}
+
+TextRenderer.prototype.br = function() {
+  return '';
+}
+
+/**
+ * Parsing & Compiling
+ */
+
+function Parser(options) {
+  this.tokens = [];
+  this.token = null;
+  this.options = options || marked.defaults;
+  this.options.renderer = this.options.renderer || new Renderer();
+  this.renderer = this.options.renderer;
+  this.renderer.options = this.options;
+}
+
+/**
+ * Static Parse Method
+ */
+
+Parser.parse = function(src, options) {
+  var parser = new Parser(options);
+  return parser.parse(src);
+};
+
+/**
+ * Parse Loop
+ */
+
+Parser.prototype.parse = function(src) {
+  this.inline = new InlineLexer(src.links, this.options);
+  // use an InlineLexer with a TextRenderer to extract pure text
+  this.inlineText = new InlineLexer(
+    src.links,
+    merge({}, this.options, {renderer: new TextRenderer()})
+  );
+  this.tokens = src.reverse();
+
+  var out = '';
+  while (this.next()) {
+    out += this.tok();
+  }
+
+  return out;
+};
+
+/**
+ * Next Token
+ */
+
+Parser.prototype.next = function() {
+  return this.token = this.tokens.pop();
+};
+
+/**
+ * Preview Next Token
+ */
+
+Parser.prototype.peek = function() {
+  return this.tokens[this.tokens.length - 1] || 0;
+};
+
+/**
+ * Parse Text Tokens
+ */
+
+Parser.prototype.parseText = function() {
+  var body = this.token.text;
+
+  while (this.peek().type === 'text') {
+    body += '\n' + this.next().text;
+  }
+
+  return this.inline.output(body);
+};
+
+/**
+ * Parse Current Token
+ */
+
+Parser.prototype.tok = function() {
+  switch (this.token.type) {
+    case 'space': {
+      return '';
+    }
+    case 'hr': {
+      return this.renderer.hr();
+    }
+    case 'heading': {
+      return this.renderer.heading(
+        this.inline.output(this.token.text),
+        this.token.depth,
+        unescape(this.inlineText.output(this.token.text)));
+    }
+    case 'code': {
+      return this.renderer.code(this.token.text,
+        this.token.lang,
+        this.token.escaped);
+    }
+    case 'table': {
+      var header = '',
+          body = '',
+          i,
+          row,
+          cell,
+          j;
+
+      // header
+      cell = '';
+      for (i = 0; i < this.token.header.length; i++) {
+        cell += this.renderer.tablecell(
+          this.inline.output(this.token.header[i]),
+          { header: true, align: this.token.align[i] }
+        );
+      }
+      header += this.renderer.tablerow(cell);
+
+      for (i = 0; i < this.token.cells.length; i++) {
+        row = this.token.cells[i];
+
+        cell = '';
+        for (j = 0; j < row.length; j++) {
+          cell += this.renderer.tablecell(
+            this.inline.output(row[j]),
+            { header: false, align: this.token.align[j] }
+          );
+        }
+
+        body += this.renderer.tablerow(cell);
+      }
+      return this.renderer.table(header, body);
+    }
+    case 'blockquote_start': {
+      body = '';
+
+      while (this.next().type !== 'blockquote_end') {
+        body += this.tok();
+      }
+
+      return this.renderer.blockquote(body);
+    }
+    case 'list_start': {
+      body = '';
+      var ordered = this.token.ordered,
+          start = this.token.start;
+
+      while (this.next().type !== 'list_end') {
+        body += this.tok();
+      }
+
+      return this.renderer.list(body, ordered, start);
+    }
+    case 'list_item_start': {
+      body = '';
+      var loose = this.token.loose;
+
+      if (this.token.task) {
+        body += this.renderer.checkbox(this.token.checked);
+      }
+
+      while (this.next().type !== 'list_item_end') {
+        body += !loose && this.token.type === 'text'
+          ? this.parseText()
+          : this.tok();
+      }
+
+      return this.renderer.listitem(body);
+    }
+    case 'html': {
+      // TODO parse inline content if parameter markdown=1
+      return this.renderer.html(this.token.text);
+    }
+    case 'paragraph': {
+      return this.renderer.paragraph(this.inline.output(this.token.text));
+    }
+    case 'text': {
+      return this.renderer.paragraph(this.parseText());
+    }
+  }
+};
+
+/**
+ * Helpers
+ */
+
+function escape(html, encode) {
+  if (encode) {
+    if (escape.escapeTest.test(html)) {
+      return html.replace(escape.escapeReplace, function (ch) { return escape.replacements[ch] });
+    }
+  } else {
+    if (escape.escapeTestNoEncode.test(html)) {
+      return html.replace(escape.escapeReplaceNoEncode, function (ch) { return escape.replacements[ch] });
+    }
+  }
+
+  return html;
+}
+
+escape.escapeTest = /[&<>"']/;
+escape.escapeReplace = /[&<>"']/g;
+escape.replacements = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+};
+
+escape.escapeTestNoEncode = /[<>"']|&(?!#?\w+;)/;
+escape.escapeReplaceNoEncode = /[<>"']|&(?!#?\w+;)/g;
+
+function unescape(html) {
+  // explicitly match decimal, hex, and named HTML entities
+  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig, function(_, n) {
+    n = n.toLowerCase();
+    if (n === 'colon') return ':';
+    if (n.charAt(0) === '#') {
+      return n.charAt(1) === 'x'
+        ? String.fromCharCode(parseInt(n.substring(2), 16))
+        : String.fromCharCode(+n.substring(1));
+    }
+    return '';
+  });
+}
+
+function edit(regex, opt) {
+  regex = regex.source || regex;
+  opt = opt || '';
+  return {
+    replace: function(name, val) {
+      val = val.source || val;
+      val = val.replace(/(^|[^\[])\^/g, '$1');
+      regex = regex.replace(name, val);
+      return this;
+    },
+    getRegex: function() {
+      return new RegExp(regex, opt);
+    }
+  };
+}
+
+function resolveUrl(base, href) {
+  if (!baseUrls[' ' + base]) {
+    // we can ignore everything in base after the last slash of its path component,
+    // but we might need to add _that_
+    // https://tools.ietf.org/html/rfc3986#section-3
+    if (/^[^:]+:\/*[^/]*$/.test(base)) {
+      baseUrls[' ' + base] = base + '/';
+    } else {
+      baseUrls[' ' + base] = rtrim(base, '/', true);
+    }
+  }
+  base = baseUrls[' ' + base];
+
+  if (href.slice(0, 2) === '//') {
+    return base.replace(/:[\s\S]*/, ':') + href;
+  } else if (href.charAt(0) === '/') {
+    return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
+  } else {
+    return base + href;
+  }
+}
+var baseUrls = {};
+var originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
+
+function noop() {}
+noop.exec = noop;
+
+function merge(obj) {
+  var i = 1,
+      target,
+      key;
+
+  for (; i < arguments.length; i++) {
+    target = arguments[i];
+    for (key in target) {
+      if (Object.prototype.hasOwnProperty.call(target, key)) {
+        obj[key] = target[key];
+      }
+    }
+  }
+
+  return obj;
+}
+
+function splitCells(tableRow, count) {
+  // ensure that every cell-delimiting pipe has a space
+  // before it to distinguish it from an escaped pipe
+  var row = tableRow.replace(/\|/g, function (match, offset, str) {
+        var escaped = false,
+            curr = offset;
+        while (--curr >= 0 && str[curr] === '\\') escaped = !escaped;
+        if (escaped) {
+          // odd number of slashes means | is escaped
+          // so we leave it alone
+          return '|';
+        } else {
+          // add space before unescaped |
+          return ' |';
+        }
+      }),
+      cells = row.split(/ \|/),
+      i = 0;
+
+  if (cells.length > count) {
+    cells.splice(count);
+  } else {
+    while (cells.length < count) cells.push('');
+  }
+
+  for (; i < cells.length; i++) {
+    // leading or trailing whitespace is ignored per the gfm spec
+    cells[i] = cells[i].trim().replace(/\\\|/g, '|');
+  }
+  return cells;
+}
+
+// Remove trailing 'c's. Equivalent to str.replace(/c*$/, '').
+// /c*$/ is vulnerable to REDOS.
+// invert: Remove suffix of non-c chars instead. Default falsey.
+function rtrim(str, c, invert) {
+  if (str.length === 0) {
+    return '';
+  }
+
+  // Length of suffix matching the invert condition.
+  var suffLen = 0;
+
+  // Step left until we fail to match the invert condition.
+  while (suffLen < str.length) {
+    var currChar = str.charAt(str.length - suffLen - 1);
+    if (currChar === c && !invert) {
+      suffLen++;
+    } else if (currChar !== c && invert) {
+      suffLen++;
+    } else {
+      break;
+    }
+  }
+
+  return str.substr(0, str.length - suffLen);
+}
+
+/**
+ * Marked
+ */
+
+function marked(src, opt, callback) {
+  // throw error in case of non string input
+  if (typeof src === 'undefined' || src === null) {
+    throw new Error('marked(): input parameter is undefined or null');
+  }
+  if (typeof src !== 'string') {
+    throw new Error('marked(): input parameter is of type '
+      + Object.prototype.toString.call(src) + ', string expected');
+  }
+
+  if (callback || typeof opt === 'function') {
+    if (!callback) {
+      callback = opt;
+      opt = null;
+    }
+
+    opt = merge({}, marked.defaults, opt || {});
+
+    var highlight = opt.highlight,
+        tokens,
+        pending,
+        i = 0;
+
+    try {
+      tokens = Lexer.lex(src, opt)
+    } catch (e) {
+      return callback(e);
+    }
+
+    pending = tokens.length;
+
+    var done = function(err) {
+      if (err) {
+        opt.highlight = highlight;
+        return callback(err);
+      }
+
+      var out;
+
+      try {
+        out = Parser.parse(tokens, opt);
+      } catch (e) {
+        err = e;
+      }
+
+      opt.highlight = highlight;
+
+      return err
+        ? callback(err)
+        : callback(null, out);
+    };
+
+    if (!highlight || highlight.length < 3) {
+      return done();
+    }
+
+    delete opt.highlight;
+
+    if (!pending) return done();
+
+    for (; i < tokens.length; i++) {
+      (function(token) {
+        if (token.type !== 'code') {
+          return --pending || done();
+        }
+        return highlight(token.text, token.lang, function(err, code) {
+          if (err) return done(err);
+          if (code == null || code === token.text) {
+            return --pending || done();
+          }
+          token.text = code;
+          token.escaped = true;
+          --pending || done();
+        });
+      })(tokens[i]);
+    }
+
+    return;
+  }
+  try {
+    if (opt) opt = merge({}, marked.defaults, opt);
+    return Parser.parse(Lexer.lex(src, opt), opt);
+  } catch (e) {
+    e.message += '\nPlease report this to https://github.com/markedjs/marked.';
+    if ((opt || marked.defaults).silent) {
+      return '<p>An error occurred:</p><pre>'
+        + escape(e.message + '', true)
+        + '</pre>';
+    }
+    throw e;
+  }
+}
+
+/**
+ * Options
+ */
+
+marked.options =
+marked.setOptions = function(opt) {
+  merge(marked.defaults, opt);
+  return marked;
+};
+
+marked.getDefaults = function () {
+  return {
+    baseUrl: null,
+    breaks: false,
+    gfm: true,
+    headerIds: true,
+    headerPrefix: '',
+    highlight: null,
+    langPrefix: 'language-',
+    mangle: true,
+    pedantic: false,
+    renderer: new Renderer(),
+    sanitize: false,
+    sanitizer: null,
+    silent: false,
+    smartLists: false,
+    smartypants: false,
+    tables: true,
+    xhtml: false
+  };
+}
+
+marked.defaults = marked.getDefaults();
+
+/**
+ * Expose
+ */
+
+marked.Parser = Parser;
+marked.parser = Parser.parse;
+
+marked.Renderer = Renderer;
+marked.TextRenderer = TextRenderer;
+
+marked.Lexer = Lexer;
+marked.lexer = Lexer.lex;
+
+marked.InlineLexer = InlineLexer;
+marked.inlineLexer = InlineLexer.output;
+
+marked.parse = marked;
+
+if (true) {
+  module.exports = marked;
+} else {}
+})(this || (typeof window !== 'undefined' ? window : global));
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(18)))
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
 
 /***/ })
-
-/******/ });
+/******/ ]);
