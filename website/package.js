@@ -89,7 +89,8 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 const cfg = {
-  root: 'http://localhost:4000'
+  root: 'http://localhost:4000',
+  stripe: 'pk_test_CY6HxyQkOolO1B3h43MvkJE5'
 };
 
 if (true) {
@@ -843,9 +844,42 @@ var preact = {
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(1);
+
+const root = __webpack_require__(0).root;
+console.log(root);
+
+exports.get = function(url) {
+  const opts = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    }
+  };
+  return fetch(`${root}${url}`, opts).then(res => res.json());
+};
+
+exports.put = function(url, data) {
+  const opts = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    },
+    body: JSON.stringify(data)
+  };
+  return fetch(`${root}${url}`, opts).then(res => res.json());
+};
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
 const React = __webpack_require__(2);
 
-const http = __webpack_require__(4);
+const http = __webpack_require__(3);
 
 const root = __webpack_require__(0).root;
 
@@ -924,27 +958,6 @@ class Nav extends React.Component {
 React.render(React.createElement(Nav, null), document.querySelector('#nav-container'));
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(1);
-
-const root = __webpack_require__(0).root;
-console.log(root);
-
-exports.get = function(url) {
-  const opts = {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    }
-  };
-  return fetch(`${root}${url}`, opts).then(res => res.json());
-};
-
-
-/***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
@@ -980,7 +993,7 @@ module.exports = () => `
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-__webpack_require__(3);
+__webpack_require__(4);
 
 const error404 = __webpack_require__(9);
 const marked = __webpack_require__(17);

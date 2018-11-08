@@ -89,7 +89,8 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 const cfg = {
-  root: 'http://localhost:4000'
+  root: 'http://localhost:4000',
+  stripe: 'pk_test_CY6HxyQkOolO1B3h43MvkJE5'
 };
 
 if (true) {
@@ -843,9 +844,42 @@ var preact = {
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(1);
+
+const root = __webpack_require__(0).root;
+console.log(root);
+
+exports.get = function(url) {
+  const opts = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    }
+  };
+  return fetch(`${root}${url}`, opts).then(res => res.json());
+};
+
+exports.put = function(url, data) {
+  const opts = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    },
+    body: JSON.stringify(data)
+  };
+  return fetch(`${root}${url}`, opts).then(res => res.json());
+};
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
 const React = __webpack_require__(2);
 
-const http = __webpack_require__(4);
+const http = __webpack_require__(3);
 
 const root = __webpack_require__(0).root;
 
@@ -922,27 +956,6 @@ class Nav extends React.Component {
 }
 
 React.render(React.createElement(Nav, null), document.querySelector('#nav-container'));
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(1);
-
-const root = __webpack_require__(0).root;
-console.log(root);
-
-exports.get = function(url) {
-  const opts = {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    }
-  };
-  return fetch(`${root}${url}`, opts).then(res => res.json());
-};
-
 
 /***/ }),
 /* 5 */
@@ -1308,9 +1321,11 @@ module.exports = function (encodedURI) {
 
 __webpack_require__(1);
 
-__webpack_require__(3);
+__webpack_require__(4);
 
 const React = __webpack_require__(2);
+
+const http = __webpack_require__(3);
 
 const linkstate = __webpack_require__(11).default;
 
@@ -1318,9 +1333,12 @@ const mitt = __webpack_require__(12).default;
 
 const qs = __webpack_require__(6);
 
-const root = __webpack_require__(0).root;
+const config = __webpack_require__(0);
 
-console.log(root);
+const root = config.root;
+console.log(root, config.stripe);
+const stripe = Stripe(config.stripe);
+console.log(stripe.createToken);
 const events$ = mitt();
 const state$ = mitt();
 let state = {
@@ -1398,6 +1416,24 @@ events$.on('ADD_PACKAGE', $wrap(async ({
     accounts
   });
   state$.emit('UPDATE', state);
+}));
+events$.on('SET_PAYMENT', $wrap(async ({
+  el
+}) => {
+  const stripeToken = await stripe.createToken(el()).then(res => res.token.id);
+  const {
+    customer
+  } = await http.put('/stripe', {
+    stripeToken
+  });
+  const updated = Object.assign({}, state.customer, {
+    stripe: customer.stripe
+  });
+  state = Object.assign({}, state, {
+    customer: updated
+  });
+  state$.emit('UPDATE', state);
+  console.log('Updated', state);
 }));
 events$.on('ERROR', err => {
   console.log(err.stack);
@@ -1556,6 +1592,48 @@ function Integrations(props) {
   }, "\uD83D\uDDD9")))));
 }
 
+class Billing extends React.Component {
+  render(props) {
+    const show = {
+      display: 'block'
+    };
+    const hide = {
+      display: 'none'
+    };
+    const last4 = props.stripe == null ? null : props.stripe.last4;
+    return React.createElement("div", {
+      class: "billing"
+    }, React.createElement("div", {
+      class: "card-display",
+      style: props.stripe == null ? hide : show
+    }, React.createElement("div", {
+      class: "check"
+    }, "\u2714"), React.createElement("div", {
+      class: "card-description"
+    }, "Card ending in ", last4), React.createElement("div", {
+      style: "clear: both"
+    })), React.createElement("div", null, React.createElement("div", {
+      id: "stripe-container"
+    }), React.createElement("input", {
+      type: "button",
+      value: "Update Payment",
+      class: "button",
+      onClick: () => events$.emit('SET_PAYMENT', {
+        el: () => this._element
+      })
+    })));
+  }
+
+  componentDidMount() {
+    if (this._element == null) {
+      this._element = stripe.elements().create('card');
+
+      this._element.mount('#stripe-container');
+    }
+  }
+
+}
+
 class Dashboard extends React.Component {
   componentDidMount() {
     this.setState(state);
@@ -1598,6 +1676,9 @@ class Dashboard extends React.Component {
       class: "dashboard"
     }, React.createElement("h2", null, "Profile"), React.createElement(Profile, {
       customer: state.customer
+    }), React.createElement("h2", null, "Billing"), React.createElement("h4", null, "For Early Adopters Only"), "Unlimited integrations and watched packages for $9.99 per month, first 30 days free.", React.createElement(Billing, {
+      customerId: state.customer._id,
+      stripe: state.customer.stripe
     }), React.createElement("h2", null, "Integrations"), React.createElement(Integrations, {
       accounts: state.accounts
     }), React.createElement("h2", null, "Add Integration"), React.createElement("a", {

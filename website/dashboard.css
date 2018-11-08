@@ -95,3 +95,33 @@
   padding-top: 8px;
   padding-bottom: 8px;
 }
+
+.card-display {
+  width: 450px;
+  border: 1px dashed #e3e3e3;
+  padding: 25px;
+  margin-top: 15px;
+}
+
+.card-display .check {
+  font-size: 3em;
+  color: green;
+  margin-right: 15px;
+  float: left;
+}
+
+.card-display .card-description {
+  float: left;
+  margin-top: 1em;
+}
+
+#stripe-container {
+  width: 450px;
+  border: 1px dashed #e3e3e3;
+  padding: 25px;
+  margin-top: 15px;
+}
+
+.billing input[type="button"] {
+  margin-top: 20px;
+}

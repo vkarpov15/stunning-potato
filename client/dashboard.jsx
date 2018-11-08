@@ -2,12 +2,16 @@ require('unfetch');
 require('./nav.jsx');
 
 const React = require('preact');
+const http = require('./http');
 const linkstate = require('linkstate').default;
 const mitt = require('mitt').default;
 const qs = require('query-string');
 
-const root = require('../config').root;
-console.log(root);
+const config = require('../config');
+const root = config.root;
+console.log(root, config.stripe);
+const stripe = Stripe(config.stripe);
+console.log(stripe.createToken)
 
 const events$ = mitt();
 const state$ = mitt();
@@ -75,6 +79,18 @@ events$.on('ADD_PACKAGE', $wrap(async ({ accountId, pkg }) => {
   state = Object.assign({}, state, { accounts });
 
   state$.emit('UPDATE', state);
+}));
+
+events$.on('SET_PAYMENT', $wrap(async ({ el }) => {
+  const stripeToken = await stripe.createToken(el()).then(res => res.token.id);
+
+  const { customer } = await http.put('/stripe', { stripeToken });
+
+  const updated = Object.assign({}, state.customer, { stripe: customer.stripe });
+  state = Object.assign({}, state, { customer: updated });
+  state$.emit('UPDATE', state);
+
+  console.log('Updated', state);
 }));
 
 events$.on('ERROR', err => {
@@ -215,6 +231,43 @@ function Integrations(props) {
   );
 }
 
+class Billing extends React.Component {
+  render(props) {
+    const show = { display: 'block' };
+    const hide = { display: 'none' };
+    const last4 = props.stripe == null ? null : props.stripe.last4;
+    return (
+      <div class="billing">
+        <div class="card-display" style={props.stripe == null ? hide : show}>
+          <div class="check">&#x2714;</div>
+          <div class="card-description">
+            Card ending in {last4}
+          </div>
+          <div style="clear: both"></div>
+        </div>
+
+        <div>
+          <div id="stripe-container">
+          </div>
+
+          <input
+            type="button"
+            value="Update Payment"
+            class="button"
+            onClick={() => events$.emit('SET_PAYMENT', { el: () => this._element })} />
+        </div>
+      </div>
+    );
+  }
+
+  componentDidMount() {
+    if (this._element == null) {
+      this._element = stripe.elements().create('card');
+      this._element.mount('#stripe-container');
+    }
+  }
+}
+
 class Dashboard extends React.Component {
   componentDidMount() {
     this.setState(state);
@@ -258,6 +311,15 @@ class Dashboard extends React.Component {
         <h2>Profile</h2>
 
         <Profile customer={state.customer} />
+
+        <h2>Billing</h2>
+
+        <h4>For Early Adopters Only</h4>
+
+        Unlimited integrations and watched packages for $9.99 per month, first
+        30 days free.
+
+        <Billing customerId={state.customer._id} stripe={state.customer.stripe} />
 
         <h2>Integrations</h2>
 
