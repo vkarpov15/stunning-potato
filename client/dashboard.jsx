@@ -82,7 +82,18 @@ events$.on('ADD_PACKAGE', $wrap(async ({ accountId, pkg }) => {
 }));
 
 events$.on('SET_PAYMENT', $wrap(async ({ el }) => {
-  const stripeToken = await stripe.createToken(el()).then(res => res.token.id);
+  const stripeToken = await stripe.createToken(el()).then(res => {
+    if (res.error) {
+      console.log('Emit', res.error)
+      events$.emit('SET_PAYMENT_ERROR', res.error);
+      return null;
+    }
+    return res.token.id;
+  });
+
+  if (stripeToken == null) {
+    return;
+  }
 
   const { customer } = await http.put('/stripe', { stripeToken });
 
@@ -90,7 +101,7 @@ events$.on('SET_PAYMENT', $wrap(async ({ el }) => {
   state = Object.assign({}, state, { customer: updated });
   state$.emit('UPDATE', state);
 
-  console.log('Updated', state);
+  events$.emit('SET_PAYMENT_SUCCESS', {});
 }));
 
 events$.on('ERROR', err => {
@@ -232,7 +243,28 @@ function Integrations(props) {
 }
 
 class Billing extends React.Component {
-  render(props) {
+  componentDidMount() {
+    console.log('Register billing events')
+    events$.on('SET_PAYMENT_ERROR', error => {
+      console.log('Got ', error)
+      this.setState(Object.assign({}, this.state, { error }));
+    });
+
+    events$.on('SET_PAYMENT', () => {
+      this.setState(Object.assign({}, this.state, { error: null }));
+    });
+
+    events$.on('SET_PAYMENT_SUCCESS', () => {
+      this.setState(Object.assign({}, this.state, { error: null }));
+    });
+
+    if (this._element == null) {
+      this._element = stripe.elements().create('card');
+      this._element.mount('#stripe-container');
+    }
+  }
+
+  render(props, state) {
     const show = { display: 'block' };
     const hide = { display: 'none' };
     const last4 = props.stripe == null ? null : props.stripe.last4;
@@ -247,6 +279,8 @@ class Billing extends React.Component {
         </div>
 
         <div>
+          <h4>Update Payment with Stripe</h4>
+
           <div id="stripe-container">
           </div>
 
@@ -255,16 +289,13 @@ class Billing extends React.Component {
             value="Update Payment"
             class="button"
             onClick={() => events$.emit('SET_PAYMENT', { el: () => this._element })} />
+
+          <span class="card-error">
+            {state.error == null ? '' : state.error.message}
+          </span>
         </div>
       </div>
     );
-  }
-
-  componentDidMount() {
-    if (this._element == null) {
-      this._element = stripe.elements().create('card');
-      this._element.mount('#stripe-container');
-    }
   }
 }
 
