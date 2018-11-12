@@ -982,7 +982,9 @@ module.exports = {
 __webpack_require__(1);
 __webpack_require__(4);
 
-fetch('https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default/latest-versions').
+const config = __webpack_require__(0);
+
+fetch(`${config.root}/home`).
   then(res => res.json()).
   then(res => {
     document.querySelector('#latest-releases-content').innerHTML = res.versions.

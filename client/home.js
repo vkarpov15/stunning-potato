@@ -1,7 +1,9 @@
 require('unfetch');
 require('./nav.jsx');
 
-fetch('https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default/latest-versions').
+const config = require('../config');
+
+fetch(`${config.root}/home`).
   then(res => res.json()).
   then(res => {
     document.querySelector('#latest-releases-content').innerHTML = res.versions.
