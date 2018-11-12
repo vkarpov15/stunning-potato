@@ -1,8 +1,17 @@
 const React = require('preact');
 const http = require('./http');
 
-const root = require('../config').root;
+const config = require('../config');
+const root = config.root;
 console.log(root);
+
+if (config.track) {
+  const client = new require('keen-tracking').default(config.keen);
+
+  client.recordEvent('pageView', {
+    path: window.location.pathname
+  });
+}
 
 class Nav extends React.Component {
   componentDidMount() {

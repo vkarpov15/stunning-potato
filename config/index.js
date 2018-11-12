@@ -1,6 +1,7 @@
 const cfg = {
   root: 'http://localhost:4000',
-  stripe: 'pk_test_CY6HxyQkOolO1B3h43MvkJE5'
+  stripe: 'pk_test_CY6HxyQkOolO1B3h43MvkJE5',
+  track: false
 };
 
 if (process.env.NODE_ENV === 'production') {
