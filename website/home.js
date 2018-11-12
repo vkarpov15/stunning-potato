@@ -972,6 +972,7 @@ React.render(React.createElement(Nav, null), document.querySelector('#nav-contai
 
 module.exports = {
   root: 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod',
+  stripe: 'pk_live_CYJYFTKEJ340Qau5PP7fXWgk',
   track: true,
   keen: {
     projectId: '5be9abb3c9e77c0001a1284e',

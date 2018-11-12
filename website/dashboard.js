@@ -972,6 +972,7 @@ React.render(React.createElement(Nav, null), document.querySelector('#nav-contai
 
 module.exports = {
   root: 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod',
+  stripe: 'pk_live_CYJYFTKEJ340Qau5PP7fXWgk',
   track: true,
   keen: {
     projectId: '5be9abb3c9e77c0001a1284e',
@@ -6333,7 +6334,9 @@ class Dashboard extends React.Component {
       width: "139",
       src: "https://platform.slack-edge.com/img/add_to_slack.png",
       srcset: "https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"
-    })));
+    })), React.createElement("h2", null, "Help"), "Have a question or need a new feature? ", React.createElement("a", {
+      href: "https://github.com/js-report/support/issues/new"
+    }, "Open an issue on our GitHub page"), ".");
   }
 
 }
