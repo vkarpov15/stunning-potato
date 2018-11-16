@@ -957,6 +957,10 @@ class Nav extends React.Component {
       href: "https://tinyletter.com/js-report"
     }, "Newsletter")), React.createElement("div", {
       class: "nav-link"
+    }, React.createElement("a", {
+      href: "/blog/this-week-on-npm-20181116"
+    }, "Blog")), React.createElement("div", {
+      class: "nav-link"
     }, this.login()), React.createElement("div", {
       style: "clear: both"
     }));
