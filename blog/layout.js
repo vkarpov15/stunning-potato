@@ -1,7 +1,9 @@
-module.exports = content => `
+module.exports = (content, post) => `
 <!DOCTYPE html>
 <html>
   <head>
+    <title>${post.title}</title>
+
     <link rel="stylesheet" href="/website/style.css">
     <link rel="stylesheet" href="/website/github.css">
     <link href="https://fonts.googleapis.com/css?family=Play|Roboto" rel="stylesheet">

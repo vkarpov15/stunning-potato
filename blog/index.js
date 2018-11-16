@@ -15,6 +15,6 @@ for (const post of posts) {
   const content = layout(`
     <h1>${post.title}</h1>
     ${marked(fs.readFileSync(file, 'utf8'))}
-  `);
+  `, post);
   fs.writeFileSync(`${__dirname}/${post.output}.html`, content);
 }
