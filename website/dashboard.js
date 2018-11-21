@@ -958,7 +958,7 @@ class Nav extends React.Component {
     }, "Newsletter")), React.createElement("div", {
       class: "nav-link"
     }, React.createElement("a", {
-      href: "/blog/this-week-on-npm-20181116"
+      href: "/blog"
     }, "Blog")), React.createElement("div", {
       class: "nav-link"
     }, this.login()), React.createElement("div", {

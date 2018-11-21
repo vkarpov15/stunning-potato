@@ -68,7 +68,7 @@ class Nav extends React.Component {
           </a>
         </div>
         <div class="nav-link">
-          <a href="/blog/this-week-on-npm-20181116">
+          <a href="/blog">
             Blog
           </a>
         </div>

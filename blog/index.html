@@ -1,8 +1,8 @@
-module.exports = (content, { title }) => `
+
 <!DOCTYPE html>
 <html>
   <head>
-    <title>JSReport: ${title}</title>
+    <title>JSReport: Blog</title>
 
     <link rel="stylesheet" href="/website/style.css">
     <link rel="stylesheet" href="/website/github.css">
@@ -56,11 +56,24 @@ module.exports = (content, { title }) => `
       </div>
 
       <div id="content">
-        ${content}
+        
+  <h1>The JSReport Blog</h1>
+
+  
+    <div class="post">
+      <div class="post-image">
+        <img src="https://i.imgur.com/qsKE9gx.jpg">
+      </div>
+      <div class="post-description">
+        <h2><a href="this-week-on-npm-20181116">This Week on npm v20181116</a></h2>
+        <i>New releases from the most popular npm packages from Nov 9 - Nov 16.</i>
+      </div>
+    </div>
+  
+
       </div>
     </div>
 
     <script src="/website/nav.js"></script>
   </body>
 </html>
-`;
