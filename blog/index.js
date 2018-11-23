@@ -5,6 +5,13 @@ const marked = require('marked');
 
 const posts = [
   {
+    title: 'This Week on npm v20181123',
+    content: '20181123_weekly.md',
+    output: 'this-week-on-npm-20181123',
+    description: 'New releases from the most popular npm packages from Nov 16 to Nov 23, broken down by major, minor, and patch releases.',
+    image: 'https://i.imgur.com/XZlI1P3.jpg'
+  },
+  {
     title: 'This Week on npm v20181116',
     content: '20181116_weekly.md',
     output: 'this-week-on-npm-20181116',
@@ -37,9 +44,10 @@ function listView(post) {
         <img src="${post.image}">
       </div>
       <div class="post-description">
-        <h2><a href="${post.output}">${post.title}</a></h2>
+        <h2><a href="/blog/${post.output}">${post.title}</a></h2>
         <i>${post.description}</i>
       </div>
+      <div style="clear: both"></div>
     </div>
   `;
 }
