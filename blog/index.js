@@ -5,6 +5,13 @@ const marked = require('marked');
 
 const posts = [
   {
+    title: 'This Week on npm v20181130: event-stream, qs, snapdragon-node',
+    content: '20181130_weekly.md',
+    output: 'this-week-on-npm-20181130',
+    description: 'New releases from the most popular npm packages from November 23 - November 30.',
+    image: 'https://i.imgur.com/S0ObOcJ.png'
+  },
+  {
     title: 'This Week on npm v20181123',
     content: '20181123_weekly.md',
     output: 'this-week-on-npm-20181123',

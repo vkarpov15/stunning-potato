@@ -91,11 +91,17 @@ a {
   line-height: 1.5em;
 }
 
-code {
+p code {
   color: #00386c;
   background-color: #ddd;
   padding: 2px;
   border-radius: 1px;
+}
+
+pre {
+  background-color: #ddd;
+  border-radius: 2px;
+  padding: 3px;
 }
 
 .error-gag-img {
