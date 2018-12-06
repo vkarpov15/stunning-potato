@@ -4,7 +4,8 @@ require('./nav.jsx');
 const error404 = require('./error404');
 const marked = require('marked');
 
-const root = 'https://ja7gm36oie.execute-api.us-east-1.amazonaws.com/default';
+const config = require('../config');
+const root = config.root;
 
 if (typeof window !== 'undefined') {
   main(window.location.pathname, document.querySelector('#content'));
@@ -13,18 +14,41 @@ if (typeof window !== 'undefined') {
 module.exports = main;
 
 function main(url, container) {
-  const sp = url.split('/');
+  const versionStr = url.substr('/package/'.length);
 
-  if (sp.length < 4) {
+  const lastSlash = versionStr.lastIndexOf('/');
+
+  if (lastSlash === -1) {
     container.innerHTML = error404();
     return;
   }
 
-  fetch(`${root}/version?packageId=${sp[2]}&version=${sp[3]}`).
+  const versionNum = versionStr.substr(lastSlash + 1);
+  const packageId = versionStr.substr(0, lastSlash);
+
+  fetch(`${root}/version?packageId=${packageId}&version=${versionNum}`).
     then(res => res.json()).
     then(res => {
+      if (res.version == null) {
+        container.innerHTML = error404();
+        return;
+      }
       let html = `
-        <h1>${res.version.packageId}@${res.version.version}</h1>
+        <h1 class="inline-header">
+          ${res.version.packageId}@${res.version.version}
+        </h1>
+
+        <p>${res.package.description}</p>
+
+        <div class="links">
+          <a href="https://npmjs.com/package/${res.version.packageId}/v/${res.version.version}">
+            <img src="/images/npm.svg" />
+          </a>
+
+          ${githubLink(res)}
+        </div>
+
+        <h1 class="inline-header">Changelog</h1>
 
         <div class="changelog">
           ${res.version.changelog == null ? 'No Changelog Found' : marked(res.version.changelog)}
@@ -36,4 +60,18 @@ function main(url, container) {
       container.innerHTML = error404();
       throw err;
     });
+}
+
+function githubLink(res) {
+  if (res.package.github == null) {
+    return '';
+  }
+
+  const { github } = res.package;
+
+  return `
+    <a href="https://github.com/${github.owner}/${github.repo}">
+      <img src="/images/github.svg" />
+    </a>
+  `;
 }

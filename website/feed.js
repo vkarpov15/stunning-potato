@@ -5680,7 +5680,7 @@ function isXPercentDownThePage(percent) {
 module.exports = version => `
   <div class="version">
     <div class="left">
-      <a href="https://npmjs.com/package/${version.packageId}">
+      <a href="/package/${version.packageId}/${version.version}">
         ${version.packageId}@${version.version}
       </a>
       <div
