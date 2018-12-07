@@ -3,7 +3,21 @@ const layout = require('./layout');
 const postLayout = require('./post');
 const marked = require('marked');
 
+const highlight = require('highlight.js');
+marked.setOptions({
+  highlight: function(code) {
+    return highlight.highlight('JavaScript', code).value;
+  }
+});
+
 const posts = [
+  {
+    title: 'This Week on npm v20181207: is-ci, react-redux, How Often Should You Update Dependencies?',
+    content: '20181207_weekly.md',
+    output: 'this-week-on-npm-20181207',
+    description: 'New releases from the most popular npm packages from November 30 - December 7.',
+    image: 'https://i.imgur.com/vA0a4eD.png'
+  },
   {
     title: 'This Week on npm v20181130: event-stream, qs, snapdragon-node',
     content: '20181130_weekly.md',
@@ -27,7 +41,8 @@ const posts = [
   }
 ];
 
-for (const post of posts) {
+for (let i = 0; i < posts.length; ++i) {
+  const post = posts[i];
   const file = `${__dirname}/posts/${post.content}`;
   const content = postLayout(`
     <h1>${post.title}</h1>

@@ -12,6 +12,14 @@
       p {
         line-height: 1.5em;
       }
+
+      pre {
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 5px;
+      }
+
       hr {
         margin-top: 1em;
         margin-bottom: 1em;
@@ -126,14 +134,14 @@
 <h2 id="qs-6-6-0"><a href="mailto:qs@6.6.0">qs@6.6.0</a></h2>
 <p>The <a href="https://www.npmjs.com/package/qs">qs</a> module is the query string parser <a href="https://www.npmjs.com/package/express">Express</a> uses. Express <a href="https://github.com/expressjs/express/blob/dc538f6e810bd462c98ee7e6aae24c64d4b1da93/package.json#L50">pegs an exact version of qs</a>, so this release also likely will not affect you.</p>
 <p>The primary new feature in this release is a new flag adding <a href="https://github.com/ljharb/qs/pull/268/files#diff-04c6e90faac2675aa89e2176d2eec7d8">support for old Internet Explorer form encodings</a>.</p>
-<pre><code>$ npm install qs@6.6.0
+<pre><code>$ npm install qs@<span class="hljs-number">6.6</span><span class="hljs-number">.0</span>
 $ node
-&gt; const qs = require(&#39;qs&#39;)
-undefined
-&gt; qs.parse(&#39;a=%A7&#39;)
-{ a: &#39;%A7&#39; }
-&gt; qs.parse(&#39;a=%A7&#39;, { charset: &#39;iso-8859-1&#39; }) // New in 6.6.0
-{ a: &#39;§&#39; }
+&gt; <span class="hljs-keyword">const</span> qs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'qs'</span>)
+<span class="hljs-literal">undefined</span>
+&gt; qs.parse(<span class="hljs-string">'a=%A7'</span>)
+{ <span class="hljs-attr">a</span>: <span class="hljs-string">'%A7'</span> }
+&gt; qs.parse(<span class="hljs-string">'a=%A7'</span>, { <span class="hljs-attr">charset</span>: <span class="hljs-string">'iso-8859-1'</span> }) <span class="hljs-comment">// New in 6.6.0</span>
+{ <span class="hljs-attr">a</span>: <span class="hljs-string">'§'</span> }
 &gt;</code></pre><h2 id="moving-on">Moving On</h2>
 <p>Event-stream not withstanding, this was a quiet week on npm with only 37,782 new releases between November 23 and November 30. How many of those affect you? Check out <a href="https://js.report/slack">JSReport for Slack</a> and keep up to date with the JavaScript libraries you depend on.</p>
 
