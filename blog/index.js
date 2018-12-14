@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20181214: moment@2.23.0, Automated vs Manual Changelogs',
+    content: '20181214_weekly.md',
+    output: 'this-week-on-npm-20181214',
+    description: 'New releases from the most popular npm packages from December 7 - December 14.',
+    image: 'https://i.imgur.com/bBOgZxu.jpg'
+  },
+  {
     title: 'This Week on npm v20181207: is-ci, react-redux, How Often Should You Update Dependencies?',
     content: '20181207_weekly.md',
     output: 'this-week-on-npm-20181207',

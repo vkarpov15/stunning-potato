@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JSReport: This Week on npm v20181214: moment@2.23.0, Automated vs Manual Changelogs</title>
+
+    <link rel="stylesheet" href="/website/style.css">
+    <link rel="stylesheet" href="/website/github.css">
+    <link href="https://fonts.googleapis.com/css?family=Play|Roboto" rel="stylesheet">
+
+    <style>
+      p {
+        line-height: 1.5em;
+      }
+
+      pre {
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 5px;
+      }
+
+      hr {
+        margin-top: 1em;
+        margin-bottom: 1em;
+      }
+
+      a {
+        color: #00386c;
+      }
+
+      .post {
+        margin-bottom: 1em;
+      }
+
+      .post .post-image img {
+        width: 200px;
+        float: left;
+      }
+
+      .post h2 {
+        margin-top: 0px;
+      }
+
+      .post .post-description {
+        float: left;
+        width: 765px;
+        margin-left: 35px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="header">
+        <div class="brand">
+          <img class="logo" src="/images/logo2.svg">
+          <div class="brand-name">
+            <a href="/">
+              js.report
+            </a>
+          </div>
+          <div style="clear: both"></div>
+        </div>
+        <div class="nav-right" id="nav-container">
+          <!-- Populated by nav.jsx -->
+        </div>
+      </div>
+
+      <div id="content">
+        
+  
+    <h1>This Week on npm v20181214: moment@2.23.0, Automated vs Manual Changelogs</h1>
+    <p>Changelogs are one of the major reasons why we created JSReport. Finding what happened between two releases of an npm module is a hassle, so we created a tool that could glue together npm releases with <a href="https://keepachangelog.com/en/1.0.0/">changelogs</a> on GitHub. Changelogs are supposed to help consumers of your software understand what upgrading from v1.0.0 to v1.0.1 means for them. As someone working on a software project, should you write changelogs on your own or use a tool like <a href="https://www.npmjs.com/package/standard-changelog">standard-changelog</a>?</p>
+<h2 id="do-you-write-or-generate-changelogs-">Do You Write or Generate Changelogs?</h2>
+<p>There are plenty of tools out there that will <a href="http://thecodebarbarian.com/keeping-a-changelog-in-nodejs.html">automatically generate a changelog for you</a> based on your Git commit history. These tools are great for quickly generating changelogs as part of your release process: run <code>npm run release</code>, and your script can bump <code>package.json</code>, generate a changelog, and push your code up to GitHub to deploy. Sounds easy, right?</p>
+<p>Now imagine you have a larger project. Say you have 5-10 contributors distributed around the world. Even if you get them to consistently follow <a href="http://thecodebarbarian.com/keeping-a-changelog-in-nodejs.html#angular-style-structured-commits">Angular structured commit guidelines</a>, Git commit messages are often not very user friendly. We&#39;ve all had times when it&#39;s late at night and our commit messages are not very readable. Check out <a href="http://whatthecommit.com/">this bad commit message generator</a> for a chuckle.</p>
+<img src="https://i.imgur.com/xOphnVH.png">
+
+<p>Furthermore, tools like standard-changelog don&#39;t have any support for custom ordering. The first commit after v1.0.0 and before v1.0.1 is the first one in the changelog regardless of significance. Let&#39;s face it, the further down in a changelog a note is, the less likely someone is to read it. Therefore, the most important changes be at the top of the changelog. <a href="https://dorieclark.com/dont-bury-the-lead/">Don&#39;t bury the lead</a>.</p>
+<p>Changelogs are meant for consumers of your software. Git commit messages are meant for other developers on a project. Make sure you don&#39;t conflate the two. Changelog generators work well if you&#39;re one developer with many smaller projects. If your releases have a lot of changes and you&#39;re not able to ensure that your commit messages provide enough context, there&#39;s nothing wrong with writing your changelog by hand.</p>
+<h2 id="this-week-s-releases">This Week&#39;s Releases</h2>
+<p>Here are the most popular packages that published new releases to npm this week. Packages are ranked by downloads in November 2018, and versions are broken down by major, minor, and patch releases.</p>
+<h3 id="major">Major</h3>
+<p>1) <strong><a href="https://npmjs.com/package/css-loader">css-loader</a>@2.0.0</strong>: css loader module for webpack</p>
+<p>2) <strong><a href="https://npmjs.com/package/@sinonjs/samsam">@sinonjs/samsam</a>@3.0.0</strong>: Value identification and comparison functions</p>
+<p>3) <strong><a href="https://npmjs.com/package/multipipe">multipipe</a>@3.0.0</strong>: pipe streams with centralized error handling</p>
+<p>4) <strong><a href="https://npmjs.com/package/@types/sinon">@types/sinon</a>@7.0.0</strong>: TypeScript definitions for Sinon</p>
+<p>5) <strong><a href="https://npmjs.com/package/react-dropzone">react-dropzone</a>@8.0.0</strong>: Simple HTML5 drag-drop zone with React.js</p>
+<p>6) <strong><a href="https://npmjs.com/package/redux-form">redux-form</a>@8.0.0</strong>: A higher order component decorator for forms using Redux and React</p>
+<p>7) <strong><a href="https://npmjs.com/package/indefinite-observable">indefinite-observable</a>@2.0.0</strong>: <!-- TODO: update version number before releasing, here and in the script tag --> <a href="https://www.npmjs.com/package/indefinite-observable/v/2.0.1"><img src="https://img.shields.io/badge/v2.0.1:-222222.svg?logo=npm" alt="Current version:"></a> [![Test status](<a href="https://img.shie">https://img.shie</a></p>
+<p>8) <strong><a href="https://npmjs.com/package/highcharts">highcharts</a>@7.0.0</strong>: JavaScript charting framework</p>
+<h3 id="minor">Minor</h3>
+<p>1) <strong><a href="https://npmjs.com/package/moment">moment</a>@2.23.0</strong>: Parse, validate, manipulate, and display dates</p>
+<p>2) <strong><a href="https://npmjs.com/package/eslint">eslint</a>@5.10.0</strong>: An AST-based pattern checker for JavaScript.</p>
+<p>3) <strong><a href="https://npmjs.com/package/got">got</a>@9.4.0</strong>: Simplified HTTP requests</p>
+<p>4) <strong><a href="https://npmjs.com/package/@webassemblyjs/ast">@webassemblyjs/ast</a>@1.8.0</strong>: AST utils for webassemblyjs</p>
+<p>5) <strong><a href="https://npmjs.com/package/@webassemblyjs/helper-wasm-bytecode">@webassemblyjs/helper-wasm-bytecode</a>@1.8.0</strong>: WASM&#39;s Bytecode constants</p>
+<p>6) <strong><a href="https://npmjs.com/package/@webassemblyjs/wast-parser">@webassemblyjs/wast-parser</a>@1.8.0</strong>: WebAssembly text format parser</p>
+<p>7) <strong><a href="https://npmjs.com/package/@webassemblyjs/floating-point-hex-parser">@webassemblyjs/floating-point-hex-parser</a>@1.8.0</strong>: A function to parse floating point hexadecimal strings as defined by the WebAssembly specification</p>
+<p>8) <strong><a href="https://npmjs.com/package/@webassemblyjs/wasm-parser">@webassemblyjs/wasm-parser</a>@1.8.0</strong>: WebAssembly binary format parser</p>
+<p>9) <strong><a href="https://npmjs.com/package/@webassemblyjs/leb128">@webassemblyjs/leb128</a>@1.8.0</strong>: LEB128 decoder and encoder</p>
+<p>10) <strong><a href="https://npmjs.com/package/@webassemblyjs/helper-fsm">@webassemblyjs/helper-fsm</a>@1.8.0</strong>: FSM implementation</p>
+<h3 id="patch">Patch</h3>
+<p>1) <strong><a href="https://npmjs.com/package/colors">colors</a>@1.3.3</strong>: get colors in your node.js console</p>
+<p>2) <strong><a href="https://npmjs.com/package/electron-to-chromium">electron-to-chromium</a>@1.3.90</strong>: Provides a list of electron-to-chromium version mappings</p>
+<p>3) <strong><a href="https://npmjs.com/package/caniuse-lite">caniuse-lite</a>@1.0.30000918</strong>: A smaller version of caniuse-db, with only the essentials!</p>
+<p>4) <strong><a href="https://npmjs.com/package/@types/react">@types/react</a>@16.7.17</strong>: TypeScript definitions for React</p>
+<p>5) <strong><a href="https://npmjs.com/package/caniuse-db">caniuse-db</a>@1.0.30000918</strong>: Raw browser/feature support data from caniuse.com</p>
+<p>6) <strong><a href="https://npmjs.com/package/@angular-devkit/core">@angular-devkit/core</a>@7.1.3</strong>: Angular DevKit - Core Utility Library</p>
+<p>7) <strong><a href="https://npmjs.com/package/types-registry">types-registry</a>@0.1.414</strong>: A registry of TypeScript declaration file packages published within the @types scope.</p>
+<p>8) <strong><a href="https://npmjs.com/package/ansi-colors">ansi-colors</a>@3.2.3</strong>: Easily add ANSI colors to your text and symbols in the terminal. A faster drop-in replacement for chalk, kleur and turbocolor (without the dependencies and rendering bugs).</p>
+<p>9) <strong><a href="https://npmjs.com/package/node-releases">node-releases</a>@1.1.1</strong>: Node.js releases data</p>
+<p>10) <strong><a href="https://npmjs.com/package/@sinonjs/formatio">@sinonjs/formatio</a>@3.0.1</strong>: Human-readable object formatting</p>
+<h3 id="moment">moment</h3>
+<p>For better or worse, <a href="http://momentjs.com/">moment</a> is the most popular date/time utility library on npm. <a href="https://www.npmjs.com/package/moment/v/2.23.0">Moment v2.23.0</a> was shipped on December 13. What changed? <a href="https://gist.github.com/marwahaha/eadb7ac11b761290399a576f8b2419a5#moment-2230-changelog">Here&#39;s the full changelog on GitHub</a>. This is an example of a changelog that appears to be generated automatically. The only new feature&#39;s description matches that of the <a href="https://github.com/moment/moment/pull/4563">GitHub pull request</a>.</p>
+<p>The new feature adds support for adding and subtracting <a href="https://en.wikipedia.org/wiki/ISO_week_date">ISO weeks</a>. The key difference between ISO weeks and normal moment weeks is that ISO weeks start on Monday, and moment weeks start on Sunday. This is a <a href="https://github.com/moment/moment/issues/4518#issuecomment-397913182">problem for some users</a> because they would have to remember to use <code>startOf(&#39;isoWeek&#39;)</code> but <code>add(1, &#39;week&#39;)</code></p>
+<pre><code class="language-javascript">moment().startOf(<span class="hljs-string">'week'</span>).format(<span class="hljs-string">'dddd'</span>); <span class="hljs-comment">// Sunday</span>
+moment().startOf(<span class="hljs-string">'isoWeek'</span>).format(<span class="hljs-string">'dddd'</span>); <span class="hljs-comment">// Monday</span>
+
+<span class="hljs-comment">// v2.23.0 fixed this, because `.add(1, 'isoWeek')` was a no-op before</span>
+moment().startOf(<span class="hljs-string">'isoWeek'</span>).add(<span class="hljs-number">1</span>, <span class="hljs-string">'isoWeek'</span>).isAfter(moment()); <span class="hljs-comment">// false in &lt; 2.23.0</span></code></pre>
+<h2 id="moving-on">Moving On</h2>
+<p>There were 51,345 new releases between November 30 and December 7. How many of those affect you? Check out <a href="https://js.report/slack">JSReport for Slack</a> and keep up to date with the JavaScript libraries you depend on.</p>
+
+  
+  <hr>
+  <div id="disqus_thread"></div>
+  <script>
+
+  /**
+  *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+  var disqus_config = function () {
+  this.page.url = window.location.pathname;  // Replace PAGE_URL with your page's canonical URL variable
+  this.page.identifier = 'this-week-on-npm-20181214'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+  };
+  */
+  (function() { // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://jsreport-1.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+    </div>
+
+    <script src="/website/nav.js"></script>
+  </body>
+</html>
