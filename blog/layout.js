@@ -47,6 +47,11 @@ module.exports = (content, { title }) => `
         width: 765px;
         margin-left: 35px;
       }
+
+      .outlined {
+        border: 1px solid #e3e3e3;
+        padding: 5px;
+      }
     </style>
   </head>
 

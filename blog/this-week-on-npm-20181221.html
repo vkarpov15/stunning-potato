@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JSReport: This Week on npm v20181221: webpack@4.28.0, Fixing GitHub Security Warnings</title>
+
+    <link rel="stylesheet" href="/website/style.css">
+    <link rel="stylesheet" href="/website/github.css">
+    <link href="https://fonts.googleapis.com/css?family=Play|Roboto" rel="stylesheet">
+
+    <style>
+      p {
+        line-height: 1.5em;
+      }
+
+      pre {
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 5px;
+      }
+
+      hr {
+        margin-top: 1em;
+        margin-bottom: 1em;
+      }
+
+      a {
+        color: #00386c;
+      }
+
+      .post {
+        margin-bottom: 1em;
+      }
+
+      .post .post-image img {
+        width: 200px;
+        float: left;
+      }
+
+      .post h2 {
+        margin-top: 0px;
+      }
+
+      .post .post-description {
+        float: left;
+        width: 765px;
+        margin-left: 35px;
+      }
+
+      .outlined {
+        border: 1px solid #e3e3e3;
+        padding: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="header">
+        <div class="brand">
+          <img class="logo" src="/images/logo2.svg">
+          <div class="brand-name">
+            <a href="/">
+              js.report
+            </a>
+          </div>
+          <div style="clear: both"></div>
+        </div>
+        <div class="nav-right" id="nav-container">
+          <!-- Populated by nav.jsx -->
+        </div>
+      </div>
+
+      <div id="content">
+        
+  
+    <h1>This Week on npm v20181221: webpack@4.28.0, Fixing GitHub Security Warnings</h1>
+    <p>If you host Node.js projects on GitHub, odds are you&#39;ve seen these emails:</p>
+<img class="outlined" src="https://i.imgur.com/t2fPa96.png">
+
+<p>And these alerts on your GitHub repos:</p>
+<img class="outlined" src="https://i.imgur.com/Il4F91f.png">
+
+<p>Unfortunately, fixing these alerts can be a pain because these alerts often
+packages that you don&#39;t depend on directly. For example, the <a href="https://github.com/mongoosejs/mongoose-throw-unselected">mongoose-throw-unselected</a> package had the below security vulnerability alerts:</p>
+<img class="outlined" src="https://i.imgur.com/4E3x102.png">
+
+<p>But neither <code>bson</code> nor <code>minimatch</code> is in <code>package.json</code>:</p>
+<pre><code><span class="hljs-string">"devDependencies"</span>: {
+  <span class="hljs-string">"acquit"</span>: <span class="hljs-string">"1.0.0"</span>,
+  <span class="hljs-string">"acquit-ignore"</span>: <span class="hljs-string">"0.0.3"</span>,
+  <span class="hljs-string">"acquit-markdown"</span>: <span class="hljs-string">"0.1.0"</span>,
+  <span class="hljs-string">"istanbul"</span>: <span class="hljs-string">"0.4.2"</span>,
+  <span class="hljs-string">"mocha"</span>: <span class="hljs-string">"5.x"</span>,
+  <span class="hljs-string">"mongodb"</span>: <span class="hljs-string">"~2.2.9"</span>,
+  <span class="hljs-string">"mongoose"</span>: <span class="hljs-string">"5.x"</span>
+}</code></pre><h2 id="figuring-out-what-packages-to-update">Figuring Out What Packages to Update</h2>
+<p>The security alert is due to the fact that <code>mongodb@2.2.9</code> depends on <code>mongodb-core@2.0.11</code>, which in turn depends on <a href="https://github.com/mongodb-js/mongodb-core/blob/bf2755ceae7d3fcc5895ed7fcd28bd3dc114f36a/package.json#L19"><code>bson@~0.5.4</code></a>. The <code>minimatch</code> vulnerability comes from <code>istanbul@0.4.2</code> -&gt; <code>fileset@0.2.1</code> -&gt; <code>minimatch@2.0.10</code>.</p>
+<p>These vulnerabilities are DoS vulnerabilities (see <a href="https://nvd.nist.gov/vuln/detail/CVE-2018-13863">bson</a>, <a href="https://nvd.nist.gov/vuln/detail/CVE-2016-10540">minimatch</a>) in dev dependencies, so they are not exploitable. <a href="https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS">ReDoS vulnerabilities</a> allow a malicious user to send a bad regular expression that grinds your server to a halt, but in the vulnerable code only runs when executing tests.</p>
+<p>How do you figure out what packages you need to update to make these security alerts go away? There isn&#39;t any established tooling for this. We just use <a href="https://docs.npmjs.com/cli/ls.html"><code>npm list</code></a>. Running the below command gives you a <code>list.out</code> file with your entire dependency tree:</p>
+<pre><code>npm list &gt; list.out</code></pre><p>The <code>list.out</code> file looks like this:</p>
+<pre><code>mongoose-<span class="hljs-keyword">throw</span>-unselected@<span class="hljs-number">0.1</span><span class="hljs-number">.2</span>
+├─┬ acquit@<span class="hljs-number">1.0</span><span class="hljs-number">.0</span>
+│ ├── esprima@<span class="hljs-number">4.0</span><span class="hljs-number">.0</span>
+│ ├── lodash@<span class="hljs-number">4.17</span><span class="hljs-number">.5</span>
+│ └── marked@<span class="hljs-number">0.3</span><span class="hljs-number">.9</span>
+├── acquit-ignore@<span class="hljs-number">0.0</span><span class="hljs-number">.3</span>
+├─┬ acquit-markdown@<span class="hljs-number">0.1</span><span class="hljs-number">.0</span>
+│ └── commander@<span class="hljs-number">2.13</span><span class="hljs-number">.0</span>
+├─┬ istanbul@<span class="hljs-number">0.4</span><span class="hljs-number">.2</span></code></pre><p>You can then use vim or whichever text editor you prefer to find what top-level dependencies depend on compromised versions.</p>
+<p>How do you find what packages you need to upgrade due to security vulnerabilities? Leave a note in the comments!</p>
+<h2 id="this-week-s-releases">This Week&#39;s Releases</h2>
+<p>Here are the most popular packages that published new releases to npm this week. Packages are ranked by downloads in November 2018, and versions are broken down by major, minor, and patch releases.</p>
+<h3 id="major">Major</h3>
+<p>1) <strong><a href="https://npmjs.com/package/string-width">string-width</a>@3.0.0</strong>: Get the visual width of a string - the number of columns required to display it</p>
+<p>2) <strong><a href="https://npmjs.com/package/file-loader">file-loader</a>@3.0.0</strong>: A file loader module for webpack</p>
+<p>3) <strong><a href="https://npmjs.com/package/istanbul-lib-source-maps">istanbul-lib-source-maps</a>@3.0.0</strong>: Source maps support for istanbul</p>
+<p>4) <strong><a href="https://npmjs.com/package/global-modules">global-modules</a>@2.0.0</strong>: The directory used by npm for globally installed npm modules.</p>
+<p>5) <strong><a href="https://npmjs.com/package/global-prefix">global-prefix</a>@3.0.0</strong>: Get the npm global path prefix.</p>
+<p>6) <strong><a href="https://npmjs.com/package/ansi-align">ansi-align</a>@3.0.0</strong>: align-text with ANSI support for CLIs</p>
+<p>7) <strong><a href="https://npmjs.com/package/multimatch">multimatch</a>@3.0.0</strong>: Extends <code>minimatch.match()</code> with support for multiple patterns</p>
+<p>8) <strong><a href="https://npmjs.com/package/vfile-message">vfile-message</a>@2.0.0</strong>: Create a virtual message</p>
+<p>9) <strong><a href="https://npmjs.com/package/memoize-one">memoize-one</a>@5.0.0</strong>: A memoization library which only remembers the latest invocation</p>
+<p>10) <strong><a href="https://npmjs.com/package/@types/p-cancelable">@types/p-cancelable</a>@1.0.0</strong>: TypeScript definitions for p-cancelable</p>
+<h3 id="minor">Minor</h3>
+<p>1) <strong><a href="https://npmjs.com/package/readable-stream">readable-stream</a>@3.1.0</strong>: Streams3, a user-land copy of the stream library from Node.js</p>
+<p>2) <strong><a href="https://npmjs.com/package/resolve">resolve</a>@1.9.0</strong>: resolve like require.resolve() on behalf of files asynchronously and synchronously</p>
+<p>3) <strong><a href="https://npmjs.com/package/sshpk">sshpk</a>@1.16.0</strong>: A library for finding and using SSH public keys</p>
+<p>4) <strong><a href="https://npmjs.com/package/nan">nan</a>@2.12.0</strong>: Native Abstractions for Node.js: C++ header for Node 0.8 -&gt; 11 compatibility</p>
+<p>5) <strong><a href="https://npmjs.com/package/webpack">webpack</a>@4.28.0</strong>: Packs CommonJs/AMD modules for the browser. Allows to split your codebase into multiple bundles, which can be loaded on demand. Support loaders to preprocess files, i.e. json, jsx, es7, css, less, ... and your custom stuff.</p>
+<p>6) <strong><a href="https://npmjs.com/package/got">got</a>@9.5.0</strong>: Simplified HTTP requests</p>
+<p>7) <strong><a href="https://npmjs.com/package/js-base64">js-base64</a>@2.5.0</strong>: Yet another Base64 transcoder in pure-JS</p>
+<p>8) <strong><a href="https://npmjs.com/package/normalize-url">normalize-url</a>@4.1.0</strong>: Normalize a URL</p>
+<p>9) <strong><a href="https://npmjs.com/package/react">react</a>@16.7.0</strong>: React is a JavaScript library for building user interfaces.</p>
+<p>10) <strong><a href="https://npmjs.com/package/jsdom">jsdom</a>@13.1.0</strong>: A JavaScript implementation of many web standards</p>
+<h3 id="patch">Patch</h3>
+<p>1) <strong><a href="https://npmjs.com/package/@types/node">@types/node</a>@10.12.18</strong>: TypeScript definitions for Node.js</p>
+<p>2) <strong><a href="https://npmjs.com/package/ajv">ajv</a>@6.6.2</strong>: Another JSON Schema Validator</p>
+<p>3) <strong><a href="https://npmjs.com/package/postcss">postcss</a>@7.0.7</strong>: Tool for transforming styles with JS plugins</p>
+<p>4) <strong><a href="https://npmjs.com/package/@babel/types">@babel/types</a>@7.2.2</strong>: Babel Types is a Lodash-esque utility library for AST nodes</p>
+<p>5) <strong><a href="https://npmjs.com/package/core-js">core-js</a>@2.6.1</strong>: Standard library</p>
+<p>6) <strong><a href="https://npmjs.com/package/@babel/traverse">@babel/traverse</a>@7.2.3</strong>: The Babel Traverse module maintains the overall tree state, and is responsible for replacing, removing, and adding nodes</p>
+<p>7) <strong><a href="https://npmjs.com/package/browserslist">browserslist</a>@4.3.6</strong>: Share target browsers between different front-end tools, like Autoprefixer, Stylelint and babel-env-preset</p>
+<p>8) <strong><a href="https://npmjs.com/package/@babel/generator">@babel/generator</a>@7.2.2</strong>: Turns an AST into code.</p>
+<p>9) <strong><a href="https://npmjs.com/package/@babel/template">@babel/template</a>@7.2.2</strong>: Generate an AST from a string template.</p>
+<p>10) <strong><a href="https://npmjs.com/package/spdx-license-ids">spdx-license-ids</a>@3.0.3</strong>: A list of SPDX license identifiers</p>
+<h2 id="webpack-4-28-0"><code>webpack@4.28.0</code></h2>
+<p>Webpack keeps its <a href="https://github.com/webpack/webpack/releases/tag/v4.28.0">changelog in GitHub tags</a>. 4.28.0 is a small release in preparation for the <a href="https://github.com/webpack/webpack/releases/tag/v5.0.0-alpha.0">upcoming Webpack 5 release</a>.</p>
+<p>Want to know why changelogs are so important? Here&#39;s the <a href="https://github.com/webpack/webpack/compare/4056506488c1e071dfc9a0127daa61bf531170bf...e871eeb121a69efd6cbfa56f977d5843bf030202">full GitHub diff between v4.28.0 and v4.27.1</a>. 76 file changes and 1564 SLOC delta. This isn&#39;t very accessible to the casual observer.</p>
+<p>The changelog makes this much easier to understand. This release&#39;s only
+new feature is a new parameter to <a href="https://webpack.js.org/plugins/ignore-plugin/">IgnorePlugin</a>. Suppose you have two simple JS files, <code>foo.js</code> and <code>bar.js</code>:</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> bar = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./bar'</span>);</code></pre>
+<pre><code class="language-javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-string">'bar'</span>;</code></pre>
+<p>The below script demonstrates the new parameter for <code>IgnorePlugin</code>&#39;s <code>checkResource()</code> function:</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">const</span> webpack = <span class="hljs-built_in">require</span>(<span class="hljs-string">'webpack'</span>);
+
+<span class="hljs-keyword">const</span> plugin = <span class="hljs-keyword">new</span> webpack.IgnorePlugin({
+  checkContext(context) {
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  },
+  checkResource(resource, context) {
+    <span class="hljs-comment">// Before 4.28.0, `context` would be undefined</span>
+    <span class="hljs-comment">// In `&gt;= 4.28.0`, `context` contains the current dir</span>
+    <span class="hljs-built_in">console</span>.log(resource, context);
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  }
+});
+
+<span class="hljs-keyword">const</span> config = {
+  <span class="hljs-attr">entry</span>: [<span class="hljs-string">'./foo.js'</span>],
+  <span class="hljs-attr">plugins</span>: [plugin]
+};
+
+webpack(config, (err, res) =&gt; {
+  <span class="hljs-keyword">if</span> (err) {
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">console</span>.log(err);
+  }
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'done'</span>);
+});</code></pre>
+<p>The above script will print:</p>
+<pre><code>$ node test.js
+./foo.js /home/workspace
+./bar /home/workspace
+done</code></pre><h2 id="moving-on">Moving On</h2>
+<p>There were 67,747 new releases between November 30 and December 7. How many of those affect you? Check out <a href="https://js.report/slack">JSReport for Slack</a> and keep up to date with the JavaScript libraries you depend on.</p>
+
+  
+  <hr>
+  <div id="disqus_thread"></div>
+  <script>
+
+  /**
+  *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+  var disqus_config = function () {
+  this.page.url = window.location.pathname;  // Replace PAGE_URL with your page's canonical URL variable
+  this.page.identifier = 'this-week-on-npm-20181221'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+  };
+  */
+  (function() { // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://jsreport-1.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+    </div>
+
+    <script src="/website/nav.js"></script>
+  </body>
+</html>

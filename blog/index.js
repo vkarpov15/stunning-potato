@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20181221: webpack@4.28.0, Fixing GitHub Security Warnings',
+    content: '20181221_weekly.md',
+    output: 'this-week-on-npm-20181221',
+    description: 'New releases from the most popular npm packages from December 14 - December 21.',
+    image: 'https://i.imgur.com/MGjWxTu.png'
+  },
+  {
     title: 'This Week on npm v20181214: moment@2.23.0, Automated vs Manual Changelogs',
     content: '20181214_weekly.md',
     output: 'this-week-on-npm-20181214',
