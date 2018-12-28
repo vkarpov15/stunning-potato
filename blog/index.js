@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20181228: eslint@5.11.0, Changelog Links',
+    content: '20181228_weekly.md',
+    output: 'this-week-on-npm-20181228',
+    description: 'New releases from the most popular npm packages from December 21 - December 28.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/book.jpeg'
+  },
+  {
     title: 'This Week on npm v20181221: webpack@4.28.0, Fixing GitHub Security Warnings',
     content: '20181221_weekly.md',
     output: 'this-week-on-npm-20181221',
