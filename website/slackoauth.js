@@ -858,7 +858,12 @@ exports.get = function(url) {
       authorization: window.localStorage.getItem('token')
     }
   };
-  return fetch(`${root}${url}`, opts).then(res => res.json());
+  return fetch(`${root}${url}`, opts).then(res => res.json()).then(res => {
+    if (res.error != null) {
+      throw new Error(res.error);
+    }
+    return res;
+  });
 };
 
 exports.put = function(url, data) {
@@ -5583,13 +5588,14 @@ module.exports = __webpack_require__(42);
 //# sourceMappingURL=keen-tracking.js.map
 
 /***/ }),
-/* 7 */
+/* 7 */,
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-const strictUriEncode = __webpack_require__(8);
-const decodeComponent = __webpack_require__(9);
+const strictUriEncode = __webpack_require__(9);
+const decodeComponent = __webpack_require__(10);
 
 function encoderForArrayFormat(options) {
 	switch (options.arrayFormat) {
@@ -5821,7 +5827,7 @@ exports.parseUrl = (input, options) => {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5830,7 +5836,7 @@ module.exports = str => encodeURIComponent(str).replace(/[!'()*]/g, x => `%${x.c
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5931,7 +5937,6 @@ module.exports = function (encodedURI) {
 
 
 /***/ }),
-/* 10 */,
 /* 11 */,
 /* 12 */,
 /* 13 */,
@@ -5947,7 +5952,7 @@ module.exports = function (encodedURI) {
 __webpack_require__(1);
 __webpack_require__(4);
 
-const qs = __webpack_require__(7);
+const qs = __webpack_require__(8);
 
 const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
 

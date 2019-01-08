@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 21);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -5660,810 +5660,162 @@ function mitt(all                 ) {
 
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const strictUriEncode = __webpack_require__(9);
-const decodeComponent = __webpack_require__(10);
-
-function encoderForArrayFormat(options) {
-	switch (options.arrayFormat) {
-		case 'index':
-			return (key, value, index) => {
-				return value === null ? [
-					encode(key, options),
-					'[',
-					index,
-					']'
-				].join('') : [
-					encode(key, options),
-					'[',
-					encode(index, options),
-					']=',
-					encode(value, options)
-				].join('');
-			};
-		case 'bracket':
-			return (key, value) => {
-				return value === null ? [encode(key, options), '[]'].join('') : [
-					encode(key, options),
-					'[]=',
-					encode(value, options)
-				].join('');
-			};
-		default:
-			return (key, value) => {
-				return value === null ? encode(key, options) : [
-					encode(key, options),
-					'=',
-					encode(value, options)
-				].join('');
-			};
-	}
-}
-
-function parserForArrayFormat(options) {
-	let result;
-
-	switch (options.arrayFormat) {
-		case 'index':
-			return (key, value, accumulator) => {
-				result = /\[(\d*)\]$/.exec(key);
-
-				key = key.replace(/\[\d*\]$/, '');
-
-				if (!result) {
-					accumulator[key] = value;
-					return;
-				}
-
-				if (accumulator[key] === undefined) {
-					accumulator[key] = {};
-				}
-
-				accumulator[key][result[1]] = value;
-			};
-		case 'bracket':
-			return (key, value, accumulator) => {
-				result = /(\[\])$/.exec(key);
-				key = key.replace(/\[\]$/, '');
-
-				if (!result) {
-					accumulator[key] = value;
-					return;
-				}
-
-				if (accumulator[key] === undefined) {
-					accumulator[key] = [value];
-					return;
-				}
-
-				accumulator[key] = [].concat(accumulator[key], value);
-			};
-		default:
-			return (key, value, accumulator) => {
-				if (accumulator[key] === undefined) {
-					accumulator[key] = value;
-					return;
-				}
-
-				accumulator[key] = [].concat(accumulator[key], value);
-			};
-	}
-}
-
-function encode(value, options) {
-	if (options.encode) {
-		return options.strict ? strictUriEncode(value) : encodeURIComponent(value);
-	}
-
-	return value;
-}
-
-function decode(value, options) {
-	if (options.decode) {
-		return decodeComponent(value);
-	}
-
-	return value;
-}
-
-function keysSorter(input) {
-	if (Array.isArray(input)) {
-		return input.sort();
-	}
-
-	if (typeof input === 'object') {
-		return keysSorter(Object.keys(input))
-			.sort((a, b) => Number(a) - Number(b))
-			.map(key => input[key]);
-	}
-
-	return input;
-}
-
-function extract(input) {
-	const queryStart = input.indexOf('?');
-	if (queryStart === -1) {
-		return '';
-	}
-
-	return input.slice(queryStart + 1);
-}
-
-function parse(input, options) {
-	options = Object.assign({decode: true, arrayFormat: 'none'}, options);
-
-	const formatter = parserForArrayFormat(options);
-
-	// Create an object with no prototype
-	const ret = Object.create(null);
-
-	if (typeof input !== 'string') {
-		return ret;
-	}
-
-	input = input.trim().replace(/^[?#&]/, '');
-
-	if (!input) {
-		return ret;
-	}
-
-	for (const param of input.split('&')) {
-		let [key, value] = param.replace(/\+/g, ' ').split('=');
-
-		// Missing `=` should be `null`:
-		// http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
-		value = value === undefined ? null : decode(value, options);
-
-		formatter(decode(key, options), value, ret);
-	}
-
-	return Object.keys(ret).sort().reduce((result, key) => {
-		const value = ret[key];
-		if (Boolean(value) && typeof value === 'object' && !Array.isArray(value)) {
-			// Sort object keys, not values
-			result[key] = keysSorter(value);
-		} else {
-			result[key] = value;
-		}
-
-		return result;
-	}, Object.create(null));
-}
-
-exports.extract = extract;
-exports.parse = parse;
-
-exports.stringify = (obj, options) => {
-	if (!obj) {
-		return '';
-	}
-
-	options = Object.assign({
-		encode: true,
-		strict: true,
-		arrayFormat: 'none'
-	}, options);
-
-	const formatter = encoderForArrayFormat(options);
-	const keys = Object.keys(obj);
-
-	if (options.sort !== false) {
-		keys.sort(options.sort);
-	}
-
-	return keys.map(key => {
-		const value = obj[key];
-
-		if (value === undefined) {
-			return '';
-		}
-
-		if (value === null) {
-			return encode(key, options);
-		}
-
-		if (Array.isArray(value)) {
-			const result = [];
-
-			for (const value2 of value.slice()) {
-				if (value2 === undefined) {
-					continue;
-				}
-
-				result.push(formatter(key, value2, result.length));
-			}
-
-			return result.join('&');
-		}
-
-		return encode(key, options) + '=' + encode(value, options);
-	}).filter(x => x.length > 0).join('&');
-};
-
-exports.parseUrl = (input, options) => {
-	const hashStart = input.indexOf('#');
-	if (hashStart !== -1) {
-		input = input.slice(0, hashStart);
-	}
-
-	return {
-		url: input.split('?')[0] || '',
-		query: parse(extract(input), options)
-	};
-};
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-module.exports = str => encodeURIComponent(str).replace(/[!'()*]/g, x => `%${x.charCodeAt(0).toString(16).toUpperCase()}`);
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var token = '%[a-f0-9]{2}';
-var singleMatcher = new RegExp(token, 'gi');
-var multiMatcher = new RegExp('(' + token + ')+', 'gi');
-
-function decodeComponents(components, split) {
-	try {
-		// Try to decode the entire string first
-		return decodeURIComponent(components.join(''));
-	} catch (err) {
-		// Do nothing
-	}
-
-	if (components.length === 1) {
-		return components;
-	}
-
-	split = split || 1;
-
-	// Split the array in 2 parts
-	var left = components.slice(0, split);
-	var right = components.slice(split);
-
-	return Array.prototype.concat.call([], decodeComponents(left), decodeComponents(right));
-}
-
-function decode(input) {
-	try {
-		return decodeURIComponent(input);
-	} catch (err) {
-		var tokens = input.match(singleMatcher);
-
-		for (var i = 1; i < tokens.length; i++) {
-			input = decodeComponents(tokens, i).join('');
-
-			tokens = input.match(singleMatcher);
-		}
-
-		return input;
-	}
-}
-
-function customDecodeURIComponent(input) {
-	// Keep track of all the replacements and prefill the map with the `BOM`
-	var replaceMap = {
-		'%FE%FF': '\uFFFD\uFFFD',
-		'%FF%FE': '\uFFFD\uFFFD'
-	};
-
-	var match = multiMatcher.exec(input);
-	while (match) {
-		try {
-			// Decode as big chunks as possible
-			replaceMap[match[0]] = decodeURIComponent(match[0]);
-		} catch (err) {
-			var result = decode(match[0]);
-
-			if (result !== match[0]) {
-				replaceMap[match[0]] = result;
-			}
-		}
-
-		match = multiMatcher.exec(input);
-	}
-
-	// Add `%C2` at the end of the map to make sure it does not replace the combinator before everything else
-	replaceMap['%C2'] = '\uFFFD';
-
-	var entries = Object.keys(replaceMap);
-
-	for (var i = 0; i < entries.length; i++) {
-		// Replace all decoded components
-		var key = entries[i];
-		input = input.replace(new RegExp(key, 'g'), replaceMap[key]);
-	}
-
-	return input;
-}
-
-module.exports = function (encodedURI) {
-	if (typeof encodedURI !== 'string') {
-		throw new TypeError('Expected `encodedURI` to be of type `string`, got `' + typeof encodedURI + '`');
-	}
-
-	try {
-		encodedURI = encodedURI.replace(/\+/g, ' ');
-
-		// Try the built in decoder first
-		return decodeURIComponent(encodedURI);
-	} catch (err) {
-		// Fallback to a more advanced decoder
-		return customDecodeURIComponent(encodedURI);
-	}
-};
-
-
-/***/ }),
+/* 8 */,
+/* 9 */,
+/* 10 */,
 /* 11 */,
-/* 12 */
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(1);
 
 __webpack_require__(4);
+
+const Error = __webpack_require__(22);
 
 const React = __webpack_require__(2);
 
 const http = __webpack_require__(3);
 
-const linkstate = __webpack_require__(13).default;
-
 const mitt = __webpack_require__(7).default;
 
-const qs = __webpack_require__(8);
-
-const config = __webpack_require__(0);
-
-const root = config.root;
-console.log(root, config.stripe);
-const stripe = Stripe(config.stripe);
-console.log(stripe.createToken);
 const events$ = mitt();
 const state$ = mitt();
 let state = {
-  loading: true
+  loading: true,
+  sortBy: 'downloads'
 };
-events$.on('UPDATE_PROFILE', $wrap(async ({
-  account
-}) => {
-  state = Object.assign({}, state, {
-    saving: true
-  });
+
+const setState = _state => {
+  state = _state;
   state$.emit('UPDATE', state);
-  const opts = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    },
-    body: JSON.stringify(account)
-  };
-  const res = await fetch(`${root}/me`, opts).then(res => res.json());
-  state = Object.assign({}, {
-    saving: false
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('DELETE_PACKAGE', $wrap(async ({
-  accountId,
-  pkg
-}) => {
-  const account = state.accounts.find(acc => acc._id === accountId);
-  const packagesWatched = account.packagesWatched.filter(_pkg => _pkg !== pkg);
-  const opts = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    },
-    body: JSON.stringify({
-      packagesWatched,
-      accountId
-    })
-  };
-  const res = await fetch(`${root}/account`, opts).then(res => res.json());
-  const accounts = state.accounts.slice();
-  const index = state.accounts.findIndex(acc => acc._id === accountId);
-  accounts[index] = res.account;
-  state = Object.assign({}, state, {
-    accounts
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('ADD_PACKAGE', $wrap(async ({
-  accountId,
-  pkg
-}) => {
-  const account = state.accounts.find(acc => acc._id === accountId);
-  const packagesWatched = account.packagesWatched.concat([pkg]);
-  const opts = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    },
-    body: JSON.stringify({
-      packagesWatched,
-      accountId
-    })
-  };
-  const res = await fetch(`${root}/account`, opts).then(res => res.json());
-  const accounts = state.accounts.slice();
-  const index = state.accounts.findIndex(acc => acc._id === accountId);
-  accounts[index] = res.account;
-  state = Object.assign({}, state, {
-    accounts
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('SET_PAYMENT', $wrap(async ({
-  el
-}) => {
-  const stripeToken = await stripe.createToken(el()).then(res => {
-    if (res.error) {
-      console.log('Emit', res.error);
-      events$.emit('SET_PAYMENT_ERROR', res.error);
-      return null;
+};
+
+class Top extends React.Component {
+  constructor() {
+    super();
+    this.setState(state);
+  }
+
+  componentDidMount() {
+    state$.on('UPDATE', state => this.setState(state));
+    http.get(`/top?sortBy=${this.state.sortBy}`).then(res => setState(Object.assign({}, res, {
+      loading: false
+    }))).catch(err => setState(Object.assign({}, {
+      err,
+      loading: false
+    })));
+  }
+
+  render() {
+    if (this.state.err) {
+      return React.createElement(Error, {
+        message: this.state.err.message
+      });
     }
 
-    return res.token.id;
-  });
-
-  if (stripeToken == null) {
-    return;
-  }
-
-  const {
-    customer
-  } = await http.put('/stripe', {
-    stripeToken
-  });
-  const updated = Object.assign({}, state.customer, {
-    stripe: customer.stripe
-  });
-  state = Object.assign({}, state, {
-    customer: updated
-  });
-  state$.emit('UPDATE', state);
-  events$.emit('SET_PAYMENT_SUCCESS', {});
-}));
-events$.on('ERROR', err => {
-  console.log(err.stack);
-});
-
-function $wrap(fn) {
-  return param => fn(param).catch(err => events$.emit('ERROR', err));
-}
-
-const Packages = ({
-  accountId,
-  packages
-}) => React.createElement("div", null, packages.map(pkg => React.createElement("span", {
-  class: "pkg"
-}, pkg, "\xA0", React.createElement("span", {
-  class: "delete",
-  onClick: () => events$.emit('DELETE_PACKAGE', {
-    accountId,
-    pkg
-  })
-}, "\uD83D\uDDD9"))));
-
-class Profile extends React.Component {
-  componentDidMount() {
-    this.setState(Object.assign({}, this.props.customer));
-  }
-
-  render(props, state) {
-    return React.createElement("div", {
-      class: "profile"
-    }, React.createElement("div", {
-      class: "input-with-label"
-    }, React.createElement("div", {
-      class: "label"
-    }, "First Name"), React.createElement("div", {
-      class: "input"
-    }, React.createElement("input", {
-      type: "text",
-      value: state.firstName,
-      onInput: linkstate(this, 'firstName')
-    })), React.createElement("div", {
-      style: "clear: both"
-    })), React.createElement("div", {
-      class: "input-with-label"
-    }, React.createElement("div", {
-      class: "label"
-    }, "Last Name"), React.createElement("div", {
-      class: "input"
-    }, React.createElement("input", {
-      type: "text",
-      value: state.lastName,
-      onInput: linkstate(this, 'lastName')
-    })), React.createElement("div", {
-      style: "clear: both"
-    })), React.createElement("div", {
-      class: "input-with-label"
-    }, React.createElement("div", {
-      class: "label"
-    }, "Email"), React.createElement("div", {
-      class: "input"
-    }, React.createElement("input", {
-      type: "text",
-      value: state.email,
-      onInput: linkstate(this, 'customer.email')
-    })), React.createElement("div", {
-      style: "clear: both"
-    })), React.createElement("input", {
-      type: "button",
-      value: "Save Profile",
-      class: "button",
-      onClick: () => events$.emit('UPDATE_PROFILE', {
-        account: state
-      }),
-      disabled: state.saving
+    return React.createElement("div", null, React.createElement("h1", null, "Top 100 Packages Sorted By ", cap(this.state.sortBy)), React.createElement(PackageList, {
+      loading: this.state.loading,
+      packages: this.state.packages
     }));
   }
 
 }
 
-class AddPackage extends React.Component {
-  componentDidMount() {
-    this.setState({
-      input: ''
-    });
+function PackageList(props) {
+  if (props.loading) {
+    return React.createElement("h1", null, "Loading...");
   }
 
-  render({
-    accountId
-  }, state) {
-    const add = () => events$.emit('ADD_PACKAGE', {
-      accountId,
-      pkg: state.input
-    });
-
+  ;
+  return React.createElement("div", null, React.createElement("div", {
+    class: "row"
+  }, React.createElement("div", {
+    class: "count"
+  }, "\xA0"), React.createElement("div", {
+    class: "column"
+  }, "Package"), React.createElement("div", {
+    class: "column"
+  }, "Dec 2018 Downloads"), React.createElement("div", {
+    class: "column"
+  }, "GitHub Stars")), props.packages.map((pkg, i) => {
     return React.createElement("div", {
-      class: "add-package"
+      class: "row"
     }, React.createElement("div", {
-      class: "add-package-input"
-    }, React.createElement("input", {
-      type: "text",
-      placeholder: "Package Name",
-      value: state.input,
-      onChange: linkstate(this, 'input')
-    })), React.createElement("div", {
-      class: "button",
-      onClick: add
-    }, "Watch Package"));
-  }
-
+      class: "count"
+    }, i + 1), React.createElement("div", {
+      class: "column"
+    }, React.createElement("a", {
+      href: `https://npmjs.com/package/${pkg._id}`
+    }, pkg._id)), React.createElement("div", {
+      class: "column"
+    }, formatNumber(pkg.downloadsLastMonth)), React.createElement("div", {
+      class: "column"
+    }, React.createElement(Github, {
+      pkg: pkg
+    })));
+  }));
 }
 
-function Integrations(props) {
-  return React.createElement("div", {
-    class: "integrations"
-  }, props.accounts.map(account => React.createElement("div", {
-    class: "integration"
-  }, React.createElement("div", {
-    class: "left"
-  }, React.createElement("div", {
-    class: "input-with-label"
-  }, React.createElement("div", {
-    class: "label"
-  }, React.createElement("img", {
-    class: "slack",
-    src: "/images/slack.svg"
-  }), "Webhook"), React.createElement("div", {
-    class: "input"
-  }, React.createElement("input", {
-    type: "text",
-    value: account.slackWebhooks[0]
-  })), React.createElement("div", {
-    style: "clear: both"
-  })), React.createElement("div", {
-    class: "input-with-label"
-  }, React.createElement("div", {
-    class: "label"
-  }, React.createElement("img", {
-    class: "slack",
-    src: "/images/npm.svg"
-  }), "Packages"), React.createElement("div", {
-    class: "input"
-  }, React.createElement("div", {
-    class: "packages"
-  }, React.createElement(Packages, {
-    accountId: account._id,
-    packages: account.packagesWatched
-  })), React.createElement(AddPackage, {
-    accountId: account._id
-  })), React.createElement("div", {
-    style: "clear: both"
-  }))), React.createElement("div", {
-    class: "right"
-  }, React.createElement("div", {
-    class: "delete",
-    id: "delete-${account._id}"
-  }, "\uD83D\uDDD9")))));
+React.render(React.createElement(Top, null), document.querySelector('#content'));
+
+function cap(str) {
+  if (!str) {
+    return str;
+  }
+
+  return str.charAt(0).toUpperCase() + str.substr(1);
 }
 
-class Billing extends React.Component {
-  componentDidMount() {
-    console.log('Register billing events');
-    events$.on('SET_PAYMENT_ERROR', error => {
-      console.log('Got ', error);
-      this.setState(Object.assign({}, this.state, {
-        error
-      }));
-    });
-    events$.on('SET_PAYMENT', () => {
-      this.setState(Object.assign({}, this.state, {
-        error: null
-      }));
-    });
-    events$.on('SET_PAYMENT_SUCCESS', () => {
-      this.setState(Object.assign({}, this.state, {
-        error: null
-      }));
-    });
-
-    if (this._element == null) {
-      this._element = stripe.elements().create('card');
-
-      this._element.mount('#stripe-container');
-    }
+function Github({
+  pkg
+}) {
+  if (pkg.github == null) {
+    return React.createElement("span", null);
   }
 
-  render(props, state) {
-    const show = {
-      display: 'block'
-    };
-    const hide = {
-      display: 'none'
-    };
-    const last4 = props.stripe == null ? null : props.stripe.last4;
-    return React.createElement("div", {
-      class: "billing"
-    }, React.createElement("div", {
-      class: "card-display",
-      style: props.stripe == null ? hide : show
-    }, React.createElement("div", {
-      class: "check"
-    }, "\u2714"), React.createElement("div", {
-      class: "card-description"
-    }, "Card ending in ", last4), React.createElement("div", {
-      style: "clear: both"
-    })), React.createElement("div", null, React.createElement("h4", null, "Update Payment with Stripe"), React.createElement("div", {
-      id: "stripe-container"
-    }), React.createElement("input", {
-      type: "button",
-      value: "Update Payment",
-      class: "button",
-      onClick: () => events$.emit('SET_PAYMENT', {
-        el: () => this._element
-      })
-    }), React.createElement("span", {
-      class: "card-error"
-    }, state.error == null ? '' : state.error.message)));
-  }
-
+  return React.createElement("a", {
+    href: `https://github.com/${pkg.github.owner}/${pkg.github.repo}`
+  }, formatNumber(pkg.github.numStars));
 }
 
-class Dashboard extends React.Component {
-  componentDidMount() {
-    this.setState(state);
-    state$.on('UPDATE', state => this.setState(state));
-    const opts = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: window.localStorage.getItem('token')
-      }
-    };
-    fetch(`${root}/me`, opts).then(res => res.json()).then(res => {
-      state = Object.assign({}, res, {
-        loading: false
-      });
-      this.setState(state);
-    }).catch(err => {
-      state = Object.assign({}, {
-        err,
-        loading: false
-      });
-      this.setState(state);
-    });
+function formatNumber(num) {
+  if (!num) {
+    return '';
   }
 
-  render(props, state) {
-    if (state.loading !== false) {
-      return React.createElement("div", {
-        class: "loading"
-      }, "Loading");
-    }
+  let str = num.toString();
+  let ret = '';
 
-    if (state.err) {
-      return React.createElement("div", {
-        class: "loading"
-      }, React.createElement("p", null, "An error occurred:"), React.createElement("pre", null, "$", state.err.stack));
-    }
-
-    return React.createElement("div", {
-      class: "dashboard"
-    }, React.createElement("h2", null, "Profile"), React.createElement(Profile, {
-      customer: state.customer
-    }), React.createElement("h2", null, "Billing"), React.createElement("h4", null, "For Early Adopters Only"), "Unlimited integrations and watched packages for $9.99 per month, first 30 days free.", React.createElement(Billing, {
-      customerId: state.customer._id,
-      stripe: state.customer.stripe
-    }), React.createElement("h2", null, "Integrations"), React.createElement(Integrations, {
-      accounts: state.accounts
-    }), React.createElement("h2", null, "Add Integration"), React.createElement("a", {
-      href: "https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=80341368871.427593509574"
-    }, React.createElement("img", {
-      alt: "Add to Slack",
-      height: "40",
-      width: "139",
-      src: "https://platform.slack-edge.com/img/add_to_slack.png",
-      srcset: "https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"
-    })), React.createElement("h2", null, "Help"), "Have a question or need a new feature? ", React.createElement("a", {
-      href: "https://github.com/js-report/support/issues/new"
-    }, "Open an issue on our GitHub page"), ".");
+  while (str.length > 3) {
+    ret = ',' + str.substr(str.length - 3) + ret;
+    str = str.substr(0, str.length - 3);
   }
 
+  return str + ret;
 }
-
-React.render(React.createElement(Dashboard, null), document.querySelector('#content'));
 
 /***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-function dlv(obj, key, def, p) {
-	p = 0;
-	key = key.split ? key.split('.') : key;
-	while (obj && p<key.length) { obj = obj[key[p++]]; }
-	return obj===undefined ? def : obj;
-}
+const React = __webpack_require__(2);
 
-/** Create an Event handler function that sets a given state property.
- *	@param {Component} component	The component whose state should be updated
- *	@param {string} key				A dot-notated key path to update in the component's state
- *	@param {string} eventPath		A dot-notated key path to the value that should be retrieved from the Event or component
- *	@returns {function} linkedStateHandler
- */
-function linkState(component, key, eventPath) {
-	var path = key.split('.'),
-		cache = component.__lsc || (component.__lsc = {});
-
-	return cache[key+eventPath] || (cache[key+eventPath] = function(e) {
-		var t = e && e.target || this,
-			state = {},
-			obj = state,
-			v = typeof eventPath==='string' ? dlv(e, eventPath) : t.nodeName ? (t.type.match(/^che|rad/) ? t.checked : t.value) : e,
-			i = 0;
-		for ( ; i<path.length-1; i++) {
-			obj = obj[path[i]] || (obj[path[i]] = !i && component.state[path[i]] || {});
-		}
-		obj[path[i]] = v;
-		component.setState(state);
-	});
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (linkState);
-//# sourceMappingURL=linkstate.es.js.map
-
+module.exports = props => React.createElement("div", {
+  class: "error-404"
+}, React.createElement("h2", null, "Error"), React.createElement("img", {
+  class: "error-gag-img",
+  src: "/images/pooka.png"
+}), React.createElement("div", {
+  class: "error-gag"
+}, "Life is Ruff"), React.createElement("h4", null, props.message));
 
 /***/ })
 /******/ ]);

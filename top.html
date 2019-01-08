@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/website/style.css">
+    <link rel="stylesheet" href="/website/github.css">
+    <link href="https://fonts.googleapis.com/css?family=Play|Roboto" rel="stylesheet">
+
+    <style>
+      .row {
+        border-bottom: 1px solid #dfdfdf;
+        width: 1000px;
+        position: relative;
+      }
+
+      .row a {
+        color: #00386c;
+      }
+
+      .row::after {
+        content: "";
+        clear: both;
+        display: table;
+      }
+
+      .row .count {
+        float: left;
+        width: 30px;
+        padding-top: 0.25em;
+        height: 1.5em;
+      }
+
+      .row .column {
+        border-left: 1px solid #dfdfdf;
+        float: left;
+        width: 310px;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 0.25em;
+        height: 1.5em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="header">
+        <div class="brand">
+          <img class="logo" src="/images/logo2.svg">
+          <div class="brand-name">
+            <a href="/">
+              js.report
+            </a>
+          </div>
+          <div style="clear: both"></div>
+        </div>
+        <div class="nav-right" id="nav-container">
+          <!-- Populated by nav.jsx -->
+        </div>
+      </div>
+
+      <div id="content">
+      </div>
+    </div>
+
+    <script src="/website/top.js"></script>
+  </body>
+</html>

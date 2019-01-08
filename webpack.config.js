@@ -6,7 +6,8 @@ module.exports = {
     home: './client/home.js',
     nav: './client/nav.jsx',
     package: './client/package.js',
-    slackoauth: './client/slackoauth.js'
+    slackoauth: './client/slackoauth.js',
+    top: './client/top.jsx'
   },
   target: 'web',
   output: {

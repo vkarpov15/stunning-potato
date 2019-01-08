@@ -858,7 +858,12 @@ exports.get = function(url) {
       authorization: window.localStorage.getItem('token')
     }
   };
-  return fetch(`${root}${url}`, opts).then(res => res.json());
+  return fetch(`${root}${url}`, opts).then(res => res.json()).then(res => {
+    if (res.error != null) {
+      throw new Error(res.error);
+    }
+    return res;
+  });
 };
 
 exports.put = function(url, data) {
@@ -5586,7 +5591,8 @@ module.exports = __webpack_require__(42);
 /* 7 */,
 /* 8 */,
 /* 9 */,
-/* 10 */
+/* 10 */,
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = () => `
@@ -5599,7 +5605,6 @@ module.exports = () => `
 
 
 /***/ }),
-/* 11 */,
 /* 12 */,
 /* 13 */,
 /* 14 */
@@ -5608,7 +5613,7 @@ module.exports = () => `
 __webpack_require__(1);
 __webpack_require__(4);
 
-const error404 = __webpack_require__(10);
+const error404 = __webpack_require__(11);
 const versionComponent = __webpack_require__(15);
 
 const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';

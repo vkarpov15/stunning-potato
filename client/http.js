@@ -11,7 +11,12 @@ exports.get = function(url) {
       authorization: window.localStorage.getItem('token')
     }
   };
-  return fetch(`${root}${url}`, opts).then(res => res.json());
+  return fetch(`${root}${url}`, opts).then(res => res.json()).then(res => {
+    if (res.error != null) {
+      throw new Error(res.error);
+    }
+    return res;
+  });
 };
 
 exports.put = function(url, data) {
