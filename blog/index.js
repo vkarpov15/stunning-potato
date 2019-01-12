@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20190111: tough-cookie@3.0.0',
+    content: '20190111_weekly.md',
+    output: 'this-week-on-npm-20190111',
+    description: 'New releases from the most popular npm packages from January 4 - January 11.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/20190111_books.jpg'
+  },
+  {
     title: 'This Week on npm v20181228: eslint@5.11.0, Changelog Links',
     content: '20181228_weekly.md',
     output: 'this-week-on-npm-20181228',
