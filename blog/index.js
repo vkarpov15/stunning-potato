@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20190118: ajv@6.7.0',
+    content: '20190118_weekly.md',
+    output: 'this-week-on-npm-20190118',
+    description: 'New releases from the most popular npm packages from January 11 - January 18.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/20190118_books.jpeg'
+  },
+  {
     title: 'This Week on npm v20190111: tough-cookie@3.0.0',
     content: '20190111_weekly.md',
     output: 'this-week-on-npm-20190111',

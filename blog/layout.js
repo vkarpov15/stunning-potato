@@ -2,7 +2,7 @@ module.exports = (content, { title }) => `
 <!DOCTYPE html>
 <html>
   <head>
-    <title>JSReport: ${title}</title>
+    <title>${title} - JSReport</title>
 
     <link rel="stylesheet" href="/website/style.css">
     <link rel="stylesheet" href="/website/github.css">
