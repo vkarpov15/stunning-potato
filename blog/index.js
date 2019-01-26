@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20190125: onetime@3.0.0',
+    content: '20190125_weekly.md',
+    output: 'this-week-on-npm-20190125',
+    description: 'New releases from the most popular npm packages from January 18 - January 25.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/20190126_books.jpeg'
+  },
+  {
     title: 'This Week on npm v20190118: ajv@6.7.0',
     content: '20190118_weekly.md',
     output: 'this-week-on-npm-20190118',
