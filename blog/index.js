@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20190215',
+    content: '20190215_weekly.md',
+    output: 'this-week-on-npm-20190215',
+    description: 'New releases from the most popular npm packages from February 8 - February 15.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/20190215_books.jpeg'
+  },
+  {
     title: 'This Week on npm v20190201: rxjs@6.4.0',
     content: '20190201_weekly.md',
     output: 'this-week-on-npm-20190201',
