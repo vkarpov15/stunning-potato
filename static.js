@@ -23,7 +23,9 @@ app.use((req, res, next) => {
 });
 
 app.useAsync(async (req, res, next) => {
-  let filename = req.url.substr(req.url.lastIndexOf('/') + 1);
+  let url;
+  let filename = req.url.substr(req.url.lastIndexOf('/') + 1).replace(/\?.*$/, '');
+console.log('FN', filename)
   url = (() => {
     if (req.url === '/blog') {
       return '/blog/index.html';
@@ -40,7 +42,7 @@ app.useAsync(async (req, res, next) => {
   })();
 
   const contents = await new Promise((resolve, reject) => {
-    fs.readFile(`${__dirname}${url}`, filename.endsWith('.html') ? 'utf8' : '', (err, res) => {
+    fs.readFile(`${__dirname}${url.replace(/\?.*$/, '')}`, filename.endsWith('.html') ? 'utf8' : '', (err, res) => {
       if (err != null) {
         if (err.code === 'ENOENT') {
           err.status = 404;

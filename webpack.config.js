@@ -3,6 +3,7 @@ module.exports = {
   entry: {
     dashboard: './client/dashboard.jsx',
     feed: './client/feed.js',
+    githuboauth: './client/githuboauth.js',
     home: './client/home.js',
     nav: './client/nav.jsx',
     package: './client/package.js',

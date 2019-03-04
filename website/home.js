@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 17);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -91,7 +91,8 @@
 const cfg = {
   root: 'http://localhost:4000',
   stripe: 'pk_test_CY6HxyQkOolO1B3h43MvkJE5',
-  track: false
+  track: false,
+  github: '0aaa1ef6344e70dd463c'
 };
 
 if (true) {
@@ -5597,7 +5598,8 @@ module.exports = __webpack_require__(42);
 /* 13 */,
 /* 14 */,
 /* 15 */,
-/* 16 */
+/* 16 */,
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);

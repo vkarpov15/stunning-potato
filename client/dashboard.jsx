@@ -17,6 +17,9 @@ const events$ = mitt();
 const state$ = mitt();
 let state = { loading: true };
 
+window.events$ = events$;
+window.state$ = state$;
+
 events$.on('UPDATE_PROFILE', $wrap(async({ account }) => {
   state = Object.assign({}, state, { saving: true });
   state$.emit('UPDATE', state);
@@ -32,6 +35,58 @@ events$.on('UPDATE_PROFILE', $wrap(async({ account }) => {
   const res = await fetch(`${root}/me`, opts).then(res => res.json());
 
   state = Object.assign({}, { saving: false });
+  state$.emit('UPDATE', state);
+}));
+
+events$.on('DELETE_ACCOUNT', $wrap(async ({ accountId }) => {
+  /*const accounts = state.accounts.filter(acc => acc._id !== accountId);
+
+  const opts = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    },
+    body: JSON.stringify({ packagesWatched, accountId })
+  };
+  await fetch(`${root}/account`, opts).then(res => res.json());
+
+  state = Object.assign({}, state, { accounts });
+
+  state$.emit('UPDATE', state);*/
+}));
+
+events$.on('ADD_GITHUB', $wrap(async (account) => {
+  account.type = 'GITHUB';
+
+  const opts = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    },
+    body: JSON.stringify(account)
+  };
+  const res = await fetch(`${root}/account`, opts).then(res => res.json());
+
+  const accounts = state.accounts.slice();
+  accounts.push(res.account);
+
+  state = Object.assign({}, state, { accounts });
+  state$.emit('UPDATE', state);
+}));
+
+events$.on('UPDATE_GITHUB_REPOS', $wrap(async () => {
+  const opts = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    }
+  };
+  const res = await fetch(`${root}/repos`, opts).then(res => res.json());
+
+  state = Object.assign({}, state, { customer: res.customer });
   state$.emit('UPDATE', state);
 }));
 
@@ -53,8 +108,31 @@ events$.on('DELETE_PACKAGE', $wrap(async ({ accountId, pkg }) => {
   const accounts = state.accounts.slice();
   const index = state.accounts.findIndex(acc => acc._id === accountId);
   accounts[index] = res.account;
-  state = Object.assign({}, state, { accounts });
 
+  state = Object.assign({}, state, { accounts });
+  state$.emit('UPDATE', state);
+}));
+
+events$.on('DELETE_REPO', $wrap(async ({ accountId, repo }) => {
+  const account = state.accounts.find(acc => acc._id === accountId);
+
+  const reposWatched = account.reposWatched.filter(_repo => _repo !== repo);
+
+  const opts = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    },
+    body: JSON.stringify({ reposWatched, accountId })
+  };
+  const res = await fetch(`${root}/account`, opts).then(res => res.json());
+
+  const accounts = state.accounts.slice();
+  const index = state.accounts.findIndex(acc => acc._id === accountId);
+  accounts[index] = res.account;
+
+  state = Object.assign({}, state, { accounts });
   state$.emit('UPDATE', state);
 }));
 
@@ -70,6 +148,29 @@ events$.on('ADD_PACKAGE', $wrap(async ({ accountId, pkg }) => {
       authorization: window.localStorage.getItem('token')
     },
     body: JSON.stringify({ packagesWatched, accountId })
+  };
+  const res = await fetch(`${root}/account`, opts).then(res => res.json());
+
+  const accounts = state.accounts.slice();
+  const index = state.accounts.findIndex(acc => acc._id === accountId);
+  accounts[index] = res.account;
+  state = Object.assign({}, state, { accounts });
+
+  state$.emit('UPDATE', state);
+}));
+
+events$.on('ADD_REPO', $wrap(async ({ accountId, repo }) => {
+  const account = state.accounts.find(acc => acc._id === accountId);
+
+  const reposWatched = account.reposWatched.concat([repo]);
+
+  const opts = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: window.localStorage.getItem('token')
+    },
+    body: JSON.stringify({ reposWatched, accountId })
   };
   const res = await fetch(`${root}/account`, opts).then(res => res.json());
 
@@ -203,35 +304,9 @@ function Integrations(props) {
       {
         props.accounts.map(account => (
           <div class="integration">
-            <div class="left">
-              <div class="input-with-label">
-                <div class="label">
-                  <img class="slack" src="/images/slack.svg" />
-                  Webhook
-                </div>
-                <div class="input">
-                  <input type="text" value={account.slackWebhooks[0]} />
-                </div>
-                <div style="clear: both"></div>
-              </div>
-              <div class="input-with-label">
-                <div class="label">
-                  <img class="slack" src="/images/npm.svg" />
-                  Packages
-                </div>
-                <div class="input">
-                  <div class="packages">
-                    <Packages
-                      accountId={account._id}
-                      packages={account.packagesWatched} />
-                  </div>
-                  <AddPackage accountId={account._id} />
-                </div>
-                <div style="clear: both"></div>
-              </div>
-            </div>
+            <Integration account={account} customer={props.customer}></Integration>
             <div class="right">
-              <div class="delete" id="delete-${account._id}">
+              <div class="delete" onClick={() => events$.emit('DELETE_ACCOUNT', { accountId: account._id })}>
                 &#x1f5d9;
               </div>
             </div>
@@ -242,11 +317,155 @@ function Integrations(props) {
   );
 }
 
+function Integration({ account, customer }) {
+  if (account.type === 'GITHUB') {
+    return (<GitHubIntegration account={account} customer={customer}></GitHubIntegration>);
+  }
+
+  return (<SlackIntegration account={account}></SlackIntegration>);
+}
+
+function GitHubIntegration({ account, customer }) {
+  const addRepo = ev => {
+    if (!ev.target.value) {
+      return;
+    }
+    events$.emit('ADD_REPO', { accountId: account._id, repo: ev.target.value });
+  };
+  const accountId = account._id;
+
+  return (
+    <div class="left">
+      <div class="input-with-label">
+        <div class="label">
+          Name
+        </div>
+        <div class="input">
+          <input type="text" value={account.name} />
+        </div>
+        <div style="clear: both"></div>
+      </div>
+      <div class="input-with-label">
+        <div class="label">
+          Email
+        </div>
+        <div class="input">
+          <input type="text" value={account.emails[0]} />
+        </div>
+        <div style="clear: both"></div>
+      </div>
+      <div class="input-with-label">
+        <div class="label">
+          <img class="slack" src="/images/github.svg" />
+          GitHub Repos
+        </div>
+        <div class="input">
+          <div>
+            {
+              account.reposWatched.map(repo => {
+                return (
+                  <span class="pkg">
+                    {repo}
+                    <span
+                      class="delete"
+                      onClick={() => events$.emit('DELETE_REPO', { accountId, repo })}>
+                      &#x1f5d9;
+                    </span>
+                  </span>);
+              })
+            }
+          </div>
+          <div>
+            <h4>Add Repo</h4>
+            <select onChange={addRepo}>
+              <option key={''} value={''}></option>
+              {
+                customer.githubRepos.map(repo => {
+                  return (<option key={repo} value={repo}>{repo}</option>);
+                })
+              }
+            </select>
+            <h4>or</h4>
+            <EnterCustomRepo accountId={accountId}></EnterCustomRepo>
+          </div>
+        </div>
+        <div style="clear: both"></div>
+      </div>
+    </div>
+  );
+}
+
+class EnterCustomRepo extends React.Component {
+  constructor() {
+    super();
+    this.setState({ value: '' });
+  }
+
+  addRepo(accountId) {
+    events$.emit('ADD_REPO', { accountId, repo: this.state.value });
+    this.setState({ value: '' });
+  }
+
+  render({ accountId }) {
+    return (
+      <div>
+        <input
+          type="text"
+          placeholder="Repo Name"
+          value={this.state.value}
+          onChange={ev => this.setState({ value: ev.target.value })} />
+        <div class="button small-button" onClick={() => this.addRepo(accountId)}>
+          Add Repo By Name
+        </div>
+      </div>
+    );
+  }
+}
+
+function SlackIntegration({ account }) {
+  return (
+    <div class="left">
+      <div class="input-with-label">
+        <div class="label">
+          Name
+        </div>
+        <div class="input">
+          <input type="text" value={account.name} />
+        </div>
+        <div style="clear: both"></div>
+      </div>
+      <div class="input-with-label">
+        <div class="label">
+          <img class="slack" src="/images/slack.svg" />
+          Webhook
+        </div>
+        <div class="input">
+          <input type="text" value={account.slackWebhooks[0]} />
+        </div>
+        <div style="clear: both"></div>
+      </div>
+      <div class="input-with-label">
+        <div class="label">
+          <img class="slack" src="/images/npm.svg" />
+          Packages
+        </div>
+        <div class="input">
+          <div class="packages">
+            <Packages
+              accountId={account._id}
+              packages={account.packagesWatched} />
+          </div>
+          <AddPackage accountId={account._id} />
+        </div>
+        <div style="clear: both"></div>
+      </div>
+    </div>
+  );
+}
+
 class Billing extends React.Component {
   componentDidMount() {
-    console.log('Register billing events')
     events$.on('SET_PAYMENT_ERROR', error => {
-      console.log('Got ', error)
       this.setState(Object.assign({}, this.state, { error }));
     });
 
@@ -354,9 +573,29 @@ class Dashboard extends React.Component {
 
         <h2>Integrations</h2>
 
-        <Integrations accounts={state.accounts} />
+        <Integrations accounts={state.accounts} customer={state.customer} />
 
         <h2>Add Integration</h2>
+
+        <h3>GitHub</h3>
+
+        <p>
+          Add JSReport to GitHub and receive an email once per week with all
+          releases for packages in your <code>package.json</code>.
+        </p>
+
+        <div>
+          <div class="button add-github-button" onClick={() => events$.emit('ADD_GITHUB', {})}>
+            Add GitHub Integration
+          </div>
+        </div>
+
+        <h3>Slack</h3>
+
+        <p>
+          A Slack integration will post to a Slack channel whenever a new
+          version of a watched package is released.
+        </p>
 
         <a href="https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=80341368871.427593509574">
           <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />

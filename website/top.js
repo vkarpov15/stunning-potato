@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 21);
+/******/ 	return __webpack_require__(__webpack_require__.s = 22);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -91,7 +91,8 @@
 const cfg = {
   root: 'http://localhost:4000',
   stripe: 'pk_test_CY6HxyQkOolO1B3h43MvkJE5',
-  track: false
+  track: false,
+  github: '0aaa1ef6344e70dd463c'
 };
 
 if (true) {
@@ -5588,7 +5589,10 @@ module.exports = __webpack_require__(42);
 //# sourceMappingURL=keen-tracking.js.map
 
 /***/ }),
-/* 7 */
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5660,9 +5664,6 @@ function mitt(all                 ) {
 
 
 /***/ }),
-/* 8 */,
-/* 9 */,
-/* 10 */,
 /* 11 */,
 /* 12 */,
 /* 13 */,
@@ -5673,18 +5674,19 @@ function mitt(all                 ) {
 /* 18 */,
 /* 19 */,
 /* 20 */,
-/* 21 */
+/* 21 */,
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(4);
 
-const Error = __webpack_require__(22);
+const Error = __webpack_require__(23);
 
 const React = __webpack_require__(2);
 
 const http = __webpack_require__(3);
 
-const mitt = __webpack_require__(7).default;
+const mitt = __webpack_require__(10).default;
 
 const events$ = mitt();
 const state$ = mitt();
@@ -5803,7 +5805,7 @@ function formatNumber(num) {
 }
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const React = __webpack_require__(2);

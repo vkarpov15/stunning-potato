@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 20);
+/******/ 	return __webpack_require__(__webpack_require__.s = 21);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -91,7 +91,8 @@
 const cfg = {
   root: 'http://localhost:4000',
   stripe: 'pk_test_CY6HxyQkOolO1B3h43MvkJE5',
-  track: false
+  track: false,
+  github: '0aaa1ef6344e70dd463c'
 };
 
 if (true) {
@@ -5588,14 +5589,13 @@ module.exports = __webpack_require__(42);
 //# sourceMappingURL=keen-tracking.js.map
 
 /***/ }),
-/* 7 */,
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-const strictUriEncode = __webpack_require__(9);
-const decodeComponent = __webpack_require__(10);
+const strictUriEncode = __webpack_require__(8);
+const decodeComponent = __webpack_require__(9);
 
 function encoderForArrayFormat(options) {
 	switch (options.arrayFormat) {
@@ -5827,7 +5827,7 @@ exports.parseUrl = (input, options) => {
 
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5836,7 +5836,7 @@ module.exports = str => encodeURIComponent(str).replace(/[!'()*]/g, x => `%${x.c
 
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5937,6 +5937,7 @@ module.exports = function (encodedURI) {
 
 
 /***/ }),
+/* 10 */,
 /* 11 */,
 /* 12 */,
 /* 13 */,
@@ -5946,13 +5947,14 @@ module.exports = function (encodedURI) {
 /* 17 */,
 /* 18 */,
 /* 19 */,
-/* 20 */
+/* 20 */,
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
 __webpack_require__(4);
 
-const qs = __webpack_require__(8);
+const qs = __webpack_require__(7);
 
 const root = 'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
 

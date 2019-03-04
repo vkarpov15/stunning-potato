@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -5937,787 +5937,92 @@ module.exports = function (encodedURI) {
 
 
 /***/ }),
-/* 10 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//      
-// An event handler can take an optional event argument
-// and should not return a value
-                                          
-                                                               
-
-// An array of all currently registered event handlers for a type
-                                            
-                                                            
-// A map of event types and their corresponding event handlers.
-                        
-                                 
-                                   
-  
-
-/** Mitt: Tiny (~200b) functional event emitter / pubsub.
- *  @name mitt
- *  @returns {Mitt}
- */
-function mitt(all                 ) {
-	all = all || Object.create(null);
-
-	return {
-		/**
-		 * Register an event handler for the given type.
-		 *
-		 * @param  {String} type	Type of event to listen for, or `"*"` for all events
-		 * @param  {Function} handler Function to call in response to given event
-		 * @memberOf mitt
-		 */
-		on: function on(type        , handler              ) {
-			(all[type] || (all[type] = [])).push(handler);
-		},
-
-		/**
-		 * Remove an event handler for the given type.
-		 *
-		 * @param  {String} type	Type of event to unregister `handler` from, or `"*"`
-		 * @param  {Function} handler Handler function to remove
-		 * @memberOf mitt
-		 */
-		off: function off(type        , handler              ) {
-			if (all[type]) {
-				all[type].splice(all[type].indexOf(handler) >>> 0, 1);
-			}
-		},
-
-		/**
-		 * Invoke all handlers for the given type.
-		 * If present, `"*"` handlers are invoked after type-matched handlers.
-		 *
-		 * @param {String} type  The event type to invoke
-		 * @param {Any} [evt]  Any value (object is recommended and powerful), passed to each handler
-		 * @memberOf mitt
-		 */
-		emit: function emit(type        , evt     ) {
-			(all[type] || []).slice().map(function (handler) { handler(evt); });
-			(all['*'] || []).slice().map(function (handler) { handler(type, evt); });
-		}
-	};
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (mitt);
-//# sourceMappingURL=mitt.es.js.map
-
-
-/***/ }),
+/* 10 */,
 /* 11 */,
-/* 12 */
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-
 __webpack_require__(4);
-
-const React = __webpack_require__(2);
-
-const http = __webpack_require__(3);
-
-const linkstate = __webpack_require__(13).default;
-
-const mitt = __webpack_require__(10).default;
 
 const qs = __webpack_require__(7);
 
-const config = __webpack_require__(0);
+const root = 'http://localhost:4000'; //'https://s5hqb41ya4.execute-api.us-east-1.amazonaws.com/prod';
 
-const root = config.root;
-console.log(root, config.stripe);
-const stripe = Stripe(config.stripe);
-console.log(stripe.createToken);
-const events$ = mitt();
-const state$ = mitt();
-let state = {
-  loading: true
-};
-window.events$ = events$;
-window.state$ = state$;
-events$.on('UPDATE_PROFILE', $wrap(async ({
-  account
-}) => {
-  state = Object.assign({}, state, {
-    saving: true
-  });
-  state$.emit('UPDATE', state);
-  const opts = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    },
-    body: JSON.stringify(account)
-  };
-  const res = await fetch(`${root}/me`, opts).then(res => res.json());
-  state = Object.assign({}, {
-    saving: false
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('DELETE_ACCOUNT', $wrap(async ({
-  accountId
-}) => {
-  /*const accounts = state.accounts.filter(acc => acc._id !== accountId);
-   const opts = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    },
-    body: JSON.stringify({ packagesWatched, accountId })
-  };
-  await fetch(`${root}/account`, opts).then(res => res.json());
-   state = Object.assign({}, state, { accounts });
-   state$.emit('UPDATE', state);*/
-}));
-events$.on('ADD_GITHUB', $wrap(async account => {
-  account.type = 'GITHUB';
+if (typeof window !== 'undefined') {
+  main(document.querySelector('#content'), window.location.search);
+}
+
+function main(content, querystring) {
+  const interval = loading(content);
+
+  const params = qs.parse(querystring);
+
   const opts = {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify(account)
+    body: JSON.stringify({ code: params.code })
   };
-  const res = await fetch(`${root}/account`, opts).then(res => res.json());
-  const accounts = state.accounts.slice();
-  accounts.push(res.account);
-  state = Object.assign({}, state, {
-    accounts
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('UPDATE_GITHUB_REPOS', $wrap(async () => {
-  const opts = {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
+  fetch(`${root}/github`, opts).
+    then(res => {
+      clearInterval(interval);
+      success(content);
+      return res.json();
+    }).
+    then(res => {
+      window.localStorage.setItem('token', res.token._id);
+    }).
+    catch(err => {
+      clearInterval(interval);
+      error(content, err);
+    });
+}
+
+function error(content, err) {
+  content.innerHTML = `
+    <div class="registering">
+      <p>An error occurred:</p>
+      <pre>${err.stack}</pre>
+    </div>
+  `;
+}
+
+function loading(content) {
+  content.innerHTML = `
+    <div class="registering"><p>Registering</p></div>
+  `;
+
+  let count = 0;
+  const interval = setInterval(() => {
+    let html = content.querySelector('.registering').innerHTML;
+    html += '.';
+    if (html.substr(html.indexOf('.')).length > 3) {
+      html = 'Registering';
     }
-  };
-  const res = await fetch(`${root}/repos`, opts).then(res => res.json());
-  state = Object.assign({}, state, {
-    customer: res.customer
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('DELETE_PACKAGE', $wrap(async ({
-  accountId,
-  pkg
-}) => {
-  const account = state.accounts.find(acc => acc._id === accountId);
-  const packagesWatched = account.packagesWatched.filter(_pkg => _pkg !== pkg);
-  const opts = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    },
-    body: JSON.stringify({
-      packagesWatched,
-      accountId
-    })
-  };
-  const res = await fetch(`${root}/account`, opts).then(res => res.json());
-  const accounts = state.accounts.slice();
-  const index = state.accounts.findIndex(acc => acc._id === accountId);
-  accounts[index] = res.account;
-  state = Object.assign({}, state, {
-    accounts
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('DELETE_REPO', $wrap(async ({
-  accountId,
-  repo
-}) => {
-  const account = state.accounts.find(acc => acc._id === accountId);
-  const reposWatched = account.reposWatched.filter(_repo => _repo !== repo);
-  const opts = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    },
-    body: JSON.stringify({
-      reposWatched,
-      accountId
-    })
-  };
-  const res = await fetch(`${root}/account`, opts).then(res => res.json());
-  const accounts = state.accounts.slice();
-  const index = state.accounts.findIndex(acc => acc._id === accountId);
-  accounts[index] = res.account;
-  state = Object.assign({}, state, {
-    accounts
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('ADD_PACKAGE', $wrap(async ({
-  accountId,
-  pkg
-}) => {
-  const account = state.accounts.find(acc => acc._id === accountId);
-  const packagesWatched = account.packagesWatched.concat([pkg]);
-  const opts = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    },
-    body: JSON.stringify({
-      packagesWatched,
-      accountId
-    })
-  };
-  const res = await fetch(`${root}/account`, opts).then(res => res.json());
-  const accounts = state.accounts.slice();
-  const index = state.accounts.findIndex(acc => acc._id === accountId);
-  accounts[index] = res.account;
-  state = Object.assign({}, state, {
-    accounts
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('ADD_REPO', $wrap(async ({
-  accountId,
-  repo
-}) => {
-  const account = state.accounts.find(acc => acc._id === accountId);
-  const reposWatched = account.reposWatched.concat([repo]);
-  const opts = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: window.localStorage.getItem('token')
-    },
-    body: JSON.stringify({
-      reposWatched,
-      accountId
-    })
-  };
-  const res = await fetch(`${root}/account`, opts).then(res => res.json());
-  const accounts = state.accounts.slice();
-  const index = state.accounts.findIndex(acc => acc._id === accountId);
-  accounts[index] = res.account;
-  state = Object.assign({}, state, {
-    accounts
-  });
-  state$.emit('UPDATE', state);
-}));
-events$.on('SET_PAYMENT', $wrap(async ({
-  el
-}) => {
-  const stripeToken = await stripe.createToken(el()).then(res => {
-    if (res.error) {
-      console.log('Emit', res.error);
-      events$.emit('SET_PAYMENT_ERROR', res.error);
-      return null;
-    }
+    content.querySelector('.registering').innerHTML = html;
+  }, 250);
 
-    return res.token.id;
-  });
-
-  if (stripeToken == null) {
-    return;
-  }
-
-  const {
-    customer
-  } = await http.put('/stripe', {
-    stripeToken
-  });
-  const updated = Object.assign({}, state.customer, {
-    stripe: customer.stripe
-  });
-  state = Object.assign({}, state, {
-    customer: updated
-  });
-  state$.emit('UPDATE', state);
-  events$.emit('SET_PAYMENT_SUCCESS', {});
-}));
-events$.on('ERROR', err => {
-  console.log(err.stack);
-});
-
-function $wrap(fn) {
-  return param => fn(param).catch(err => events$.emit('ERROR', err));
+  return interval;
 }
 
-const Packages = ({
-  accountId,
-  packages
-}) => React.createElement("div", null, packages.map(pkg => React.createElement("span", {
-  class: "pkg"
-}, pkg, "\xA0", React.createElement("span", {
-  class: "delete",
-  onClick: () => events$.emit('DELETE_PACKAGE', {
-    accountId,
-    pkg
-  })
-}, "\uD83D\uDDD9"))));
-
-class Profile extends React.Component {
-  componentDidMount() {
-    this.setState(Object.assign({}, this.props.customer));
-  }
-
-  render(props, state) {
-    return React.createElement("div", {
-      class: "profile"
-    }, React.createElement("div", {
-      class: "input-with-label"
-    }, React.createElement("div", {
-      class: "label"
-    }, "First Name"), React.createElement("div", {
-      class: "input"
-    }, React.createElement("input", {
-      type: "text",
-      value: state.firstName,
-      onInput: linkstate(this, 'firstName')
-    })), React.createElement("div", {
-      style: "clear: both"
-    })), React.createElement("div", {
-      class: "input-with-label"
-    }, React.createElement("div", {
-      class: "label"
-    }, "Last Name"), React.createElement("div", {
-      class: "input"
-    }, React.createElement("input", {
-      type: "text",
-      value: state.lastName,
-      onInput: linkstate(this, 'lastName')
-    })), React.createElement("div", {
-      style: "clear: both"
-    })), React.createElement("div", {
-      class: "input-with-label"
-    }, React.createElement("div", {
-      class: "label"
-    }, "Email"), React.createElement("div", {
-      class: "input"
-    }, React.createElement("input", {
-      type: "text",
-      value: state.email,
-      onInput: linkstate(this, 'customer.email')
-    })), React.createElement("div", {
-      style: "clear: both"
-    })), React.createElement("input", {
-      type: "button",
-      value: "Save Profile",
-      class: "button",
-      onClick: () => events$.emit('UPDATE_PROFILE', {
-        account: state
-      }),
-      disabled: state.saving
-    }));
-  }
-
+function success(content) {
+  content.innerHTML = `
+    <div class="registered">
+      <p>Registered Successfully!</p>
+      <div class="button" >
+        <a href="/dashboard">
+          See Your Dashboard
+        </a>
+      </div>
+    </div>
+  `;
 }
-
-class AddPackage extends React.Component {
-  componentDidMount() {
-    this.setState({
-      input: ''
-    });
-  }
-
-  render({
-    accountId
-  }, state) {
-    const add = () => events$.emit('ADD_PACKAGE', {
-      accountId,
-      pkg: state.input
-    });
-
-    return React.createElement("div", {
-      class: "add-package"
-    }, React.createElement("div", {
-      class: "add-package-input"
-    }, React.createElement("input", {
-      type: "text",
-      placeholder: "Package Name",
-      value: state.input,
-      onChange: linkstate(this, 'input')
-    })), React.createElement("div", {
-      class: "button",
-      onClick: add
-    }, "Watch Package"));
-  }
-
-}
-
-function Integrations(props) {
-  return React.createElement("div", {
-    class: "integrations"
-  }, props.accounts.map(account => React.createElement("div", {
-    class: "integration"
-  }, React.createElement(Integration, {
-    account: account,
-    customer: props.customer
-  }), React.createElement("div", {
-    class: "right"
-  }, React.createElement("div", {
-    class: "delete",
-    onClick: () => events$.emit('DELETE_ACCOUNT', {
-      accountId: account._id
-    })
-  }, "\uD83D\uDDD9")))));
-}
-
-function Integration({
-  account,
-  customer
-}) {
-  if (account.type === 'GITHUB') {
-    return React.createElement(GitHubIntegration, {
-      account: account,
-      customer: customer
-    });
-  }
-
-  return React.createElement(SlackIntegration, {
-    account: account
-  });
-}
-
-function GitHubIntegration({
-  account,
-  customer
-}) {
-  const addRepo = ev => {
-    if (!ev.target.value) {
-      return;
-    }
-
-    events$.emit('ADD_REPO', {
-      accountId: account._id,
-      repo: ev.target.value
-    });
-  };
-
-  const accountId = account._id;
-  return React.createElement("div", {
-    class: "left"
-  }, React.createElement("div", {
-    class: "input-with-label"
-  }, React.createElement("div", {
-    class: "label"
-  }, "Name"), React.createElement("div", {
-    class: "input"
-  }, React.createElement("input", {
-    type: "text",
-    value: account.name
-  })), React.createElement("div", {
-    style: "clear: both"
-  })), React.createElement("div", {
-    class: "input-with-label"
-  }, React.createElement("div", {
-    class: "label"
-  }, "Email"), React.createElement("div", {
-    class: "input"
-  }, React.createElement("input", {
-    type: "text",
-    value: account.emails[0]
-  })), React.createElement("div", {
-    style: "clear: both"
-  })), React.createElement("div", {
-    class: "input-with-label"
-  }, React.createElement("div", {
-    class: "label"
-  }, React.createElement("img", {
-    class: "slack",
-    src: "/images/github.svg"
-  }), "GitHub Repos"), React.createElement("div", {
-    class: "input"
-  }, React.createElement("div", null, account.reposWatched.map(repo => {
-    return React.createElement("span", {
-      class: "pkg"
-    }, repo, React.createElement("span", {
-      class: "delete",
-      onClick: () => events$.emit('DELETE_REPO', {
-        accountId,
-        repo
-      })
-    }, "\uD83D\uDDD9"));
-  })), React.createElement("div", null, React.createElement("h4", null, "Add Repo"), React.createElement("select", {
-    onChange: addRepo
-  }, React.createElement("option", {
-    key: '',
-    value: ''
-  }), customer.githubRepos.map(repo => {
-    return React.createElement("option", {
-      key: repo,
-      value: repo
-    }, repo);
-  })), React.createElement("h4", null, "or"), React.createElement(EnterCustomRepo, {
-    accountId: accountId
-  }))), React.createElement("div", {
-    style: "clear: both"
-  })));
-}
-
-class EnterCustomRepo extends React.Component {
-  constructor() {
-    super();
-    this.setState({
-      value: ''
-    });
-  }
-
-  addRepo(accountId) {
-    events$.emit('ADD_REPO', {
-      accountId,
-      repo: this.state.value
-    });
-    this.setState({
-      value: ''
-    });
-  }
-
-  render({
-    accountId
-  }) {
-    return React.createElement("div", null, React.createElement("input", {
-      type: "text",
-      placeholder: "Repo Name",
-      value: this.state.value,
-      onChange: ev => this.setState({
-        value: ev.target.value
-      })
-    }), React.createElement("div", {
-      class: "button small-button",
-      onClick: () => this.addRepo(accountId)
-    }, "Add Repo By Name"));
-  }
-
-}
-
-function SlackIntegration({
-  account
-}) {
-  return React.createElement("div", {
-    class: "left"
-  }, React.createElement("div", {
-    class: "input-with-label"
-  }, React.createElement("div", {
-    class: "label"
-  }, "Name"), React.createElement("div", {
-    class: "input"
-  }, React.createElement("input", {
-    type: "text",
-    value: account.name
-  })), React.createElement("div", {
-    style: "clear: both"
-  })), React.createElement("div", {
-    class: "input-with-label"
-  }, React.createElement("div", {
-    class: "label"
-  }, React.createElement("img", {
-    class: "slack",
-    src: "/images/slack.svg"
-  }), "Webhook"), React.createElement("div", {
-    class: "input"
-  }, React.createElement("input", {
-    type: "text",
-    value: account.slackWebhooks[0]
-  })), React.createElement("div", {
-    style: "clear: both"
-  })), React.createElement("div", {
-    class: "input-with-label"
-  }, React.createElement("div", {
-    class: "label"
-  }, React.createElement("img", {
-    class: "slack",
-    src: "/images/npm.svg"
-  }), "Packages"), React.createElement("div", {
-    class: "input"
-  }, React.createElement("div", {
-    class: "packages"
-  }, React.createElement(Packages, {
-    accountId: account._id,
-    packages: account.packagesWatched
-  })), React.createElement(AddPackage, {
-    accountId: account._id
-  })), React.createElement("div", {
-    style: "clear: both"
-  })));
-}
-
-class Billing extends React.Component {
-  componentDidMount() {
-    events$.on('SET_PAYMENT_ERROR', error => {
-      this.setState(Object.assign({}, this.state, {
-        error
-      }));
-    });
-    events$.on('SET_PAYMENT', () => {
-      this.setState(Object.assign({}, this.state, {
-        error: null
-      }));
-    });
-    events$.on('SET_PAYMENT_SUCCESS', () => {
-      this.setState(Object.assign({}, this.state, {
-        error: null
-      }));
-    });
-
-    if (this._element == null) {
-      this._element = stripe.elements().create('card');
-
-      this._element.mount('#stripe-container');
-    }
-  }
-
-  render(props, state) {
-    const show = {
-      display: 'block'
-    };
-    const hide = {
-      display: 'none'
-    };
-    const last4 = props.stripe == null ? null : props.stripe.last4;
-    return React.createElement("div", {
-      class: "billing"
-    }, React.createElement("div", {
-      class: "card-display",
-      style: props.stripe == null ? hide : show
-    }, React.createElement("div", {
-      class: "check"
-    }, "\u2714"), React.createElement("div", {
-      class: "card-description"
-    }, "Card ending in ", last4), React.createElement("div", {
-      style: "clear: both"
-    })), React.createElement("div", null, React.createElement("h4", null, "Update Payment with Stripe"), React.createElement("div", {
-      id: "stripe-container"
-    }), React.createElement("input", {
-      type: "button",
-      value: "Update Payment",
-      class: "button",
-      onClick: () => events$.emit('SET_PAYMENT', {
-        el: () => this._element
-      })
-    }), React.createElement("span", {
-      class: "card-error"
-    }, state.error == null ? '' : state.error.message)));
-  }
-
-}
-
-class Dashboard extends React.Component {
-  componentDidMount() {
-    this.setState(state);
-    state$.on('UPDATE', state => this.setState(state));
-    const opts = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: window.localStorage.getItem('token')
-      }
-    };
-    fetch(`${root}/me`, opts).then(res => res.json()).then(res => {
-      state = Object.assign({}, res, {
-        loading: false
-      });
-      this.setState(state);
-    }).catch(err => {
-      state = Object.assign({}, {
-        err,
-        loading: false
-      });
-      this.setState(state);
-    });
-  }
-
-  render(props, state) {
-    if (state.loading !== false) {
-      return React.createElement("div", {
-        class: "loading"
-      }, "Loading");
-    }
-
-    if (state.err) {
-      return React.createElement("div", {
-        class: "loading"
-      }, React.createElement("p", null, "An error occurred:"), React.createElement("pre", null, "$", state.err.stack));
-    }
-
-    return React.createElement("div", {
-      class: "dashboard"
-    }, React.createElement("h2", null, "Profile"), React.createElement(Profile, {
-      customer: state.customer
-    }), React.createElement("h2", null, "Billing"), React.createElement("h4", null, "For Early Adopters Only"), "Unlimited integrations and watched packages for $9.99 per month, first 30 days free.", React.createElement(Billing, {
-      customerId: state.customer._id,
-      stripe: state.customer.stripe
-    }), React.createElement("h2", null, "Integrations"), React.createElement(Integrations, {
-      accounts: state.accounts,
-      customer: state.customer
-    }), React.createElement("h2", null, "Add Integration"), React.createElement("h3", null, "GitHub"), React.createElement("p", null, "Add JSReport to GitHub and receive an email once per week with all releases for packages in your ", React.createElement("code", null, "package.json"), "."), React.createElement("div", null, React.createElement("div", {
-      class: "button add-github-button",
-      onClick: () => events$.emit('ADD_GITHUB', {})
-    }, "Add GitHub Integration")), React.createElement("h3", null, "Slack"), React.createElement("p", null, "A Slack integration will post to a Slack channel whenever a new version of a watched package is released."), React.createElement("a", {
-      href: "https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=80341368871.427593509574"
-    }, React.createElement("img", {
-      alt: "Add to Slack",
-      height: "40",
-      width: "139",
-      src: "https://platform.slack-edge.com/img/add_to_slack.png",
-      srcset: "https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"
-    })), React.createElement("h2", null, "Help"), "Have a question or need a new feature? ", React.createElement("a", {
-      href: "https://github.com/js-report/support/issues/new"
-    }, "Open an issue on our GitHub page"), ".");
-  }
-
-}
-
-React.render(React.createElement(Dashboard, null), document.querySelector('#content'));
-
-/***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-function dlv(obj, key, def, p) {
-	p = 0;
-	key = key.split ? key.split('.') : key;
-	while (obj && p<key.length) { obj = obj[key[p++]]; }
-	return obj===undefined ? def : obj;
-}
-
-/** Create an Event handler function that sets a given state property.
- *	@param {Component} component	The component whose state should be updated
- *	@param {string} key				A dot-notated key path to update in the component's state
- *	@param {string} eventPath		A dot-notated key path to the value that should be retrieved from the Event or component
- *	@returns {function} linkedStateHandler
- */
-function linkState(component, key, eventPath) {
-	var path = key.split('.'),
-		cache = component.__lsc || (component.__lsc = {});
-
-	return cache[key+eventPath] || (cache[key+eventPath] = function(e) {
-		var t = e && e.target || this,
-			state = {},
-			obj = state,
-			v = typeof eventPath==='string' ? dlv(e, eventPath) : t.nodeName ? (t.type.match(/^che|rad/) ? t.checked : t.value) : e,
-			i = 0;
-		for ( ; i<path.length-1; i++) {
-			obj = obj[path[i]] || (obj[path[i]] = !i && component.state[path[i]] || {});
-		}
-		obj[path[i]] = v;
-		component.setState(state);
-	});
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (linkState);
-//# sourceMappingURL=linkstate.es.js.map
 
 
 /***/ })

@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 18);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -91,7 +91,8 @@
 const cfg = {
   root: 'http://localhost:4000',
   stripe: 'pk_test_CY6HxyQkOolO1B3h43MvkJE5',
-  track: false
+  track: false,
+  github: '0aaa1ef6344e70dd463c'
 };
 
 if (true) {
@@ -5610,14 +5611,15 @@ module.exports = () => `
 /* 14 */,
 /* 15 */,
 /* 16 */,
-/* 17 */
+/* 17 */,
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
 __webpack_require__(4);
 
 const error404 = __webpack_require__(11);
-const marked = __webpack_require__(18);
+const marked = __webpack_require__(19);
 
 const config = __webpack_require__(0);
 const root = config.root;
@@ -5693,7 +5695,7 @@ function githubLink(res) {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
@@ -7297,10 +7299,10 @@ if (true) {
 } else {}
 })(this || (typeof window !== 'undefined' ? window : global));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(19)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(20)))
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 var g;
