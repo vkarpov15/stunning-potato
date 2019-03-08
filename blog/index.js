@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20190308: ajv@6.10.0, eslint@5.15.0',
+    content: '20190308_weekly.md',
+    output: 'this-week-on-npm-20190308',
+    description: 'New releases from the most popular npm packages from March 1 - March 8.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/20190308_winery.jpg'
+  },
+  {
     title: 'This Week on npm v20190222: eslint@5.14.0, next@8.0.0',
     content: '20190222_weekly.md',
     output: 'this-week-on-npm-20190222',
