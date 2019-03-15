@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20190315: dotenv@7.0.0',
+    content: '20190315_weekly.md',
+    output: 'this-week-on-npm-20190315',
+    description: 'New releases from the most popular npm packages from March 8 - March 15.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/20190315_books.jpeg'
+  },
+  {
     title: 'This Week on npm v20190308: ajv@6.10.0, eslint@5.15.0',
     content: '20190308_weekly.md',
     output: 'this-week-on-npm-20190308',

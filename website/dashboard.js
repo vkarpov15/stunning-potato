@@ -879,6 +879,9 @@ exports.put = function(url, data) {
   return fetch(`${root}${url}`, opts).then(res => res.json());
 };
 
+window.get = exports.get;
+window.put = exports.put;
+
 
 /***/ }),
 /* 4 */
