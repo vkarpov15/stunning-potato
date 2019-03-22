@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20190322: core-js@3.0.0, uglify-js@3.5.0',
+    content: '20190322_weekly.md',
+    output: 'this-week-on-npm-20190322',
+    description: 'New releases from the most popular npm packages from March 15 - March 22.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/20190322_books.jpeg'
+  },
+  {
     title: 'This Week on npm v20190315: dotenv@7.0.0',
     content: '20190315_weekly.md',
     output: 'this-week-on-npm-20190315',
