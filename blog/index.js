@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20190406: path-exists@4.0.0, readable-stream@3.3.0',
+    content: '20190406_weekly.md',
+    output: 'this-week-on-npm-20190406',
+    description: 'New releases from the most popular npm packages from March 29 - April 5.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/20190422_books.jpg'
+  },
+  {
     title: 'This Week on npm v20190322: core-js@3.0.0, uglify-js@3.5.0',
     content: '20190322_weekly.md',
     output: 'this-week-on-npm-20190322',
