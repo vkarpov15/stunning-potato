@@ -12,6 +12,13 @@ marked.setOptions({
 
 const posts = [
   {
+    title: 'This Week on npm v20190412: micromatch@4.0.0',
+    content: '20190412_weekly.md',
+    output: 'this-week-on-npm-20190412',
+    description: 'New releases from the most popular npm packages from April 5 - April 12.',
+    image: 'https://s3.amazonaws.com/codebarbarian-images/20190412_books.jpeg'
+  },
+  {
     title: 'This Week on npm v20190406: path-exists@4.0.0, readable-stream@3.3.0',
     content: '20190406_weekly.md',
     output: 'this-week-on-npm-20190406',
